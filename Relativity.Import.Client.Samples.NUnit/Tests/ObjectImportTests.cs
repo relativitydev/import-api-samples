@@ -10,9 +10,6 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	using System.Collections.Generic;
 	using System.Data;
 
-	using kCura.Relativity.DataReaderClient;
-	using kCura.Relativity.ImportAPI;
-
 	using global::NUnit.Framework;
 
 	/// <summary>
@@ -22,6 +19,11 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	public class ObjectImportTests : ImportTestsBase
 	{
 		private const string ArtifactTypeName = "TransferJob";
+		private const string FieldCompleted = "Completed";
+		private const string FieldDescription = "Description";
+		private const string FieldName = "Name";
+		private const string FieldSize = "Size";
+
 		private int _artifactTypeId;
 		private int _identifierFieldId;
 
@@ -38,9 +40,13 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		[OneTimeSetUp]
 		public void OneTimeSetUp()
 		{
-			this.CreateObjectType(ArtifactTypeName);
-			this._artifactTypeId = this.GetArtifactTypeId(ArtifactTypeName);
-			this._identifierFieldId = this.GetIdentifierFieldId(ArtifactTypeName);
+			int artifactTypeId = this.CreateObjectType(ArtifactTypeName);
+			int workspaceObjectTypeId = this.QueryWorkspaceObjectTypeDescriptorId(artifactTypeId);
+			this.CreateFixedLengthTextField(workspaceObjectTypeId, FieldDescription, 100);
+			this.CreateDecimalField(workspaceObjectTypeId, FieldSize);
+			this.CreateDateField(workspaceObjectTypeId, FieldCompleted);
+			this._artifactTypeId = this.QueryArtifactTypeId(ArtifactTypeName);
+			this._identifierFieldId = this.QueryIdentifierFieldId(ArtifactTypeName);
 		}
 
 		[Test]
@@ -48,17 +54,23 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		public void ShouldImportTheObject(string name)
 		{
 			// Arrange
-			ImportAPI importApi = CreateImportApiObject();
-			ImportBulkArtifactJob job = importApi.NewObjectImportJob(this._artifactTypeId);
+			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewObjectImportJob(this._artifactTypeId);
 			this.ConfigureJobSettings(job);
 			this.CatchJobEvents(job);
 			this.DataTable.Columns.AddRange(new[]
 			{
-				new DataColumn("Name", typeof(string))
+				new DataColumn(FieldName, typeof(string)),
+				new DataColumn(FieldDescription, typeof(string)),
+				new DataColumn(FieldSize, typeof(decimal)),
+				new DataColumn(FieldCompleted, typeof(DateTime))
 			});
 
-			int initialObjectCount = this.GetObjectCount(this._artifactTypeId);
-			this.DataTable.Rows.Add(name);
+			int initialObjectCount = this.QueryRelativityObjectCount(this._artifactTypeId);
+			decimal jobSize = TestHelper.NextDecimal(10, 100000);
+			string description = TestHelper.NextString(50, 100);
+			DateTime completed = DateTime.Now;
+			this.DataTable.Rows.Add(name, description, jobSize, completed);
 			job.SourceData.SourceData = this.DataTable.CreateDataReader();
 
 			// Act
@@ -70,13 +82,25 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Assert.That(this.JobReport.ErrorRowCount, Is.Zero);
 			Assert.That(this.JobReport.TotalRows, Is.EqualTo(1));
 			int expectedObjectCount = initialObjectCount + this.DataTable.Rows.Count;
-			int actualObjectCount = this.GetObjectCount(this._artifactTypeId);
-			Assert.That(actualObjectCount, Is.EqualTo(expectedObjectCount));
+			IList<Relativity.Services.Objects.DataContracts.RelativityObject> objects =
+				this.QueryRelativityObjects(this._artifactTypeId,
+					new[] { FieldName, FieldDescription, FieldSize, FieldCompleted });
+			Assert.That(objects, Is.Not.Null);
+			Assert.That(objects.Count, Is.EqualTo(expectedObjectCount));
+			Relativity.Services.Objects.DataContracts.RelativityObject importedObj
+				= GetRelativityObject(objects, FieldName, name);
+			Assert.That(importedObj, Is.Not.Null);
+			string descriptionFieldValue = GetStringFieldValue(importedObj, FieldDescription);
+			Assert.That(descriptionFieldValue, Is.EqualTo(description));
+			DateTime completeFieldValue = GetDateFieldValue(importedObj, FieldCompleted);
+			Assert.That(completeFieldValue, Is.EqualTo(completed).Within(5).Seconds);
+			decimal sizeFieldValue = GetDecimalFieldValue(importedObj, FieldSize);
+			Assert.That(sizeFieldValue, Is.EqualTo(jobSize));
 		}
 
-		private void ConfigureJobSettings(ImportBulkArtifactJob job)
+		private void ConfigureJobSettings(kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job)
 		{
-			Settings settings = job.Settings;
+			kCura.Relativity.DataReaderClient.Settings settings = job.Settings;
 			settings.ArtifactTypeId = this._artifactTypeId;
 			settings.Billable = false;
 			settings.BulkLoadFileFieldDelimiter = ";";
@@ -94,13 +118,13 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			settings.MaximumErrorCount = int.MaxValue - 1;
 			settings.MoveDocumentsInAppendOverlayMode = false;
 			settings.MultiValueDelimiter = ';';
-			settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
-			settings.OverwriteMode = OverwriteModeEnum.Append;
+			settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.DoNotImportNativeFiles;
+			settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append;
 			settings.SelectedIdentifierFieldName = "Name";
 			settings.StartRecordNumber = 0;
 		}
 
-		private void CatchJobEvents(ImportBulkArtifactJob job)
+		private void CatchJobEvents(kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job)
 		{
 			job.OnMessage += status =>
 			{

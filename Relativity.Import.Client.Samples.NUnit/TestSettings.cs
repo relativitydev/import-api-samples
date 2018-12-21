@@ -47,6 +47,12 @@ namespace Relativity.Import.Client.Sample.NUnit
 			set;
 		}
 
+		public static string RelativityRestApiUrl
+		{
+			get;
+			set;
+		}
+
 		public static string RelativityWebApiUrl
 		{
 			get;

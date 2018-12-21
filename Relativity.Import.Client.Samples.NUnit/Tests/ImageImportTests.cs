@@ -11,9 +11,6 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	using System.Data;
 	using System.Text;
 
-	using kCura.Relativity.DataReaderClient;
-	using kCura.Relativity.ImportAPI;
-
 	using global::NUnit.Framework;
 
 	/// <summary>
@@ -23,6 +20,9 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	public class ImageImportTests : ImportTestsBase
 	{
 		private const string ArtifactTypeName = "Document";
+		private const string FieldBatesNumber = "Bates Number";
+		private const string FieldControlNumber = "Control Number";
+		private const string FieldFileLocation = "File Location";
 		private int _artifactTypeId;
 		private int _identifierFieldId;
 
@@ -39,8 +39,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected override void OnSetup()
 		{
 			base.OnSetup();
-			this._artifactTypeId = this.GetArtifactTypeId(ArtifactTypeName);
-			this._identifierFieldId = this.GetIdentifierFieldId(ArtifactTypeName);
+			this._artifactTypeId = this.QueryArtifactTypeId(ArtifactTypeName);
+			this._identifierFieldId = this.QueryIdentifierFieldId(ArtifactTypeName);
 		}
 
 		[Test]
@@ -48,31 +48,28 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		public void ShouldImportTheImage(string fileName)
 		{
 			// Arrange
-			ImportAPI importApi = CreateImportApiObject();
-			ImageImportBulkArtifactJob job = importApi.NewImageImportJob();
+			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+			kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job = importApi.NewImageImportJob();
 			this.ConfigureJobSettings(job);
 			this.CatchJobEvents(job);
-			string file = GetResourceFilePath("Images", fileName);
+			string file = TestHelper.GetResourceFilePath("Images", fileName);
 			this.DataTable.Columns.AddRange(new[]
 			{
-				new DataColumn("Bates Number", typeof(string)),
-				new DataColumn("Control Number", typeof(string)),
-				new DataColumn("File Location", typeof(string))
-				
+				new DataColumn(FieldBatesNumber, typeof(string)),
+				new DataColumn(FieldControlNumber, typeof(string)),
+				new DataColumn(FieldFileLocation, typeof(string))
 			});
 
-			int initialDocumentCount = this.GetObjectCount((int)ArtifactType.Document);
+			int initialDocumentCount = this.QueryRelativityObjectCount((int)ArtifactType.Document);
+			string batesNumber = $"BATES-{Guid.NewGuid()}";
+			string controlNumber = "REL-" + Guid.NewGuid();
 			if (initialDocumentCount == 0)
 			{
 				// The Bates field for the first image in a set must be identical to the doc identifier.
-				var identicalVal = $"FIRST-{Guid.NewGuid()}";
-				this.DataTable.Rows.Add(identicalVal, identicalVal, file);
+				batesNumber = controlNumber;
 			}
-			else
-			{
-				this.DataTable.Rows.Add($"BATES-{Guid.NewGuid()}", $"CONTROL-{Guid.NewGuid()}", file);
-			}
-			
+
+			this.DataTable.Rows.Add(batesNumber, controlNumber, file);
 			job.SourceData.SourceData = this.DataTable;
 
 			// Act
@@ -84,32 +81,36 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Assert.That(this.JobReport.ErrorRowCount, Is.Zero);
 			Assert.That(this.JobReport.TotalRows, Is.EqualTo(1));
 			int expectedDocCount = initialDocumentCount + this.DataTable.Rows.Count;
-			int actualDocCount = this.GetObjectCount((int)ArtifactType.Document);
+			int actualDocCount = this.QueryRelativityObjectCount((int)ArtifactType.Document);
 			Assert.That(actualDocCount, Is.EqualTo(expectedDocCount));
+			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs =
+				this.QueryRelativityObjects(this._artifactTypeId, new[] { FieldControlNumber });
+			Assert.That(docs, Is.Not.Null);
+			Assert.That(docs.Count, Is.EqualTo(expectedDocCount));
 		}
 
-		private void ConfigureJobSettings(ImageImportBulkArtifactJob job)
+		private void ConfigureJobSettings(kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job)
 		{
-			ImageSettings settings = job.Settings;
+			kCura.Relativity.DataReaderClient.ImageSettings settings = job.Settings;
 			settings.ArtifactTypeId = this._artifactTypeId;
 			settings.AutoNumberImages = true;
-			settings.BatesNumberField = "Bates Number";
+			settings.BatesNumberField = FieldBatesNumber;
 			settings.CaseArtifactId = TestSettings.WorkspaceId;
 			settings.CopyFilesToDocumentRepository = true;
 			settings.DisableImageLocationValidation = false;
 			settings.DisableImageTypeValidation = false;
-			settings.DocumentIdentifierField = "Control Number";
+			settings.DocumentIdentifierField = FieldControlNumber;
 			settings.ExtractedTextEncoding = Encoding.Unicode;
 			settings.ExtractedTextFieldContainsFilePath = false;
-			settings.FileLocationField = "File Location";
+			settings.FileLocationField = FieldFileLocation;
 			settings.IdentityFieldId = this._identifierFieldId;
 			settings.LoadImportedFullTextFromServer = false;
-			settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
-			settings.OverwriteMode = OverwriteModeEnum.Append;
-			settings.SelectedIdentifierFieldName = "Control Number";
+			settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.CopyFiles;
+			settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append;
+			settings.SelectedIdentifierFieldName = FieldControlNumber;
 		}
 
-		private void CatchJobEvents(ImageImportBulkArtifactJob job)
+		private void CatchJobEvents(kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job)
 		{
 			job.OnMessage += status =>
 			{

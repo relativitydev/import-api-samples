@@ -11,9 +11,6 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	using System.Data;
 	using System.Text;
 
-	using kCura.Relativity.DataReaderClient;
-	using kCura.Relativity.ImportAPI;
-
 	using global::NUnit.Framework;
 
 	/// <summary>
@@ -23,6 +20,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	public class DocImportTests : ImportTestsBase
 	{
 		private const string ArtifactTypeName = "Document";
+		private const string FieldControlNumber = "Control Number";
+		private const string FieldFilePath = "File Path";
 		private int _artifactTypeId;
 		private int _identifierFieldId;
 
@@ -39,8 +38,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected override void OnSetup()
 		{
 			base.OnSetup();
-			this._artifactTypeId = this.GetArtifactTypeId(ArtifactTypeName);
-			this._identifierFieldId = this.GetIdentifierFieldId(ArtifactTypeName);
+			this._artifactTypeId = this.QueryArtifactTypeId(ArtifactTypeName);
+			this._identifierFieldId = this.QueryIdentifierFieldId(ArtifactTypeName);
 		}
 
 		[Test]
@@ -48,20 +47,21 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		public void ShouldImportTheDoc(string fileName)
 		{
 			// Arrange
-			ImportAPI importApi = CreateImportApiObject();
-			ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
+			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
 			this.ConfigureJobSettings(job);
 			this.CatchJobEvents(job);
-			string file = GetResourceFilePath("Docs", fileName);
+			string file = TestHelper.GetResourceFilePath("Docs", fileName);
 			this.DataTable.Columns.AddRange(new[]
 			{
-				new DataColumn("Control Number", typeof(string)),
-				new DataColumn("File Path", typeof(string))
+				new DataColumn(FieldControlNumber, typeof(string)),
+				new DataColumn(FieldFilePath, typeof(string))
 			});
 
-			this.DataTable.Rows.Add("REL-" + Guid.NewGuid(), file);
+			string controlNumber = "REL-" + Guid.NewGuid();
+			this.DataTable.Rows.Add(controlNumber, file);
 			job.SourceData.SourceData = this.DataTable.CreateDataReader();
-			int initialDocumentCount = this.GetObjectCount((int) ArtifactType.Document);
+			int initialDocumentCount = this.QueryRelativityObjectCount((int) ArtifactType.Document);
 
 			// Act
 			job.Execute();
@@ -72,13 +72,20 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Assert.That(this.JobReport.ErrorRowCount, Is.Zero);
 			Assert.That(this.JobReport.TotalRows, Is.EqualTo(1));
 			int expectedDocCount = initialDocumentCount + this.DataTable.Rows.Count;
-			int actualDocCount = this.GetObjectCount((int)ArtifactType.Document);
+			int actualDocCount = this.QueryRelativityObjectCount((int)ArtifactType.Document);
 			Assert.That(actualDocCount, Is.EqualTo(expectedDocCount));
+			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs = 
+				this.QueryRelativityObjects(this._artifactTypeId, new[] { FieldControlNumber });
+			Assert.That(docs, Is.Not.Null);
+			Assert.That(docs.Count, Is.EqualTo(expectedDocCount));
+			Relativity.Services.Objects.DataContracts.RelativityObject importedObj
+				= GetRelativityObject(docs, FieldControlNumber, controlNumber);
+			Assert.That(importedObj, Is.Not.Null);
 		}
 
-		private void ConfigureJobSettings(ImportBulkArtifactJob job)
+		private void ConfigureJobSettings(kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job)
 		{
-			Settings settings = job.Settings;
+			kCura.Relativity.DataReaderClient.Settings settings = job.Settings;
 			settings.ArtifactTypeId = this._artifactTypeId;
 			settings.BulkLoadFileFieldDelimiter = ";";
 			settings.CaseArtifactId = TestSettings.WorkspaceId;
@@ -93,16 +100,16 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			settings.FileSizeMapped = true;
 			settings.IdentityFieldId = this._identifierFieldId;
 			settings.LoadImportedFullTextFromServer = false;
-			settings.NativeFileCopyMode = NativeFileCopyModeEnum.CopyFiles;
-			settings.NativeFilePathSourceFieldName = "File Path";
+			settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.CopyFiles;
+			settings.NativeFilePathSourceFieldName = FieldFilePath;
 			settings.OIFileIdColumnName = "OutsideInFileId";
 			settings.OIFileIdMapped = true;
 			settings.OIFileTypeColumnName = "OutsideInFileType";
-			settings.OverwriteMode = OverwriteModeEnum.Append;
-			settings.SelectedIdentifierFieldName = "Control Number";
+			settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append;
+			settings.SelectedIdentifierFieldName = FieldControlNumber;
 		}
 
-		private void CatchJobEvents(ImportBulkArtifactJob job)
+		private void CatchJobEvents(kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job)
 		{
 			job.OnMessage += status =>
 			{

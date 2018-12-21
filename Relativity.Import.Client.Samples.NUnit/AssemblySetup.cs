@@ -9,6 +9,8 @@ namespace Relativity.Import.Client.Sample.NUnit
 	using System;
 	using System.Data;
 	using System.Data.SqlClient;
+	using System.IO;
+	using System.Net;
 
 	using global::NUnit.Framework;
 
@@ -18,6 +20,8 @@ namespace Relativity.Import.Client.Sample.NUnit
 	[SetUpFixture]
 	public class AssemblySetup
 	{
+		private static Relativity.Logging.ILog _logger;
+
 		/// <summary>
 		/// The main setup method.
 		/// </summary>
@@ -26,15 +30,20 @@ namespace Relativity.Import.Client.Sample.NUnit
 		{
 			TestSettings.RelativityUserName = GetConfigurationStringValue("RelativityUserName");
 			TestSettings.RelativityPassword = GetConfigurationStringValue("RelativityPassword");
+			TestSettings.RelativityRestApiUrl = GetConfigurationStringValue("RelativityRestApiUrl");
 			TestSettings.RelativityWebApiUrl = GetConfigurationStringValue("RelativityWebApiUrl");
 			TestSettings.SqlInstanceName = GetConfigurationStringValue("SqlInstanceName");
 			TestSettings.SqlAdminUserName = GetConfigurationStringValue("SqlAdminUserName");
 			TestSettings.SqlAdminPassword = GetConfigurationStringValue("SqlAdminPassword");
 			TestSettings.SqlDropWorkspaceDatabase = bool.Parse(GetConfigurationStringValue("SqlDropWorkspaceDatabase"));
+
+			// Note: don't create the logger until all parameters have been retrieved.
+			SetupLogger();
 			TestSettings.WorkspaceId = TestHelper.CreateTestWorkspace(
 				TestSettings.RelativityWebApiUrl,
 				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword);
+				TestSettings.RelativityPassword,
+				_logger);
 		}
 
 		/// <summary>
@@ -47,11 +56,11 @@ namespace Relativity.Import.Client.Sample.NUnit
 				TestSettings.RelativityWebApiUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId);
+				TestSettings.WorkspaceId,
+				_logger);
+			string database = $"EDDS{TestSettings.WorkspaceId}";
 			if (TestSettings.SqlDropWorkspaceDatabase && TestSettings.WorkspaceId > 0)
 			{
-				string database = $"EDDS{TestSettings.WorkspaceId}";
-
 				try
 				{
 					SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder
@@ -77,14 +86,20 @@ BEGIN
 END";
 							command.CommandType = CommandType.Text;
 							command.ExecuteNonQuery();
+							_logger.LogInformation("Successfully dropped the {DatabaseName} SQL workspace database.", database);
 							Console.WriteLine($"Successfully dropped the {database} SQL workspace database.");
 						}
 					}
 				}
 				catch (Exception e)
 				{
+					_logger.LogError(e, "Failed to drop the {DatabaseName} SQL workspace database.", database);
 					Console.WriteLine($"Failed to drop the {database} SQL workspace database. Exception: " + e);
 				}
+			}
+			else
+			{
+				_logger.LogInformation("Skipped dropping the {DatabaseName} SQL workspace database.", database);
 			}
 		}
 
@@ -97,6 +112,36 @@ END";
 			}
 
 			throw new AssertionException($"The '{key}' app.config setting is not specified.");
+		}
+
+		private static void SetupLogger()
+		{
+			Logging.LoggerOptions loggerOptions = new Logging.LoggerOptions
+			{
+				Application = "8A1A6418-29B3-4067-8C9E-51E296F959DE",
+				ConfigurationFileLocation = Path.Combine(TestHelper.GetBasePath(), "LogConfig.xml"),
+				System = "Import-API",
+				SubSystem = "Samples"
+			};
+
+			// Configure the optional SEQ sink to periodically send logs to the local SEQ server for improved debugging.
+			// See https://getseq.net/ for more details.
+			loggerOptions.AddSinkParameter(
+				Logging.Configuration.SeqSinkConfig.ServerUrlSinkParameterKey,
+				new Uri("http://localhost:5341"));
+
+			// Configure the optional HTTP sink to periodically send logs to Relativity.
+			loggerOptions.AddSinkParameter(
+				Logging.Configuration.RelativityHttpSinkConfig.CredentialSinkParameterKey,
+				new NetworkCredential(TestSettings.RelativityUserName, TestSettings.RelativityPassword));
+			loggerOptions.AddSinkParameter(
+				Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
+				TestSettings.RelativityRestApiUrl);
+			_logger = Logging.Factory.LogFactory.GetLogger(loggerOptions);
+
+			// Until Import API supports passing a logger instance via constructor, the API
+			// internally uses the Logger singleton instance if defined.
+			Relativity.Logging.Log.Logger = _logger;
 		}
 	}
 }

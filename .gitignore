@@ -251,3 +251,4 @@ paket-files/
 .idea/
 *.sln.iml
 /Relativity.Import.Client.Samples.NUnit/oi/unmanaged
+/Relativity.Import.Client.Samples.NUnit/oi/docs
