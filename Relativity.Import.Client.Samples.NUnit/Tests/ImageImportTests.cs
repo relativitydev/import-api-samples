@@ -75,14 +75,30 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			// Act
 			job.Execute();
 
-			// Assert
-			Assert.That(this.FatalException, Is.Null);
-			Assert.That(this.JobReport, Is.Not.Null);
-			Assert.That(this.JobReport.ErrorRowCount, Is.Zero);
-			Assert.That(this.JobReport.TotalRows, Is.EqualTo(1));
+			// Assert - the job completed and the report matches the expected values.
+			Assert.That(this.JobCompletedReport, Is.Not.Null);
+			Assert.That(this.JobCompletedReport.EndTime, Is.GreaterThan(this.JobCompletedReport.StartTime));
+			Assert.That(this.JobCompletedReport.ErrorRowCount, Is.Zero);
+
+			// Note: Importing images does NOT currently update FileBytes/MetadataBytes.
+			Assert.That(this.JobCompletedReport.FileBytes, Is.EqualTo(0));
+			Assert.That(this.JobCompletedReport.MetadataBytes, Is.EqualTo(0));
+			Assert.That(this.JobCompletedReport.StartTime, Is.GreaterThan(this.ImportStartTime));
+			Assert.That(this.JobCompletedReport.TotalRows, Is.EqualTo(1));
+
+			// Assert - the events match the expected values.
+			Assert.That(this.ErrorEvents.Count, Is.EqualTo(0));
+			Assert.That(this.FatalExceptionEvent, Is.Null);
+			Assert.That(this.MessageEvents.Count, Is.GreaterThan(0));
+			Assert.That(this.ProcessProgressEvents.Count, Is.GreaterThan(0));
+			Assert.That(this.ProgressRowEvents.Count, Is.GreaterThan(0));
+
+			// Assert - the object count is incremented by 1.
 			int expectedDocCount = initialDocumentCount + this.DataTable.Rows.Count;
 			int actualDocCount = this.QueryRelativityObjectCount((int)ArtifactType.Document);
 			Assert.That(actualDocCount, Is.EqualTo(expectedDocCount));
+
+			// Assert - the imported document exists.
 			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs =
 				this.QueryRelativityObjects(this._artifactTypeId, new[] { FieldControlNumber });
 			Assert.That(docs, Is.Not.Null);
@@ -112,21 +128,37 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 		private void CatchJobEvents(kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job)
 		{
-			job.OnMessage += status =>
+			job.OnComplete += report =>
 			{
-				Console.WriteLine("[Message]: " + status.Message);
+				this.JobCompletedReport = report;
+				Console.WriteLine("[Job Complete]");
+			};
+
+			job.OnError += row =>
+			{
+				this.ErrorEvents.Add(row);
 			};
 
 			job.OnFatalException += report =>
 			{
-				this.FatalException = report.FatalException;
-				Console.WriteLine("[Fatal Exception]: " + report.FatalException);
+				this.FatalExceptionEvent = report.FatalException;
+				Console.WriteLine("[Job Fatal Exception]: " + report.FatalException);
 			};
 
-			job.OnComplete += report =>
+			job.OnMessage += status =>
 			{
-				this.JobReport = report;
-				Console.WriteLine("[Complete]");
+				this.MessageEvents.Add(status.Message);
+				Console.WriteLine("[Job Message]: " + status.Message);
+			};
+
+			job.OnProcessProgress += status =>
+			{
+				this.ProcessProgressEvents.Add(status);
+			};
+
+			job.OnProgress += row =>
+			{
+				this.ProgressRowEvents.Add(row);
 			};
 		}
 	}

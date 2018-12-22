@@ -20,7 +20,11 @@ namespace Relativity.Import.Client.Sample.NUnit
 	[SetUpFixture]
 	public class AssemblySetup
 	{
-		private static Relativity.Logging.ILog _logger;
+		internal static Relativity.Logging.ILog Logger
+		{
+			get;
+			private set;
+		}
 
 		/// <summary>
 		/// The main setup method.
@@ -43,7 +47,7 @@ namespace Relativity.Import.Client.Sample.NUnit
 				TestSettings.RelativityWebApiUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
-				_logger);
+				Logger);
 		}
 
 		/// <summary>
@@ -57,7 +61,7 @@ namespace Relativity.Import.Client.Sample.NUnit
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
-				_logger);
+				Logger);
 			string database = $"EDDS{TestSettings.WorkspaceId}";
 			if (TestSettings.SqlDropWorkspaceDatabase && TestSettings.WorkspaceId > 0)
 			{
@@ -86,20 +90,20 @@ BEGIN
 END";
 							command.CommandType = CommandType.Text;
 							command.ExecuteNonQuery();
-							_logger.LogInformation("Successfully dropped the {DatabaseName} SQL workspace database.", database);
+							Logger.LogInformation("Successfully dropped the {DatabaseName} SQL workspace database.", database);
 							Console.WriteLine($"Successfully dropped the {database} SQL workspace database.");
 						}
 					}
 				}
 				catch (Exception e)
 				{
-					_logger.LogError(e, "Failed to drop the {DatabaseName} SQL workspace database.", database);
+					Logger.LogError(e, "Failed to drop the {DatabaseName} SQL workspace database.", database);
 					Console.WriteLine($"Failed to drop the {database} SQL workspace database. Exception: " + e);
 				}
 			}
 			else
 			{
-				_logger.LogInformation("Skipped dropping the {DatabaseName} SQL workspace database.", database);
+				Logger.LogInformation("Skipped dropping the {DatabaseName} SQL workspace database.", database);
 			}
 		}
 
@@ -137,11 +141,11 @@ END";
 			loggerOptions.AddSinkParameter(
 				Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
 				TestSettings.RelativityRestApiUrl);
-			_logger = Logging.Factory.LogFactory.GetLogger(loggerOptions);
+			Logger = Logging.Factory.LogFactory.GetLogger(loggerOptions);
 
 			// Until Import API supports passing a logger instance via constructor, the API
 			// internally uses the Logger singleton instance if defined.
-			Relativity.Logging.Log.Logger = _logger;
+			Relativity.Logging.Log.Logger = Logger;
 		}
 	}
 }

@@ -69,7 +69,12 @@ namespace Relativity.Import.Client.Sample.NUnit
 			}
 		}
 
-		public static int CreateObjectType(string webApiUrl, string userName, string password, int workspaceId, string objectTypeName)
+		public static int CreateObjectType(
+			string webApiUrl,
+			string userName,
+			string password,
+			int workspaceId,
+			string objectTypeName)
 		{
 			using (IRSAPIClient client = GetProxy<IRSAPIClient>(webApiUrl, userName, password))
 			{
@@ -88,6 +93,36 @@ namespace Relativity.Import.Client.Sample.NUnit
 
 				int artifactTypeId = client.Repositories.ObjectType.CreateSingle(objectTypeDto);
 				return artifactTypeId;
+			}
+		}
+
+		public static int CreateObjectTypeInstance(
+			string webApiUrl,
+			string userName,
+			string password,
+			int workspaceId,
+			int artifactTypeId,
+			IDictionary<string, object> fields)
+		{
+			using (var objectManager = GetProxy<IObjectManager>(webApiUrl, userName, password))
+			{
+				var request = new CreateRequest
+				{
+					ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
+					FieldValues = fields.Keys.Select(key => new FieldRefValuePair { Field = new FieldRef { Name = key }, Value = fields[key] })
+				};
+
+				Services.Objects.DataContracts.CreateResult result
+					= objectManager.CreateAsync(workspaceId, request).GetAwaiter().GetResult();
+				var innerExceptions = result.EventHandlerStatuses.Where(x => !x.Success)
+					.Select(status => new InvalidOperationException(status.Message)).Cast<Exception>().ToList();
+				if (innerExceptions.Count == 0)
+				{
+					return result.Object.ArtifactID;
+				}
+
+				throw new AggregateException(
+					$"Failed to create a new instance for {artifactTypeId} artifact type.", innerExceptions);
 			}
 		}
 

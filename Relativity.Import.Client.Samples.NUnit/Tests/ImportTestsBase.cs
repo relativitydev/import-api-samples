@@ -4,6 +4,9 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
+using System.Collections;
+using kCura.Relativity.DataReaderClient;
+
 namespace Relativity.Import.Client.Sample.NUnit.Tests
 {
 	using System;
@@ -18,19 +21,66 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	/// </summary>
 	public abstract class ImportTestsBase
 	{
+		protected ImportTestsBase()
+			: this(AssemblySetup.Logger)
+		{
+			// Assume that AssemblySetup has already setup the singleton.
+		}
+
+		protected ImportTestsBase(Relativity.Logging.ILog log)
+		{
+			this.Logger = log ?? throw new ArgumentNullException(nameof(log));
+			Assert.That(this.Logger, Is.Not.Null);
+		}
+
+		protected Relativity.Logging.ILog Logger
+		{
+			get;
+		}
+
 		protected DataTable DataTable
 		{
 			get;
 			private set;
 		}
 
-		protected Exception FatalException
+		protected DateTime ImportStartTime
+		{
+			get;
+			private set;
+		}
+
+		public IList<IDictionary> ErrorEvents
 		{
 			get;
 			set;
 		}
 
-		protected JobReport JobReport
+		protected Exception FatalExceptionEvent
+		{
+			get;
+			set;
+		}
+
+		protected JobReport JobCompletedReport
+		{
+			get;
+			set;
+		}
+
+		protected IList<string> MessageEvents
+		{
+			get;
+			set;
+		}
+
+		protected IList<long> ProgressRowEvents
+		{
+			get;
+			set;
+		}
+
+		protected IList<FullStatus> ProcessProgressEvents
 		{
 			get;
 			set;
@@ -41,8 +91,13 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		{
 			Assert.That(TestSettings.WorkspaceId, Is.GreaterThan(0));
 			this.DataTable = new DataTable();
-			this.FatalException = null;
-			this.JobReport = null;
+			this.ErrorEvents = new List<IDictionary>();
+			this.FatalExceptionEvent = null;
+			this.ImportStartTime = DateTime.Now;
+			this.JobCompletedReport = null;
+			this.MessageEvents = new List<string>();
+			this.ProgressRowEvents = new List<long>();
+			this.ProcessProgressEvents = new List<FullStatus>();
 			this.OnSetup();
 		}
 
@@ -52,28 +107,23 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			DataTable?.Dispose();
 		}
 
-		protected static DateTime GetDateFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static DateTime FindDateFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return (DateTime)GetFieldValue(relativityObject, name);
+			return (DateTime)FindFieldValue(relativityObject, name);
 		}
 
-		protected static decimal GetDecimalFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static decimal FindDecimalFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return (decimal)GetFieldValue(relativityObject, name);
+			return (decimal)FindFieldValue(relativityObject, name);
 		}
 
-		protected static object GetFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static object FindFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
 			Relativity.Services.Objects.DataContracts.FieldValuePair pair = relativityObject.FieldValues.FirstOrDefault(x => x.Field.Name == name);
 			return pair?.Value;
 		}
 
-		protected static string GetStringFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
-		{
-			return GetFieldValue(relativityObject, name) as string;
-		}
-
-		protected static Relativity.Services.Objects.DataContracts.RelativityObject GetRelativityObject(IList<Relativity.Services.Objects.DataContracts.RelativityObject> objects, string identityFieldName, string identityFieldValue)
+		protected static Relativity.Services.Objects.DataContracts.RelativityObject FindRelativityObject(IList<Relativity.Services.Objects.DataContracts.RelativityObject> objects, string identityFieldName, string identityFieldValue)
 		{
 			return (from obj in objects
 				from pair in obj.FieldValues
@@ -81,14 +131,9 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 				select obj).FirstOrDefault();
 		}
 
-		protected int CreateObjectType(string objectTypeName)
+		protected static string FindStringFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return TestHelper.CreateObjectType(
-				TestSettings.RelativityWebApiUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				objectTypeName);
+			return FindFieldValue(relativityObject, name) as string;
 		}
 
 		protected void CreateDateField(int workspaceObjectTypeId, string fieldName)
@@ -173,12 +218,90 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 				field);
 		}
 
+		protected void CreateSingleObjectField(int workspaceObjectTypeId, int descriptorArtifactTypeId, string fieldName)
+		{
+			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
+			{
+				AllowGroupBy = false,
+				AllowPivot = false,
+				AllowSortTally = false,
+				AssociativeObjectType = new kCura.Relativity.Client.DTOs.ObjectType { DescriptorArtifactTypeID = descriptorArtifactTypeId },
+				FieldTypeID = kCura.Relativity.Client.FieldType.SingleObject,
+				IgnoreWarnings = true,
+				IsRequired = false,
+				Linked = false,
+				Name = fieldName,
+				OpenToAssociations = false,
+				Width = "12",
+				Wrapping = false
+			};
+
+			TestHelper.CreateField(
+				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityUserName,
+				TestSettings.RelativityPassword,
+				TestSettings.WorkspaceId,
+				workspaceObjectTypeId,
+				field);
+		}
+
+		protected void CreateMultiObjectField(int workspaceObjectTypeId, int descriptorArtifactTypeId, string fieldName)
+		{
+			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
+			{
+				AllowGroupBy = false,
+				AllowPivot = false,
+				AssociativeObjectType = new kCura.Relativity.Client.DTOs.ObjectType { DescriptorArtifactTypeID = descriptorArtifactTypeId },
+				FieldTypeID = kCura.Relativity.Client.FieldType.MultipleObject,
+				IgnoreWarnings = true,
+				IsRequired = false,
+				Name = fieldName,
+				Width = "12"
+			};
+
+			TestHelper.CreateField(
+				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityUserName,
+				TestSettings.RelativityPassword,
+				TestSettings.WorkspaceId,
+				workspaceObjectTypeId,
+				field);
+		}
+
 		protected kCura.Relativity.ImportAPI.ImportAPI CreateImportApiObject()
 		{
 			return new kCura.Relativity.ImportAPI.ImportAPI(
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.RelativityWebApiUrl);
+		}
+
+		protected int CreateObjectType(string objectTypeName)
+		{
+			int artifactTypeId = TestHelper.CreateObjectType(
+				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityUserName,
+				TestSettings.RelativityPassword,
+				TestSettings.WorkspaceId,
+				objectTypeName);
+			this.Logger.LogInformation(
+				"Successfully created object type '{ObjectTypeName}' - {ArtifactTypeId}.",
+				objectTypeName, artifactTypeId);
+			return artifactTypeId;
+		}
+
+		protected int CreateObjectTypeInstance(int artifactTypeId, IDictionary<string, object> fields)
+		{
+			int artifactId = TestHelper.CreateObjectTypeInstance(
+				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityUserName,
+				TestSettings.RelativityPassword,
+				TestSettings.WorkspaceId,
+				artifactTypeId,
+				fields);
+			this.Logger.LogInformation("Successfully created instance {ArtifactId} of object type {ArtifactTypeId}.",
+				artifactId, artifactTypeId);
+			return artifactId;
 		}
 
 		protected int QueryArtifactTypeId(string objectTypeName)
