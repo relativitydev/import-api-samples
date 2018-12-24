@@ -187,7 +187,12 @@
   <ItemGroup>
     <Compile Include="TestSettings.cs" />
     <Compile Include="AssemblySetup.cs" />
-    <Compile Include="Tests\ObjectImportTests.cs" />
+    <Compile Include="Tests\DocImportTestsBase.cs" />
+    <Compile Include="Tests\ImageImportTestsBase.cs" />
+    <Compile Include="Tests\ObjectNegativeImportTests.cs" />
+    <Compile Include="Tests\ObjectSimpleImportTests.cs" />
+    <Compile Include="Tests\ObjectImportTestsBase.cs" />
+    <Compile Include="Tests\ObjectAdvancedImportTests.cs" />
     <Compile Include="Tests\ImageImportTests.cs" />
     <Compile Include="TestHelper.cs" />
     <Compile Include="Tests\ImportTestsBase.cs" />

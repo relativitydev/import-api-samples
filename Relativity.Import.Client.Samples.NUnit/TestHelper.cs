@@ -20,7 +20,7 @@ namespace Relativity.Import.Client.Sample.NUnit
 	using Relativity.Services.Objects;
 	using Relativity.Services.Objects.DataContracts;
 	using Relativity.Services.ServiceProxy;
-	
+
 	public static class TestHelper
 	{
 		/// <summary>
@@ -44,7 +44,8 @@ namespace Relativity.Import.Client.Sample.NUnit
 			using (IRSAPIClient client = GetProxy<IRSAPIClient>(webApiUrl, userName, password))
 			{
 				client.APIOptions.WorkspaceID = workspaceId;
-				List<kCura.Relativity.Client.DTOs.Field> fieldsToCreate = new List<kCura.Relativity.Client.DTOs.Field>();
+				List<kCura.Relativity.Client.DTOs.Field>
+					fieldsToCreate = new List<kCura.Relativity.Client.DTOs.Field>();
 				field.ObjectType = new kCura.Relativity.Client.DTOs.ObjectType
 				{
 					DescriptorArtifactTypeID = workspaceObjectTypeId
@@ -58,8 +59,8 @@ namespace Relativity.Import.Client.Sample.NUnit
 					return;
 				}
 
-				var innerExceptions = new List<Exception>();
-				foreach (var result in resultSet.Results.Where(x => !x.Success))
+				List<Exception> innerExceptions = new List<Exception>();
+				foreach (Result<kCura.Relativity.Client.DTOs.Field> result in resultSet.Results.Where(x => !x.Success))
 				{
 					innerExceptions.Add(new InvalidOperationException(result.Message));
 				}
@@ -79,6 +80,17 @@ namespace Relativity.Import.Client.Sample.NUnit
 			using (IRSAPIClient client = GetProxy<IRSAPIClient>(webApiUrl, userName, password))
 			{
 				client.APIOptions.WorkspaceID = workspaceId;
+				Result<kCura.Relativity.Client.DTOs.ObjectType> objectType = client.Repositories.ObjectType.Query(
+					new Query<kCura.Relativity.Client.DTOs.ObjectType>
+					{
+						Condition = new TextCondition("Name", TextConditionEnum.EqualTo, objectTypeName),
+						Fields = FieldValue.AllFields
+					}).Results.FirstOrDefault();
+				if (objectType != null)
+				{
+					return objectType.Artifact.ArtifactID;
+				}
+
 				kCura.Relativity.Client.DTOs.ObjectType objectTypeDto = new kCura.Relativity.Client.DTOs.ObjectType
 				{
 					Name = objectTypeName,
@@ -91,8 +103,8 @@ namespace Relativity.Import.Client.Sample.NUnit
 					CopyInstancesOnParentCopy = false
 				};
 
-				int artifactTypeId = client.Repositories.ObjectType.CreateSingle(objectTypeDto);
-				return artifactTypeId;
+				int artifactId = client.Repositories.ObjectType.CreateSingle(objectTypeDto);
+				return artifactId;
 			}
 		}
 
@@ -104,18 +116,19 @@ namespace Relativity.Import.Client.Sample.NUnit
 			int artifactTypeId,
 			IDictionary<string, object> fields)
 		{
-			using (var objectManager = GetProxy<IObjectManager>(webApiUrl, userName, password))
+			using (IObjectManager objectManager = GetProxy<IObjectManager>(webApiUrl, userName, password))
 			{
-				var request = new CreateRequest
+				CreateRequest request = new CreateRequest
 				{
-					ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId },
-					FieldValues = fields.Keys.Select(key => new FieldRefValuePair { Field = new FieldRef { Name = key }, Value = fields[key] })
+					ObjectType = new ObjectTypeRef {ArtifactTypeID = artifactTypeId},
+					FieldValues = fields.Keys.Select(key => new FieldRefValuePair
+						{Field = new FieldRef {Name = key}, Value = fields[key]})
 				};
 
 				Services.Objects.DataContracts.CreateResult result
 					= objectManager.CreateAsync(workspaceId, request).GetAwaiter().GetResult();
-				var innerExceptions = result.EventHandlerStatuses.Where(x => !x.Success)
-					.Select(status => new InvalidOperationException(status.Message)).Cast<Exception>().ToList();
+				List<InvalidOperationException> innerExceptions = result.EventHandlerStatuses.Where(x => !x.Success)
+					.Select(status => new InvalidOperationException(status.Message)).ToList();
 				if (innerExceptions.Count == 0)
 				{
 					return result.Object.ArtifactID;
@@ -140,7 +153,8 @@ namespace Relativity.Import.Client.Sample.NUnit
 				QueryResultSet<Workspace> resultSet = QueryWorkspaceTemplate(client, TemplateName);
 				if (!resultSet.Success)
 				{
-					throw new InvalidOperationException($"An error occurred while attempting to create a workspace from template {TemplateName}: {resultSet.Message}");
+					throw new InvalidOperationException(
+						$"An error occurred while attempting to create a workspace from template {TemplateName}: {resultSet.Message}");
 				}
 
 				if (resultSet.Results.Count == 0)
@@ -150,7 +164,8 @@ namespace Relativity.Import.Client.Sample.NUnit
 				}
 
 				int templateWorkspaceId = resultSet.Results[0].Artifact.ArtifactID;
-				logger.LogInformation("Retrieved the {TemplateName} workspace template. TemplateWorkspaceId={TemplateWorkspaceId}.",
+				logger.LogInformation(
+					"Retrieved the {TemplateName} workspace template. TemplateWorkspaceId={TemplateWorkspaceId}.",
 					TemplateName,
 					templateWorkspaceId);
 				Workspace workspace = new Workspace
@@ -160,11 +175,35 @@ namespace Relativity.Import.Client.Sample.NUnit
 				};
 
 				logger.LogInformation("Creating the {WorkspaceName} workspace...", workspace.Name);
-				ProcessOperationResult result = client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
+				ProcessOperationResult result =
+					client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
 				int workspaceArtifactId = QueryWorkspaceArtifactId(client, result, logger);
 				logger.LogInformation("Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
 					workspace.Name, workspaceArtifactId);
 				return workspaceArtifactId;
+			}
+		}
+
+		public static void DeleteObject(
+			string webApiUrl,
+			string userName,
+			string password,
+			int workspaceId,
+			int artifactId)
+		{
+			using (IObjectManager objectManager = GetProxy<IObjectManager>(webApiUrl, userName, password))
+			{
+				DeleteRequest request = new DeleteRequest
+				{
+					Object = new RelativityObjectRef {ArtifactID = artifactId}
+				};
+
+				Services.Objects.DataContracts.DeleteResult result
+					= objectManager.DeleteAsync(workspaceId, request).GetAwaiter().GetResult();
+				if (result.Report.DeletedItems.Count == 0)
+				{
+					throw new InvalidOperationException($"Failed to delete the {artifactId} object.");
+				}
 			}
 		}
 
@@ -275,9 +314,9 @@ namespace Relativity.Import.Client.Sample.NUnit
 
 		public static int QueryArtifactTypeId(string webApiUrl, string userName, string password, int workspaceId, string objectTypeName)
 		{
-			using (var objectManager = GetProxy<IObjectManager>(webApiUrl, userName, password))
+			using (IObjectManager objectManager = GetProxy<IObjectManager>(webApiUrl, userName, password))
 			{
-				var queryRequest = new QueryRequest
+				QueryRequest queryRequest = new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef
 					{
@@ -298,7 +337,7 @@ namespace Relativity.Import.Client.Sample.NUnit
 				Services.Objects.DataContracts.QueryResult result = objectManager.QueryAsync(workspaceId, queryRequest, 0, 1).GetAwaiter().GetResult();
 				if (result.TotalCount != 1)
 				{
-					throw new InvalidOperationException($"Failed to retrieve the artifact type id for the '{objectTypeName}' object type.");
+					return 0;
 				}
 
 				return (int)result.Objects.Single().FieldValues.Single().Value;
@@ -307,9 +346,9 @@ namespace Relativity.Import.Client.Sample.NUnit
 
 		public static int QueryIdentifierFieldId(string webApiUrl, string userName, string password, int workspaceId, string artifactTypeName)
 		{
-			using (var client = GetProxy<IObjectManager>(webApiUrl, userName, password))
+			using (IObjectManager client = GetProxy<IObjectManager>(webApiUrl, userName, password))
 			{
-				var queryRequest = new QueryRequest
+				QueryRequest queryRequest = new QueryRequest
 				{
 					Condition = $"'{ArtifactTypeNames.ObjectType}' == '{artifactTypeName}' AND '{FieldFieldNames.IsIdentifier}' == true",
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field }
@@ -328,16 +367,37 @@ namespace Relativity.Import.Client.Sample.NUnit
 
 		public static int QueryRelativityObjectCount(string webApiUrl, string userName, string password, int workspaceId, int artifactTypeId)
 		{
-			using (var client = GetProxy<IObjectManager>(webApiUrl, userName, password))
+			using (IObjectManager client = GetProxy<IObjectManager>(webApiUrl, userName, password))
 			{
-				var queryRequest = new QueryRequest
+				QueryRequest queryRequest = new QueryRequest
 				{
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId }
 				};
 
 				const int maxItemsToFetch = 10;
-				var result = client.QueryAsync(workspaceId, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
+				Services.Objects.DataContracts.QueryResult result =
+					client.QueryAsync(workspaceId, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
 				return result.TotalCount;
+			}
+		}
+
+		public static int QueryObjectType(
+			string webApiUrl,
+			string userName,
+			string password,
+			int workspaceId,
+			string objectTypeName)
+		{
+			using (IRSAPIClient client = GetProxy<IRSAPIClient>(webApiUrl, userName, password))
+			{
+				client.APIOptions.WorkspaceID = workspaceId;
+				Result<kCura.Relativity.Client.DTOs.ObjectType> objectType = client.Repositories.ObjectType.Query(
+					new Query<kCura.Relativity.Client.DTOs.ObjectType>
+					{
+						Condition = new TextCondition("Name", TextConditionEnum.EqualTo, objectTypeName),
+						Fields = FieldValue.AllFields
+					}).Results.FirstOrDefault();
+				return objectType?.Artifact?.ArtifactTypeID ?? 0;
 			}
 		}
 
@@ -349,16 +409,17 @@ namespace Relativity.Import.Client.Sample.NUnit
 			int artifactTypeId,
 			IEnumerable<string> fields)
 		{
-			using (var client = GetProxy<IObjectManager>(webApiUrl, userName, password))
+			using (IObjectManager client = GetProxy<IObjectManager>(webApiUrl, userName, password))
 			{
-				var queryRequest = new QueryRequest
+				QueryRequest queryRequest = new QueryRequest
 				{
 					Fields = fields.Select(x => new FieldRef { Name = x }),
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId }
 				};
 
 				const int maxItemsToFetch = 50;
-				var result = client.QueryAsync(workspaceId, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
+				Services.Objects.DataContracts.QueryResult result =
+					client.QueryAsync(workspaceId, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
 				return result.Objects;
 			}
 		}
@@ -368,10 +429,10 @@ namespace Relativity.Import.Client.Sample.NUnit
 			string userName,
 			string password,
 			int workspaceId,
-			int workspaceObjectTypeId)
+			int artifactId)
 		{
-			var objectType = new kCura.Relativity.Client.DTOs.ObjectType(workspaceObjectTypeId)
-				{Fields = FieldValue.AllFields};
+			kCura.Relativity.Client.DTOs.ObjectType objectType = new kCura.Relativity.Client.DTOs.ObjectType(artifactId)
+				{ Fields = FieldValue.AllFields };
 			ResultSet<kCura.Relativity.Client.DTOs.ObjectType> resultSet;
 			using (IRSAPIClient client = GetProxy<IRSAPIClient>(webApiUrl, userName, password))
 			{
@@ -394,10 +455,31 @@ namespace Relativity.Import.Client.Sample.NUnit
 			return descriptorArtifactTypeId.Value;
 		}
 
+		public static RelativityObject ReadRelativityObject(
+			string webApiUrl,
+			string userName,
+			string password,
+			int workspaceId,
+			int artifactId,
+			IEnumerable<string> fields)
+		{
+			using (IObjectManager client = GetProxy<IObjectManager>(webApiUrl, userName, password))
+			{
+				ReadRequest readRequest = new ReadRequest
+				{
+					Fields = fields.Select(x => new FieldRef { Name = x }),
+					Object = new RelativityObjectRef {  ArtifactID = artifactId }
+				};
+
+				Services.Objects.DataContracts.ReadResult result = client.ReadAsync(workspaceId, readRequest).GetAwaiter().GetResult();
+				return result.Object;
+			}
+		}
+
 		private static Uri GetKeplerUrl(string webApiUrl)
 		{
-			var baseUri = new Uri(webApiUrl);
-			var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
+			Uri baseUri = new Uri(webApiUrl);
+			Uri host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
 			Uri keplerUri = new Uri(host, "relativity.rest/api");
 			return keplerUri;
 		}
@@ -420,8 +502,8 @@ namespace Relativity.Import.Client.Sample.NUnit
 
 		private static Uri GetServicesUrl(string webApiUrl)
 		{
-			var baseUri = new Uri(webApiUrl);
-			var host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
+			Uri baseUri = new Uri(webApiUrl);
+			Uri host = new Uri(baseUri.GetLeftPart(UriPartial.Authority));
 			Uri servicesUri = new Uri(host, "relativity.services");
 			return servicesUri;
 		}
@@ -469,7 +551,7 @@ namespace Relativity.Import.Client.Sample.NUnit
 			};
 
 			client.MonitorProcessState(client.APIOptions, processResult.ProcessID);
-			var processInfo = source.Task.GetAwaiter().GetResult();
+			ProcessInformation processInfo = source.Task.GetAwaiter().GetResult();
 			if (processInfo.OperationArtifactIDs.Any() && processInfo.OperationArtifactIDs[0] != null)
 			{
 				return processInfo.OperationArtifactIDs.FirstOrDefault().Value;
