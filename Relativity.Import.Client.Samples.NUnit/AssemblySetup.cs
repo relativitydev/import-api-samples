@@ -77,10 +77,10 @@ namespace Relativity.Import.Client.Sample.NUnit
 					};
 
 					SqlConnection.ClearAllPools();
-					using (var connection = new SqlConnection(builder.ConnectionString))
+					using (SqlConnection connection = new SqlConnection(builder.ConnectionString))
 					{
 						connection.Open();
-						using (var command = connection.CreateCommand())
+						using (SqlCommand command = connection.CreateCommand())
 						{
 							command.CommandText = $@"
 IF EXISTS(SELECT name FROM sys.databases WHERE name = '{database}')
@@ -109,7 +109,7 @@ END";
 
 		private static string GetConfigurationStringValue(string key)
 		{
-			var value = System.Configuration.ConfigurationManager.AppSettings.Get(key);
+			string value = System.Configuration.ConfigurationManager.AppSettings.Get(key);
 			if (!string.IsNullOrEmpty(value))
 			{
 				return value;
