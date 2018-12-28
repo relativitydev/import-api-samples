@@ -250,5 +250,7 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
-/Relativity.Import.Client.Samples.NUnit/oi/unmanaged
-/Relativity.Import.Client.Samples.NUnit/oi/docs
+/Source/Relativity.Import.Client.Samples.NUnit/oi/unmanaged
+/Source/Relativity.Import.Client.Samples.NUnit/oi/docs
+!buildtools/packages.config
+/buildtools/*
