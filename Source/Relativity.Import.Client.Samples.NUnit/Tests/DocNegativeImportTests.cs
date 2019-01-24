@@ -20,9 +20,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		public void ShouldNotImportWhenTheFolderExceedsTheMaxLength()
 		{
 			// Arrange
-			const int MaxFolderLength = 255;
-			string controlNumber = "REL-" + Guid.NewGuid();
-			string folder = "\\" + new string('x', MaxFolderLength + 1);
+			string controlNumber = GenerateControlNumber();
+			string folder = "\\" + new string('x', TestSettings.MaxFolderLength + 1);
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job =
 				this.ArrangeImportJob(controlNumber, folder, SamplePdfFileName);
 
@@ -33,7 +32,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.AssertImportFailed(1);
 
 			// Assert - exceeding the max folder length yields a doc-level error.
-			this.AssertError(0, 1, controlNumber, MaxFolderLength.ToString());
+			this.AssertError(0, 1, controlNumber, TestSettings.MaxFolderLength.ToString());
 		}
 	}
 }

@@ -85,6 +85,20 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			private set;
 		}
 
+		/// <summary>
+		/// Splits the folder path into one or more individual folders.
+		/// </summary>
+		/// <param name="folderPath">
+		/// The folder path.
+		/// </param>
+		/// <returns>
+		/// The list of folders.
+		/// </returns>
+		protected IEnumerable<string> SplitFolderPath(string folderPath)
+		{
+			return folderPath.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+		}
+
 		protected kCura.Relativity.DataReaderClient.ImportBulkArtifactJob ArrangeImportJob(
 			string controlNumber,
 			string folder,

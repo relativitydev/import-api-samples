@@ -46,8 +46,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			});
 
 			int initialDocumentCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
-			string batesNumber = $"BATES-{Guid.NewGuid()}";
-			string controlNumber = "REL-" + Guid.NewGuid();
+			string batesNumber = GenerateBatesNumber();
+			string controlNumber = GenerateControlNumber();
 			if (initialDocumentCount == 0)
 			{
 				// The Bates field for the first image in a set must be identical to the doc identifier.

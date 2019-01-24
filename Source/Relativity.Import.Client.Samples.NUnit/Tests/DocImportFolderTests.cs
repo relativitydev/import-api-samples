@@ -9,6 +9,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
+	using System.Text;
 
 	using global::NUnit.Framework;
 
@@ -54,7 +55,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		{
 			// Arrange
 			IList<string> initialFolders = this.QueryWorkspaceFolders();
-			string controlNumber = "REL-" + Guid.NewGuid();
+			string controlNumber = GenerateControlNumber();
 			string folder = $"\\{invalidFolder}-{this.clientSideFolders}";
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job =
 				this.ArrangeImportJob(controlNumber, folder, SamplePdfFileName);
@@ -79,10 +80,10 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		[TestCase("\\case-ROOT1\\case-root2")]
 		[TestCase("\\case-ROOT1\\case-Root2")]
 		[TestCase("\\case-ROOT1\\case-ROOT2")]
-		public void ShouldNotDuplicateFoldersDueToCase(string folder)
+		public void ShouldNotDuplicateFoldersDueToCaseSensitivity(string folder)
 		{
 			// Arrange
-			string controlNumber = "REL-" + Guid.NewGuid();
+			string controlNumber = GenerateControlNumber();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job =
 				this.ArrangeImportJob(controlNumber, folder, SamplePdfFileName);
 
@@ -102,6 +103,33 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			{
 				this.AssertDistinctFolders("case-root1", "case-root2");
 			}
+		}
+
+		[Test]
+		public void ShouldSupportTheMaxFolderDepth()
+		{
+			// Arrange
+			string controlNumber = GenerateControlNumber();
+			StringBuilder sb = new StringBuilder();
+			for (var i = 0; i < TestSettings.MaxFolderDepth; i++)
+			{
+				string folderName = $"\\{Guid.NewGuid()}-{TestHelper.NextString(20, TestSettings.MaxFolderLength - 36)}";
+				sb.Append(folderName);
+			}
+
+			string folderPath = sb.ToString();
+			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job =
+				this.ArrangeImportJob(controlNumber, folderPath, SamplePdfFileName);
+
+			// Act
+			job.Execute();
+
+			// Assert - the import job is successful.
+			this.AssertImportSuccess();
+
+			// Assert - all max depth folders were created.
+			IEnumerable<string> folders = SplitFolderPath(folderPath);
+			this.AssertDistinctFolders(folders.ToArray());
 		}
 	}
 }

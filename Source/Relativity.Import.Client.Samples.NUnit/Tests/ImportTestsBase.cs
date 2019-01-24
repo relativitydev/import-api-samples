@@ -108,6 +108,28 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.OnTearDown();
 		}
 
+		/// <summary>
+		/// Generates a unique bates number with a BATES prefix.
+		/// </summary>
+		/// <returns>
+		/// The bates number.
+		/// </returns>
+		protected static string GenerateBatesNumber()
+		{
+			return $"BATES-{Guid.NewGuid()}";
+		}
+
+		/// <summary>
+		/// Generates a unique control number with a REL prefix.
+		/// </summary>
+		/// <returns>
+		/// The control number.
+		/// </returns>
+		protected static string GenerateControlNumber()
+		{
+			return $"REL-{Guid.NewGuid()}";
+		}
+
 		protected static DateTime FindDateFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
 			return (DateTime)FindFieldValue(relativityObject, name);
@@ -311,7 +333,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			return new kCura.Relativity.ImportAPI.ImportAPI(
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
-				TestSettings.RelativityWebApiUrl);
+				TestSettings.RelativityWebApiUrl.ToString());
 		}
 
 		protected int CreateObjectType(string objectTypeName)

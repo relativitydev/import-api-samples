@@ -37,7 +37,7 @@ namespace Relativity.Import.Client.Sample.NUnit
 			TestSettings.RelativityRestUrl = new Uri(GetConfigurationStringValue("RelativityRestUrl"));
 			TestSettings.RelativityServicesUrl = new Uri(GetConfigurationStringValue("RelativityServicesUrl"));
 			TestSettings.RelativityUrl = new Uri(GetConfigurationStringValue("RelativityUrl"));
-			TestSettings.RelativityWebApiUrl = GetConfigurationStringValue("RelativityWebApiUrl");
+			TestSettings.RelativityWebApiUrl = new Uri(GetConfigurationStringValue("RelativityWebApiUrl"));
 			TestSettings.SqlInstanceName = GetConfigurationStringValue("SqlInstanceName");
 			TestSettings.SqlAdminUserName = GetConfigurationStringValue("SqlAdminUserName");
 			TestSettings.SqlAdminPassword = GetConfigurationStringValue("SqlAdminPassword");

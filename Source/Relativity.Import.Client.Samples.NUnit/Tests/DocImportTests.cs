@@ -6,9 +6,9 @@
 
 namespace Relativity.Import.Client.Sample.NUnit.Tests
 {
-	using System;
 	using System.Collections.Generic;
 	using System.Data;
+	using System.Linq;
 
 	using global::NUnit.Framework;
 
@@ -47,11 +47,11 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 		[Test]
 		[TestCaseSource(nameof(TestCases))]
-		public void ShouldImportTheDoc(string fileName, string folder)
+		public void ShouldImportTheDoc(string fileName, string folderPath)
 		{
 			// Arrange
 			int initialDocumentCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
-			string controlNumber = "REL-" + Guid.NewGuid();
+			string controlNumber = GenerateControlNumber();
 			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
 			this.ConfigureJobSettings(
@@ -73,7 +73,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 			// Add the file to the data source.
 			string file = TestHelper.GetDocsResourceFilePath(fileName);
-			this.DataTable.Rows.Add(controlNumber, file, folder);
+			this.DataTable.Rows.Add(controlNumber, file, folderPath);
 			job.SourceData.SourceData = this.DataTable.CreateDataReader();
 
 			// Act
@@ -97,10 +97,10 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Assert.That(importedObj, Is.Not.Null);
 
 			// Assert - the workspace doesn't include duplicate folders.
-			if (!string.IsNullOrEmpty(folder))
+			if (!string.IsNullOrEmpty(folderPath))
 			{
-				string[] folders = folder.Split(new[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
-				this.AssertDistinctFolders(folders);
+				IEnumerable<string> folders = SplitFolderPath(folderPath);
+				this.AssertDistinctFolders(folders.ToArray());
 			}
 		}
 	}
