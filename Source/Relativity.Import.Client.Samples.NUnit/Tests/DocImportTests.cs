@@ -27,6 +27,12 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			get
 			{
 				// Ensure that duplicate folders never cause failures.
+				yield return new TestCaseData(SamplePdfFileName, null);
+				yield return new TestCaseData(SampleWordFileName, null);
+				yield return new TestCaseData(SampleExcelFileName, null);
+				yield return new TestCaseData(SamplePdfFileName, string.Empty);
+				yield return new TestCaseData(SampleWordFileName, string.Empty);
+				yield return new TestCaseData(SampleExcelFileName, string.Empty);
 				yield return new TestCaseData(SamplePdfFileName, $"\\{Level1Folder}");
 				yield return new TestCaseData(SampleWordFileName, $"\\{Level1Folder}");
 				yield return new TestCaseData(SampleExcelFileName, $"\\{Level1Folder}");
@@ -91,8 +97,11 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Assert.That(importedObj, Is.Not.Null);
 
 			// Assert - the workspace doesn't include duplicate folders.
-			string[] folders = folder.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
-			this.AssertDistinctFolders(folders);
+			if (!string.IsNullOrEmpty(folder))
+			{
+				string[] folders = folder.Split(new[] {'\\'}, StringSplitOptions.RemoveEmptyEntries);
+				this.AssertDistinctFolders(folders);
+			}
 		}
 	}
 }
