@@ -34,19 +34,24 @@ namespace Relativity.Import.Client.Sample.NUnit
 		{
 			TestSettings.RelativityUserName = GetConfigurationStringValue("RelativityUserName");
 			TestSettings.RelativityPassword = GetConfigurationStringValue("RelativityPassword");
-			TestSettings.RelativityRestApiUrl = GetConfigurationStringValue("RelativityRestApiUrl");
+			TestSettings.RelativityRestUrl = new Uri(GetConfigurationStringValue("RelativityRestUrl"));
+			TestSettings.RelativityServicesUrl = new Uri(GetConfigurationStringValue("RelativityServicesUrl"));
+			TestSettings.RelativityUrl = new Uri(GetConfigurationStringValue("RelativityUrl"));
 			TestSettings.RelativityWebApiUrl = GetConfigurationStringValue("RelativityWebApiUrl");
 			TestSettings.SqlInstanceName = GetConfigurationStringValue("SqlInstanceName");
 			TestSettings.SqlAdminUserName = GetConfigurationStringValue("SqlAdminUserName");
 			TestSettings.SqlAdminPassword = GetConfigurationStringValue("SqlAdminPassword");
 			TestSettings.SqlDropWorkspaceDatabase = bool.Parse(GetConfigurationStringValue("SqlDropWorkspaceDatabase"));
+			TestSettings.WorkspaceTemplate = GetConfigurationStringValue("WorkspaceTemplate");
 
 			// Note: don't create the logger until all parameters have been retrieved.
 			SetupLogger();
 			TestSettings.WorkspaceId = TestHelper.CreateTestWorkspace(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
+				TestSettings.WorkspaceTemplate,
 				Logger);
 		}
 
@@ -57,7 +62,8 @@ namespace Relativity.Import.Client.Sample.NUnit
 		public void TearDown()
 		{
 			TestHelper.DeleteTestWorkspace(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -82,6 +88,7 @@ namespace Relativity.Import.Client.Sample.NUnit
 						connection.Open();
 						using (SqlCommand command = connection.CreateCommand())
 						{
+
 							command.CommandText = $@"
 IF EXISTS(SELECT name FROM sys.databases WHERE name = '{database}')
 BEGIN
@@ -140,7 +147,7 @@ END";
 				new NetworkCredential(TestSettings.RelativityUserName, TestSettings.RelativityPassword));
 			loggerOptions.AddSinkParameter(
 				Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
-				TestSettings.RelativityRestApiUrl);
+				TestSettings.RelativityUrl);
 			Logger = Logging.Factory.LogFactory.GetLogger(loggerOptions);
 
 			// Until Import API supports passing a logger instance via constructor, the API

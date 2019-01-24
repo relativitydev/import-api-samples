@@ -6,6 +6,8 @@
 
 namespace Relativity.Import.Client.Sample.NUnit
 {
+	using System;
+
 	/// <summary>
 	/// Represents static test settings used throughout the sample.
 	/// </summary>
@@ -47,7 +49,19 @@ namespace Relativity.Import.Client.Sample.NUnit
 			set;
 		}
 
-		public static string RelativityRestApiUrl
+		public static Uri RelativityUrl
+		{
+			get;
+			set;
+		}
+
+		public static Uri RelativityRestUrl
+		{
+			get;
+			set;
+		}
+
+		public static Uri RelativityServicesUrl
 		{
 			get;
 			set;
@@ -60,6 +74,12 @@ namespace Relativity.Import.Client.Sample.NUnit
 		}
 
 		public static int WorkspaceId
+		{
+			get;
+			set;
+		}
+
+		public static string WorkspaceTemplate
 		{
 			get;
 			set;

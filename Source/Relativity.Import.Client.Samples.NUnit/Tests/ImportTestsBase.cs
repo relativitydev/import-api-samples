@@ -96,6 +96,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.MessageEvents = new List<string>();
 			this.ProgressRowEvents = new List<long>();
 			this.ProcessProgressEvents = new List<kCura.Relativity.DataReaderClient.FullStatus>();
+			SetWinEddsConfigValue("CreateFoldersInWebAPI", true);
 			this.OnSetup();
 		}
 
@@ -103,6 +104,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		public void Teardown()
 		{
 			DataTable?.Dispose();
+			SetWinEddsConfigValue("CreateFoldersInWebAPI", true);
 			this.OnTearDown();
 		}
 
@@ -145,6 +147,28 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			return FindFieldValue(relativityObject, name) as string;
 		}
 
+		/// <summary>
+		/// Sets a WinEDDS-based configuration value.
+		/// </summary>
+		/// <param name="key">
+		/// The configuration key name.
+		/// </param>
+		/// <param name="value">
+		/// The configuration value name.
+		/// </param>
+		protected static void SetWinEddsConfigValue(string key, object value)
+		{
+			System.Collections.IDictionary configDictionary = kCura.WinEDDS.Config.ConfigSettings;
+			if (configDictionary.Contains(key))
+			{
+				configDictionary[key] = value;
+			}
+			else
+			{
+				configDictionary.Add(key, value);
+			}
+		}
+
 		protected void CreateDateField(int workspaceObjectTypeId, string fieldName)
 		{
 			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
@@ -163,7 +187,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			};
 
 			TestHelper.CreateField(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -189,7 +214,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			};
 
 			TestHelper.CreateField(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -219,7 +245,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			};
 
 			TestHelper.CreateField(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -246,7 +273,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			};
 
 			TestHelper.CreateField(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -269,7 +297,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			};
 
 			TestHelper.CreateField(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -288,7 +317,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected int CreateObjectType(string objectTypeName)
 		{
 			int artifactId = TestHelper.CreateObjectType(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -302,7 +332,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected int CreateObjectTypeInstance(int artifactTypeId, IDictionary<string, object> fields)
 		{
 			int artifactId = TestHelper.CreateObjectTypeInstance(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -325,7 +356,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected void DeleteObject(int artifactId)
 		{
 			TestHelper.DeleteObject(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -335,7 +367,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected int QueryArtifactTypeId(string objectTypeName)
 		{
 			return TestHelper.QueryArtifactTypeId(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -345,7 +378,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected int QueryIdentifierFieldId(string artifactTypeName)
 		{
 			return TestHelper.QueryIdentifierFieldId(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -355,7 +389,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected int QueryRelativityObjectCount(int artifactTypeId)
 		{
 			return TestHelper.QueryRelativityObjectCount(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword, TestSettings.WorkspaceId,
 				artifactTypeId);
@@ -364,7 +399,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected IList<Relativity.Services.Objects.DataContracts.RelativityObject> QueryRelativityObjects(int artifactTypeId, IEnumerable<string> fields)
 		{
 			return TestHelper.QueryRelativityObjects(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -372,10 +408,22 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 				fields);
 		}
 
+		protected IList<string> QueryWorkspaceFolders()
+		{
+			return TestHelper.QueryWorkspaceFolders(
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
+				TestSettings.RelativityUserName,
+				TestSettings.RelativityPassword,
+				TestSettings.WorkspaceId,
+				this.Logger);
+		}
+
 		protected int QueryWorkspaceObjectTypeDescriptorId(int artifactId)
 		{
 			return TestHelper.QueryWorkspaceObjectTypeDescriptorId(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,
@@ -386,7 +434,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			IEnumerable<string> fields)
 		{
 			return TestHelper.ReadRelativityObject(
-				TestSettings.RelativityWebApiUrl,
+				TestSettings.RelativityRestUrl,
+				TestSettings.RelativityServicesUrl,
 				TestSettings.RelativityUserName,
 				TestSettings.RelativityPassword,
 				TestSettings.WorkspaceId,

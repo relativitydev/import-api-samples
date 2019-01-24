@@ -18,74 +18,81 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	[TestFixture]
 	public class DocImportTests : DocImportTestsBase
 	{
-		private static IEnumerable<string> TestCases
+		private const string Level1Folder = "doc-import-root1";
+		private const string Level2Folder = "doc-import-root2";
+		private const string Level3Folder = "doc-import-root3";
+
+		private static IEnumerable<TestCaseData> TestCases
 		{
 			get
 			{
-				yield return "EDRM-Sample1.pdf";
-				yield return "EDRM-Sample2.doc";
-				yield return "EDRM-Sample3.xlsx";
+				// Ensure that duplicate folders never cause failures.
+				yield return new TestCaseData(SamplePdfFileName, $"\\{Level1Folder}");
+				yield return new TestCaseData(SampleWordFileName, $"\\{Level1Folder}");
+				yield return new TestCaseData(SampleExcelFileName, $"\\{Level1Folder}");
+				yield return new TestCaseData(SamplePdfFileName, $"\\{Level1Folder}\\{Level2Folder}");
+				yield return new TestCaseData(SampleWordFileName, $"\\{Level1Folder}\\{Level2Folder}");
+				yield return new TestCaseData(SampleExcelFileName, $"\\{Level1Folder}\\{Level2Folder}");
+				yield return new TestCaseData(SamplePdfFileName, $"\\{Level1Folder}\\{Level2Folder}\\{Level3Folder}");
+				yield return new TestCaseData(SampleWordFileName, $"\\{Level1Folder}\\{Level2Folder}\\{Level3Folder}");
+				yield return new TestCaseData(SampleExcelFileName, $"\\{Level1Folder}\\{Level2Folder}\\{Level3Folder}");
 			}
 		}
 
 		[Test]
 		[TestCaseSource(nameof(TestCases))]
-		public void ShouldImportTheDoc(string fileName)
+		public void ShouldImportTheDoc(string fileName, string folder)
 		{
 			// Arrange
+			int initialDocumentCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
+			string controlNumber = "REL-" + Guid.NewGuid();
 			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
 			this.ConfigureJobSettings(
 				job,
 				this.ArtifactTypeId,
 				this.IdentifierFieldId,
-				FieldFilePath,
-				FieldControlNumber);
+				FilePathFieldName,
+				ControlNumberFieldName,
+				FolderFieldName);
 			this.ConfigureJobEvents(job);
-			string file = TestHelper.GetResourceFilePath("Docs", fileName);
+
+			// Setup the data source.
 			this.DataTable.Columns.AddRange(new[]
 			{
-				new DataColumn(FieldControlNumber, typeof(string)),
-				new DataColumn(FieldFilePath, typeof(string))
+				new DataColumn(ControlNumberFieldName, typeof(string)),
+				new DataColumn(FilePathFieldName, typeof(string)),
+				new DataColumn(FolderFieldName, typeof(string))
 			});
 
-			string controlNumber = "REL-" + Guid.NewGuid();
-			this.DataTable.Rows.Add(controlNumber, file);
+			// Add the file to the data source.
+			string file = TestHelper.GetDocsResourceFilePath(fileName);
+			this.DataTable.Rows.Add(controlNumber, file, folder);
 			job.SourceData.SourceData = this.DataTable.CreateDataReader();
-			int initialDocumentCount = this.QueryRelativityObjectCount((int) ArtifactType.Document);
 
 			// Act
 			job.Execute();
 
-			// Assert - the job completed and the report matches the expected values.
-			Assert.That(this.JobCompletedReport, Is.Not.Null);
-			Assert.That(this.JobCompletedReport.EndTime, Is.GreaterThan(this.JobCompletedReport.StartTime));
-			Assert.That(this.JobCompletedReport.ErrorRowCount, Is.Zero);
-			Assert.That(this.JobCompletedReport.FileBytes, Is.Positive);
-			Assert.That(this.JobCompletedReport.MetadataBytes, Is.Positive);
-			Assert.That(this.JobCompletedReport.StartTime, Is.GreaterThan(this.ImportStartTime));
-			Assert.That(this.JobCompletedReport.TotalRows, Is.EqualTo(1));
-
-			// Assert - the events match the expected values.
-			Assert.That(this.ErrorEvents.Count, Is.Zero);
-			Assert.That(this.FatalExceptionEvent, Is.Null);
-			Assert.That(this.MessageEvents.Count, Is.Positive);
-			Assert.That(this.ProcessProgressEvents.Count, Is.Positive);
-			Assert.That(this.ProgressRowEvents.Count, Is.Positive);
+			// Assert - the import job is successful.
+			this.AssertImportSuccess();
 
 			// Assert - the object count is incremented by 1.
 			int expectedDocCount = initialDocumentCount + this.DataTable.Rows.Count;
-			int actualDocCount = this.QueryRelativityObjectCount((int)ArtifactType.Document);
+			int actualDocCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
 			Assert.That(actualDocCount, Is.EqualTo(expectedDocCount));
 
 			// Assert - the imported document exists.
 			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs = 
-				this.QueryRelativityObjects(this.ArtifactTypeId, new[] { FieldControlNumber });
+				this.QueryRelativityObjects(this.ArtifactTypeId, new[] { ControlNumberFieldName });
 			Assert.That(docs, Is.Not.Null);
 			Assert.That(docs.Count, Is.EqualTo(expectedDocCount));
 			Relativity.Services.Objects.DataContracts.RelativityObject importedObj
-				= FindRelativityObject(docs, FieldControlNumber, controlNumber);
+				= FindRelativityObject(docs, ControlNumberFieldName, controlNumber);
 			Assert.That(importedObj, Is.Not.Null);
+
+			// Assert - the workspace doesn't include duplicate folders.
+			string[] folders = folder.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+			this.AssertDistinctFolders(folders);
 		}
 	}
 }

@@ -37,7 +37,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job = importApi.NewImageImportJob();
 			this.ConfigureJobSettings(job);
 			this.ConfigureJobEvents(job);
-			string file = TestHelper.GetResourceFilePath("Images", fileName);
+			string file = TestHelper.GetImagesResourceFilePath(fileName);
 			this.DataTable.Columns.AddRange(new[]
 			{
 				new DataColumn(FieldBatesNumber, typeof(string)),
@@ -45,7 +45,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 				new DataColumn(FieldFileLocation, typeof(string))
 			});
 
-			int initialDocumentCount = this.QueryRelativityObjectCount((int)ArtifactType.Document);
+			int initialDocumentCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
 			string batesNumber = $"BATES-{Guid.NewGuid()}";
 			string controlNumber = "REL-" + Guid.NewGuid();
 			if (initialDocumentCount == 0)
@@ -80,7 +80,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 			// Assert - the object count is incremented by 1.
 			int expectedDocCount = initialDocumentCount + this.DataTable.Rows.Count;
-			int actualDocCount = this.QueryRelativityObjectCount((int)ArtifactType.Document);
+			int actualDocCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
 			Assert.That(actualDocCount, Is.EqualTo(expectedDocCount));
 
 			// Assert - the imported document exists.
