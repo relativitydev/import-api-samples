@@ -106,12 +106,16 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		}
 
 		[Test]
-		public void ShouldSupportTheMaxFolderDepth()
+		[TestCase(10)]
+		[TestCase(100)]
+		[TestCase(500)]
+		[TestCase(1000)]
+		public void ShouldSupportTheMaxFolderDepth(int maxDepth)
 		{
 			// Arrange
 			string controlNumber = GenerateControlNumber();
 			StringBuilder sb = new StringBuilder();
-			for (var i = 0; i < TestSettings.MaxFolderDepth; i++)
+			for (var i = 0; i < maxDepth; i++)
 			{
 				string folderName = $"\\{Guid.NewGuid()}-{TestHelper.NextString(20, TestSettings.MaxFolderLength - 36)}";
 				sb.Append(folderName);

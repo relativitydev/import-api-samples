@@ -19,11 +19,6 @@ namespace Relativity.Import.Client.Sample.NUnit
 		public const int MaxFolderLength = 255;
 
 		/// <summary>
-		/// The maximum folder depth.
-		/// </summary>
-		public const int MaxFolderDepth = 100;
-
-		/// <summary>
 		/// Gets or sets the Relativity user name used to authenticate.
 		/// </summary>
 		/// <value>
