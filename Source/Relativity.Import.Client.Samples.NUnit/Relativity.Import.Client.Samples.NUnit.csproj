@@ -194,6 +194,7 @@
     </Compile>
     <Compile Include="TestSettings.cs" />
     <Compile Include="AssemblySetup.cs" />
+    <Compile Include="Tests\DocImportConcurrencyTests.cs" />
     <Compile Include="Tests\DocImportFolderTests.cs" />
     <Compile Include="Tests\DocImportTestsBase.cs" />
     <Compile Include="Tests\DocNegativeImportTests.cs" />
@@ -225,6 +226,12 @@
     <None Include="Resources\Docs\EDRM-Sample3.xlsx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Resources\Docs\EDRM-Sample4.msg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\Docs\EDRM-Sample7.ppt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="LICENSE.txt" />
@@ -248,6 +255,21 @@
     <Content Include="oi\unmanaged\scclo-R1.dll" />
     <Content Include="oi\unmanaged\sccut-R1.dll" />
     <Content Include="oi\unmanaged\wvcore-R1.dll" />
+    <Content Include="Resources\Docs\EDRM-Sample10.wmf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample5.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample6.emf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample8.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Docs\EDRM-Sample9.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Images\EDRM-Sample1.tif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

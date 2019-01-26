@@ -38,7 +38,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.ConfigureJobSettings(job);
 			this.ConfigureJobEvents(job);
 			string file = TestHelper.GetImagesResourceFilePath(fileName);
-			this.DataTable.Columns.AddRange(new[]
+			this.DataSource.Columns.AddRange(new[]
 			{
 				new DataColumn(FieldBatesNumber, typeof(string)),
 				new DataColumn(FieldControlNumber, typeof(string)),
@@ -54,32 +54,32 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 				batesNumber = controlNumber;
 			}
 
-			this.DataTable.Rows.Add(batesNumber, controlNumber, file);
-			job.SourceData.SourceData = this.DataTable;
+			this.DataSource.Rows.Add(batesNumber, controlNumber, file);
+			job.SourceData.SourceData = this.DataSource;
 
 			// Act
 			job.Execute();
 
 			// Assert - the job completed and the report matches the expected values.
-			Assert.That(this.JobCompletedReport, Is.Not.Null);
-			Assert.That(this.JobCompletedReport.EndTime, Is.GreaterThan(this.JobCompletedReport.StartTime));
-			Assert.That(this.JobCompletedReport.ErrorRowCount, Is.Zero);
+			Assert.That(this.PublishedJobReport, Is.Not.Null);
+			Assert.That(this.PublishedJobReport.EndTime, Is.GreaterThan(this.PublishedJobReport.StartTime));
+			Assert.That(this.PublishedJobReport.ErrorRowCount, Is.Zero);
 
 			// Note: Importing images does NOT currently update FileBytes/MetadataBytes.
-			Assert.That(this.JobCompletedReport.FileBytes, Is.Zero);
-			Assert.That(this.JobCompletedReport.MetadataBytes, Is.Zero);
-			Assert.That(this.JobCompletedReport.StartTime, Is.GreaterThan(this.ImportStartTime));
-			Assert.That(this.JobCompletedReport.TotalRows, Is.EqualTo(1));
+			Assert.That(this.PublishedJobReport.FileBytes, Is.Zero);
+			Assert.That(this.PublishedJobReport.MetadataBytes, Is.Zero);
+			Assert.That(this.PublishedJobReport.StartTime, Is.GreaterThan(this.StartTime));
+			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(1));
 
 			// Assert - the events match the expected values.
-			Assert.That(this.ErrorEvents.Count, Is.Zero);
-			Assert.That(this.FatalExceptionEvent, Is.Null);
-			Assert.That(this.MessageEvents.Count, Is.Positive);
-			Assert.That(this.ProcessProgressEvents.Count, Is.Positive);
-			Assert.That(this.ProgressRowEvents.Count, Is.Positive);
+			Assert.That(this.PublishedErrors.Count, Is.Zero);
+			Assert.That(this.PublishedFatalException, Is.Null);
+			Assert.That(this.PublishedMessages.Count, Is.Positive);
+			Assert.That(this.PublishedProcessProgress.Count, Is.Positive);
+			Assert.That(this.PublishedProgressRows.Count, Is.Positive);
 
 			// Assert - the object count is incremented by 1.
-			int expectedDocCount = initialDocumentCount + this.DataTable.Rows.Count;
+			int expectedDocCount = initialDocumentCount + this.DataSource.Rows.Count;
 			int actualDocCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
 			Assert.That(actualDocCount, Is.EqualTo(expectedDocCount));
 

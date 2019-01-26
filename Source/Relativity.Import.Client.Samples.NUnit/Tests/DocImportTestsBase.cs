@@ -26,17 +26,17 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// <summary>
 		/// The control number field name.
 		/// </summary>
-		protected const string ControlNumberFieldName = "Control Number";
+		protected const string ControlNumberFieldName = "control number";
 
 		/// <summary>
 		/// The file path field name.
 		/// </summary>
-		protected const string FilePathFieldName = "File Path";
+		protected const string FilePathFieldName = "file path";
 
 		/// <summary>
 		/// The folder field name.
 		/// </summary>
-		protected const string FolderFieldName = "Folder";
+		protected const string FolderFieldName = "folder name";
 
 		/// <summary>
 		/// The sample PDF file name that's available for testing within the output directory.
@@ -52,6 +52,58 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// The sample Excel file name that's available for testing within the output directory.
 		/// </summary>
 		protected const string SampleExcelFileName = "EDRM-Sample3.xlsx";
+
+		/// <summary>
+		/// The sample MSG file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleMsgFileName = "EDRM-Sample4.msg";
+
+		/// <summary>
+		/// The sample HTM file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleHtmFileName = "EDRM-Sample5.htm";
+
+		/// <summary>
+		/// The sample EMF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleEmfFileName = "EDRM-Sample6.emf";
+
+		/// <summary>
+		/// The sample PPT file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SamplePptFileName = "EDRM-Sample7.ppt";
+
+		/// <summary>
+		/// The sample PNG file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SamplePngFileName = "EDRM-Sample8.png";
+
+		/// <summary>
+		/// The sample TXT file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleTxtFileName = "EDRM-Sample9.txt";
+
+		/// <summary>
+		/// The sample WMF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleWmfFileName = "EDRM-Sample10.wmf";
+
+		/// <summary>
+		/// The list of all sample file names available for testing within the output directory.
+		/// </summary>
+		protected static IEnumerable<string> AllSampleFileNames = new[]
+		{
+			SamplePdfFileName,
+			SampleWordFileName,
+			SampleExcelFileName,
+			SampleMsgFileName,
+			SampleHtmFileName,
+			SampleEmfFileName,
+			SamplePptFileName,
+			SamplePngFileName,
+			SampleTxtFileName,
+			SampleWmfFileName
+		};
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DocImportTestsBase"/> class.
@@ -94,15 +146,44 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// <returns>
 		/// The list of folders.
 		/// </returns>
-		protected IEnumerable<string> SplitFolderPath(string folderPath)
+		protected static IEnumerable<string> SplitFolderPath(string folderPath)
 		{
 			return folderPath.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
+		}
+
+		/// <summary>
+		/// Generates a unique folder path.
+		/// </summary>
+		/// <param name="maxDepth">
+		/// The maximum depth.
+		/// </param>
+		/// <returns>
+		/// The folder path.
+		/// </returns>
+		protected static string GenerateFolderPath(int maxDepth)
+		{
+			StringBuilder sb = new StringBuilder();
+			for (var i = 0; i < maxDepth; i++)
+			{
+				string folderName = $"\\{Guid.NewGuid()}-{TestHelper.NextString(20, TestSettings.MaxFolderLength - 36)}";
+				sb.Append(folderName);
+			}
+
+			string folderPath = sb.ToString();
+			return folderPath;
 		}
 
 		protected kCura.Relativity.DataReaderClient.ImportBulkArtifactJob ArrangeImportJob(
 			string controlNumber,
 			string folder,
 			string fileName)
+		{
+			string file = TestHelper.GetDocsResourceFilePath(fileName);
+			DocImportRecord record = new DocImportRecord { ControlNumber = controlNumber, File = file, Folder = folder };
+			return this.ArrangeImportJob(new[] { record  });
+		}
+
+		protected kCura.Relativity.DataReaderClient.ImportBulkArtifactJob ArrangeImportJob(IEnumerable<DocImportRecord> records)
 		{
 			// Arrange
 			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
@@ -117,7 +198,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.ConfigureJobEvents(job);
 
 			// Setup the data source.
-			this.DataTable.Columns.AddRange(new[]
+			this.DataSource.Columns.AddRange(new[]
 			{
 				new DataColumn(ControlNumberFieldName, typeof(string)),
 				new DataColumn(FilePathFieldName, typeof(string)),
@@ -125,29 +206,32 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			});
 
 			// Add the file to the data source.
-			string file = TestHelper.GetDocsResourceFilePath(fileName);
-			this.DataTable.Rows.Add(controlNumber, file, folder);
-			job.SourceData.SourceData = this.DataTable.CreateDataReader();
+			foreach (DocImportRecord record in records)
+			{
+				this.DataSource.Rows.Add(record.ControlNumber, record.File, record.Folder);
+				job.SourceData.SourceData = this.DataSource.CreateDataReader();
+			}
+
 			return job;
 		}
 
 		protected void AssertImportSuccess()
 		{
 			// Assert - the job completed and the report matches the expected values.
-			Assert.That(this.JobCompletedReport, Is.Not.Null);
-			Assert.That(this.JobCompletedReport.EndTime, Is.GreaterThan(this.JobCompletedReport.StartTime));
-			Assert.That(this.JobCompletedReport.ErrorRowCount, Is.Zero);
-			Assert.That(this.JobCompletedReport.FileBytes, Is.Positive);
-			Assert.That(this.JobCompletedReport.MetadataBytes, Is.Positive);
-			Assert.That(this.JobCompletedReport.StartTime, Is.GreaterThan(this.ImportStartTime));
-			Assert.That(this.JobCompletedReport.TotalRows, Is.EqualTo(1));
+			Assert.That(this.PublishedJobReport, Is.Not.Null);
+			Assert.That(this.PublishedJobReport.EndTime, Is.GreaterThan(this.PublishedJobReport.StartTime));
+			Assert.That(this.PublishedJobReport.ErrorRowCount, Is.Zero);
+			Assert.That(this.PublishedJobReport.FileBytes, Is.Positive);
+			Assert.That(this.PublishedJobReport.MetadataBytes, Is.Positive);
+			Assert.That(this.PublishedJobReport.StartTime, Is.GreaterThan(this.StartTime));
+			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(this.DataSource.Rows.Count));
 
 			// Assert - the events match the expected values.
-			Assert.That(this.ErrorEvents.Count, Is.Zero);
-			Assert.That(this.FatalExceptionEvent, Is.Null);
-			Assert.That(this.MessageEvents.Count, Is.Positive);
-			Assert.That(this.ProcessProgressEvents.Count, Is.Positive);
-			Assert.That(this.ProgressRowEvents.Count, Is.Positive);
+			Assert.That(this.PublishedErrors.Count, Is.Zero);
+			Assert.That(this.PublishedFatalException, Is.Null);
+			Assert.That(this.PublishedMessages.Count, Is.Positive);
+			Assert.That(this.PublishedProcessProgress.Count, Is.Positive);
+			Assert.That(this.PublishedProgressRows.Count, Is.Positive);
 		}
 
 		/// <summary>
@@ -178,16 +262,16 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected void AssertImportFailed(int expectedErrorEvents)
 		{
 			// Assert - the job failed with a non-fatal exception.
-			Assert.That(this.JobCompletedReport, Is.Not.Null);
-			Assert.That(this.FatalExceptionEvent, Is.Null);
-			Assert.That(this.ErrorEvents.Count, Is.EqualTo(expectedErrorEvents));
+			Assert.That(this.PublishedJobReport, Is.Not.Null);
+			Assert.That(this.PublishedFatalException, Is.Null);
+			Assert.That(this.PublishedErrors.Count, Is.EqualTo(expectedErrorEvents));
 		}
 
 		protected void AssertError(int errorIndex, int expectedLineNumber, string expectedControlNumber, string expectedMessageSubstring)
 		{
-			Assert.That(this.ErrorEvents[errorIndex]["Line Number"], Is.EqualTo(expectedLineNumber));
-			Assert.That(this.ErrorEvents[errorIndex]["Identifier"], Is.EqualTo(expectedControlNumber));
-			Assert.That(this.ErrorEvents[errorIndex]["Message"], Contains.Substring(expectedMessageSubstring));
+			Assert.That(this.PublishedErrors[errorIndex]["Line Number"], Is.EqualTo(expectedLineNumber));
+			Assert.That(this.PublishedErrors[errorIndex]["Identifier"], Is.EqualTo(expectedControlNumber));
+			Assert.That(this.PublishedErrors[errorIndex]["Message"], Contains.Substring(expectedMessageSubstring));
 		}
 
 		protected void ConfigureJobSettings(
@@ -227,35 +311,35 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		{
 			job.OnComplete += report =>
 			{
-				this.JobCompletedReport = report;
+				this.PublishedJobReport = report;
 				Console.WriteLine("[Job Complete]");
 			};
 
 			job.OnError += row =>
 			{
-				this.ErrorEvents.Add(row);
+				this.PublishedErrors.Add(row);
 			};
 
 			job.OnFatalException += report =>
 			{
-				this.FatalExceptionEvent = report.FatalException;
+				this.PublishedFatalException = report.FatalException;
 				Console.WriteLine("[Job Fatal Exception]: " + report.FatalException);
 			};
 
 			job.OnMessage += status =>
 			{
-				this.MessageEvents.Add(status.Message);
+				this.PublishedMessages.Add(status.Message);
 				Console.WriteLine("[Job Message]: " + status.Message);
 			};
 
 			job.OnProcessProgress += status =>
 			{
-				this.ProcessProgressEvents.Add(status);
+				this.PublishedProcessProgress.Add(status);
 			};
 
 			job.OnProgress += row =>
 			{
-				this.ProgressRowEvents.Add(row);
+				this.PublishedProgressRows.Add(row);
 			};
 		}
 
@@ -264,6 +348,27 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			base.OnSetup();
 			this.ArtifactTypeId = this.QueryArtifactTypeId(ArtifactTypeName);
 			this.IdentifierFieldId = this.QueryIdentifierFieldId(ArtifactTypeName);
+		}
+	}
+
+	public class DocImportRecord
+	{
+		public string ControlNumber
+		{
+			get;
+			set;
+		}
+
+		public string Folder
+		{
+			get;
+			set;
+		}
+
+		public string File
+		{
+			get;
+			set;
 		}
 	}
 }

@@ -18,30 +18,21 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	[TestFixture]
 	public class DocImportTests : DocImportTestsBase
 	{
-		private const string Level1Folder = "doc-import-root1";
-		private const string Level2Folder = "doc-import-root2";
-		private const string Level3Folder = "doc-import-root3";
-
 		private static IEnumerable<TestCaseData> TestCases
 		{
 			get
 			{
 				// Ensure that duplicate folders never cause failures.
 				yield return new TestCaseData(SamplePdfFileName, null);
-				yield return new TestCaseData(SampleWordFileName, null);
-				yield return new TestCaseData(SampleExcelFileName, null);
-				yield return new TestCaseData(SamplePdfFileName, string.Empty);
 				yield return new TestCaseData(SampleWordFileName, string.Empty);
-				yield return new TestCaseData(SampleExcelFileName, string.Empty);
-				yield return new TestCaseData(SamplePdfFileName, $"\\{Level1Folder}");
-				yield return new TestCaseData(SampleWordFileName, $"\\{Level1Folder}");
-				yield return new TestCaseData(SampleExcelFileName, $"\\{Level1Folder}");
-				yield return new TestCaseData(SamplePdfFileName, $"\\{Level1Folder}\\{Level2Folder}");
-				yield return new TestCaseData(SampleWordFileName, $"\\{Level1Folder}\\{Level2Folder}");
-				yield return new TestCaseData(SampleExcelFileName, $"\\{Level1Folder}\\{Level2Folder}");
-				yield return new TestCaseData(SamplePdfFileName, $"\\{Level1Folder}\\{Level2Folder}\\{Level3Folder}");
-				yield return new TestCaseData(SampleWordFileName, $"\\{Level1Folder}\\{Level2Folder}\\{Level3Folder}");
-				yield return new TestCaseData(SampleExcelFileName, $"\\{Level1Folder}\\{Level2Folder}\\{Level3Folder}");
+				yield return new TestCaseData(SampleExcelFileName, "\\doc-import-root1");
+				yield return new TestCaseData(SampleMsgFileName, "\\doc-import-root1");
+				yield return new TestCaseData(SampleHtmFileName, "\\doc-import-root1\\doc-import-root2");
+				yield return new TestCaseData(SampleEmfFileName, "\\doc-import-root1\\doc-import-root2");
+				yield return new TestCaseData(SamplePptFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3");
+				yield return new TestCaseData(SamplePngFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3");
+				yield return new TestCaseData(SampleTxtFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4");
+				yield return new TestCaseData(SampleWmfFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4");
 			}
 		}
 
@@ -64,7 +55,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.ConfigureJobEvents(job);
 
 			// Setup the data source.
-			this.DataTable.Columns.AddRange(new[]
+			this.DataSource.Columns.AddRange(new[]
 			{
 				new DataColumn(ControlNumberFieldName, typeof(string)),
 				new DataColumn(FilePathFieldName, typeof(string)),
@@ -73,8 +64,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 			// Add the file to the data source.
 			string file = TestHelper.GetDocsResourceFilePath(fileName);
-			this.DataTable.Rows.Add(controlNumber, file, folderPath);
-			job.SourceData.SourceData = this.DataTable.CreateDataReader();
+			this.DataSource.Rows.Add(controlNumber, file, folderPath);
+			job.SourceData.SourceData = this.DataSource.CreateDataReader();
 
 			// Act
 			job.Execute();
@@ -83,7 +74,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.AssertImportSuccess();
 
 			// Assert - the object count is incremented by 1.
-			int expectedDocCount = initialDocumentCount + this.DataTable.Rows.Count;
+			int expectedDocCount = initialDocumentCount + this.DataSource.Rows.Count;
 			int actualDocCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
 			Assert.That(actualDocCount, Is.EqualTo(expectedDocCount));
 

@@ -53,35 +53,35 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		{
 			job.OnComplete += report =>
 			{
-				this.JobCompletedReport = report;
+				this.PublishedJobReport = report;
 				Console.WriteLine("[Job Complete]");
 			};
 
 			job.OnError += row =>
 			{
-				this.ErrorEvents.Add(row);
+				this.PublishedErrors.Add(row);
 			};
 
 			job.OnFatalException += report =>
 			{
-				this.FatalExceptionEvent = report.FatalException;
+				this.PublishedFatalException = report.FatalException;
 				Console.WriteLine("[Job Fatal Exception]: " + report.FatalException);
 			};
 
 			job.OnMessage += status =>
 			{
-				this.MessageEvents.Add(status.Message);
+				this.PublishedMessages.Add(status.Message);
 				Console.WriteLine("[Job Message]: " + status.Message);
 			};
 
 			job.OnProcessProgress += status =>
 			{
-				this.ProcessProgressEvents.Add(status);
+				this.PublishedProcessProgress.Add(status);
 			};
 
 			job.OnProgress += row =>
 			{
-				this.ProgressRowEvents.Add(row);
+				this.PublishedProgressRows.Add(row);
 			};
 		}
 	}

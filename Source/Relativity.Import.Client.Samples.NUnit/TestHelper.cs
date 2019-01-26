@@ -24,6 +24,11 @@ namespace Relativity.Import.Client.Sample.NUnit
 	public static class TestHelper
 	{
 		/// <summary>
+		/// The maximum number of query manager items to fetch.
+		/// </summary>
+		private const int MaxItemsToFetch = 5000;
+
+		/// <summary>
 		/// The random instance.
 		/// </summary>
 		private static readonly Random RandomInstance = new Random();
@@ -409,8 +414,7 @@ namespace Relativity.Import.Client.Sample.NUnit
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = (int)ArtifactType.Field }
 				};
 
-				const int maxItemsToFetch = 2;
-				Services.Objects.DataContracts.QueryResult result = client.QueryAsync(workspaceId, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
+				Services.Objects.DataContracts.QueryResult result = client.QueryAsync(workspaceId, queryRequest, 1, MaxItemsToFetch).GetAwaiter().GetResult();
 				if (result.TotalCount != 1)
 				{
 					throw new InvalidOperationException($"Failed to retrieve the identifier field id for the '{artifactTypeName}' artifact type.");
@@ -435,9 +439,8 @@ namespace Relativity.Import.Client.Sample.NUnit
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId }
 				};
 
-				const int maxItemsToFetch = 10;
 				Services.Objects.DataContracts.QueryResult result =
-					client.QueryAsync(workspaceId, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
+					client.QueryAsync(workspaceId, queryRequest, 1, MaxItemsToFetch).GetAwaiter().GetResult();
 				return result.TotalCount;
 			}
 		}
@@ -480,9 +483,8 @@ namespace Relativity.Import.Client.Sample.NUnit
 					ObjectType = new ObjectTypeRef { ArtifactTypeID = artifactTypeId }
 				};
 
-				const int maxItemsToFetch = 50;
 				Services.Objects.DataContracts.QueryResult result =
-					client.QueryAsync(workspaceId, queryRequest, 1, maxItemsToFetch).GetAwaiter().GetResult();
+					client.QueryAsync(workspaceId, queryRequest, 1, MaxItemsToFetch).GetAwaiter().GetResult();
 				return result.Objects;
 			}
 		}
