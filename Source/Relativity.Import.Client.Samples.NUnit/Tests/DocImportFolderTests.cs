@@ -17,30 +17,30 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	/// <remarks>
 	/// Due to poor performance, disabling client-side implementation by default.
 	/// </remarks>
-	////[TestFixture(true)]
 	[TestFixture(false)]
+	[TestFixture(true)]
 	public class DocImportFolderTests : DocImportTestsBase
 	{
 		/// <summary>
-		/// The client-side folder API flag for maximum test coverage.
+		/// The flag that indicates whether to create folders server-side or client-side.
 		/// </summary>
-		private readonly bool clientSideFolders;
+		private readonly bool serverSideFolders;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DocImportFolderTests"/> class.
 		/// </summary>
-		/// <param name="clientSideFolders">
-		/// <see langword="true" /> to create all folders via client-side API; otherwise, <see langword="false" /> to create all folders via server-side WebPI.
+		/// <param name="serverSideFolders">
+		/// <see langword="true" /> to create all folders via server-side WebPI; otherwise, <see langword="false" /> to create all folders via client-side API.
 		/// </param>
-		public DocImportFolderTests(bool clientSideFolders)
+		public DocImportFolderTests(bool serverSideFolders)
 		{
-			this.clientSideFolders = clientSideFolders;
+			this.serverSideFolders = serverSideFolders;
 		}
 
 		protected override void OnSetup()
 		{
 			base.OnSetup();
-			SetWinEddsConfigValue("CreateFoldersInWebAPI", this.clientSideFolders);
+			SetWinEddsConfigValue(true, "CreateFoldersInWebAPI", this.serverSideFolders);
 		}
 
 		[Test]
@@ -57,7 +57,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			// Arrange
 			IList<string> initialFolders = this.QueryWorkspaceFolders();
 			string controlNumber = GenerateControlNumber();
-			string folder = $"\\{invalidFolder}-{this.clientSideFolders}";
+			string folder = $"\\{invalidFolder}-{this.serverSideFolders}";
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job =
 				this.ArrangeImportJob(controlNumber, folder, SamplePdfFileName);
 

@@ -159,7 +159,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.PublishedMessages = new List<string>();
 			this.PublishedProgressRows = new List<long>();
 			this.PublishedProcessProgress = new List<kCura.Relativity.DataReaderClient.FullStatus>();
-			SetWinEddsConfigValue("CreateFoldersInWebAPI", true);
+			SetWinEddsConfigValue(false, "CreateFoldersInWebAPI", true);
 			this.OnSetup();
 		}
 
@@ -167,7 +167,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		public void Teardown()
 		{
 			DataSource?.Dispose();
-			SetWinEddsConfigValue("CreateFoldersInWebAPI", true);
+			SetWinEddsConfigValue(false, "CreateFoldersInWebAPI", true);
 			this.OnTearDown();
 		}
 
@@ -336,13 +336,16 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// <summary>
 		/// Sets a WinEDDS-based configuration value.
 		/// </summary>
+		/// <param name="log">
+		/// Specify whether to log the configuration assignment.
+		/// </param>
 		/// <param name="key">
 		/// The configuration key name.
 		/// </param>
 		/// <param name="value">
 		/// The configuration value name.
 		/// </param>
-		protected static void SetWinEddsConfigValue(string key, object value)
+		protected static void SetWinEddsConfigValue(bool log, string key, object value)
 		{
 			System.Collections.IDictionary configDictionary = kCura.WinEDDS.Config.ConfigSettings;
 			if (configDictionary.Contains(key))
@@ -352,6 +355,11 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			else
 			{
 				configDictionary.Add(key, value);
+			}
+
+			if (log)
+			{
+				System.Console.WriteLine($"{key}={value}");
 			}
 		}
 
