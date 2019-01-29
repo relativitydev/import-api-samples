@@ -53,7 +53,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			decimal requestBytes = TestHelper.NextDecimal(10, 1000000);
 			DateTime requestDate = DateTime.Now;
 			decimal requestFiles = TestHelper.NextDecimal(1000, 10000);		
-			this.DataTable.Rows.Add(
+			this.DataSource.Rows.Add(
 				name,
 				description,
 				requestBytes,
@@ -61,29 +61,29 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 				requestDate,
 				detailName,
 				dataSourceName);
-			job.SourceData.SourceData = this.DataTable.CreateDataReader();
+			job.SourceData.SourceData = this.DataSource.CreateDataReader();
 
 			// Act
 			job.Execute();
 
 			// Assert - the job completed and the report matches the expected values.
-			Assert.That(this.JobCompletedReport, Is.Not.Null);
-			Assert.That(this.JobCompletedReport.EndTime, Is.GreaterThan(this.JobCompletedReport.StartTime));
-			Assert.That(this.JobCompletedReport.ErrorRowCount, Is.Zero);
-			Assert.That(this.JobCompletedReport.FileBytes, Is.Zero);
-			Assert.That(this.JobCompletedReport.MetadataBytes, Is.Positive);
-			Assert.That(this.JobCompletedReport.StartTime, Is.GreaterThan(this.ImportStartTime));
-			Assert.That(this.JobCompletedReport.TotalRows, Is.EqualTo(1));
+			Assert.That(this.PublishedJobReport, Is.Not.Null);
+			Assert.That(this.PublishedJobReport.EndTime, Is.GreaterThan(this.PublishedJobReport.StartTime));
+			Assert.That(this.PublishedJobReport.ErrorRowCount, Is.Zero);
+			Assert.That(this.PublishedJobReport.FileBytes, Is.Zero);
+			Assert.That(this.PublishedJobReport.MetadataBytes, Is.Positive);
+			Assert.That(this.PublishedJobReport.StartTime, Is.GreaterThan(this.StartTime));
+			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(1));
 			
 			// Assert - the events match the expected values.
-			Assert.That(this.ErrorEvents.Count, Is.Zero);
-			Assert.That(this.FatalExceptionEvent, Is.Null);
-			Assert.That(this.MessageEvents.Count, Is.Positive);
-			Assert.That(this.ProcessProgressEvents.Count, Is.Positive);
-			Assert.That(this.ProgressRowEvents.Count, Is.Positive);
+			Assert.That(this.PublishedErrors.Count, Is.Zero);
+			Assert.That(this.PublishedFatalException, Is.Null);
+			Assert.That(this.PublishedMessages.Count, Is.Positive);
+			Assert.That(this.PublishedProcessProgress.Count, Is.Positive);
+			Assert.That(this.PublishedProgressRows.Count, Is.Positive);
 
 			// Assert - the object count is incremented by 1.
-			int expectedObjectCount = initialObjectCount + this.DataTable.Rows.Count;
+			int expectedObjectCount = initialObjectCount + this.DataSource.Rows.Count;
 			IList<Relativity.Services.Objects.DataContracts.RelativityObject> transfers =
 				this.QueryRelativityObjects(
 					this.TransferArtifactTypeId,
