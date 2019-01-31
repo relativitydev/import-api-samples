@@ -150,7 +150,6 @@ namespace Relativity.Import.Client.Sample.NUnit
             }
         }
 
-#if RELEASE_HAS_PROUCTIONS_PACKAGE
         public static int CreateProduction(
             Uri relativityRestUrl,
             Uri relativityServicesUrl,
@@ -186,7 +185,6 @@ namespace Relativity.Import.Client.Sample.NUnit
                 return client.CreateSingleAsync(workspaceId, production).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
-#endif
 
         public static int CreateTestWorkspace(
             Uri relativityRestUrl,
@@ -482,7 +480,6 @@ namespace Relativity.Import.Client.Sample.NUnit
             return ro.FieldValues[0].Value as string;
         }
 
-#if RELEASE_HAS_PROUCTIONS_PACKAGE
         public static Relativity.Productions.Services.Production QueryProduction(
             Uri relativityRestUrl,
             Uri relativityServicesUrl,
@@ -506,7 +503,6 @@ namespace Relativity.Import.Client.Sample.NUnit
                 return production;
             }
         }
-#endif
 
         public static int QueryRelativityObjectCount(
             Uri relativityRestUrl,

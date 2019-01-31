@@ -4,7 +4,6 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-#if RELEASE_HAS_PROUCTIONS_PACKAGE
 namespace Relativity.Import.Client.Sample.NUnit.Tests
 {
 	using System;
@@ -91,7 +90,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
             kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job =
                 importApi.NewProductionImportJob(productionSet.ArtifactID);
             this.ConfigureJobSettings(job);
-            job.Settings.NativeFileCopyMode = NativeFileCopyModeEnum.DoNotImportNativeFiles;
+            job.Settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.DoNotImportNativeFiles;
             this.ConfigureJobEvents(job);
             this.DataSource.Columns.AddRange(new[]
             {
@@ -120,4 +119,3 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
         }
 	}
 }
-#endif

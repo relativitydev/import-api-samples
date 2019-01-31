@@ -781,7 +781,6 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			return artifactId;
 		}
 
-#if RELEASE_HAS_PROUCTIONS_PACKAGE
         protected int CreateProduction(string productionName, string batesPrefix)
         {
             int artifactId = TestHelper.CreateProduction(
@@ -797,7 +796,6 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
                 productionName, artifactId);
             return artifactId;
         }
-#endif
 
         protected void DeleteObjects(IList<int> artifacts)
 		{
@@ -902,7 +900,6 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
                 artifactTypeName);
         }
 
-#if RELEASE_HAS_PROUCTIONS_PACKAGE
         protected Tuple<string, string> QueryProductionBatesNumbers(int productionId)
         {
             var production = TestHelper.QueryProduction(
@@ -916,7 +913,6 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
                 new Tuple<string, string>(production.Details.FirstBatesValue, production.Details.LastBatesValue);
             return batesNumbers;
         }
-#endif
 
         protected int QueryRelativityObjectCount(int artifactTypeId)
 		{
