@@ -6,12 +6,10 @@
 
 namespace Relativity.Import.Client.Sample.NUnit.Tests
 {
-	using System;
-
 	using global::NUnit.Framework;
 
 	/// <summary>
-	/// Represents tests that create a new workspace, fail to import documents, validates the results, and deletes the workspace.
+	/// Represents tests that fails to import documents and validates the results.
 	/// </summary>
 	[TestFixture]
 	public class DocNegativeImportTests : DocImportTestsBase
@@ -23,7 +21,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			string controlNumber = GenerateControlNumber();
 			string folder = "\\" + new string('x', TestSettings.MaxFolderLength + 1);
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job =
-				this.ArrangeImportJob(controlNumber, folder, SamplePdfFileName);
+				this.ArrangeImportJob(controlNumber, folder, SampleDocPdfFileName);
 
 			// Act
 			job.Execute();

@@ -13,7 +13,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	using global::NUnit.Framework;
 
 	/// <summary>
-	/// Represents a test that creates a new workspace, import advanced objects containing single-object and multi-object fields, validates the results, and deletes the workspace.
+	/// Represents a test that imports advanced objects containing single/multi-object fields and validates the results.
 	/// </summary>
 	[TestFixture]
 	public class ObjectAdvancedImportTests : ObjectImportTestsBase

@@ -12,7 +12,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	using global::NUnit.Framework;
 
 	/// <summary>
-	/// Represents a test that creates a new workspace, import documents with folders, validates the results, and deletes the workspace.
+	/// Represents a test that imports native documents with folders and validates the results.
 	/// </summary>
 	/// <remarks>
 	/// Due to poor performance, disabling client-side implementation by default.
@@ -59,7 +59,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			string controlNumber = GenerateControlNumber();
 			string folder = $"\\{invalidFolder}-{this.serverSideFolders}";
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job =
-				this.ArrangeImportJob(controlNumber, folder, SamplePdfFileName);
+				this.ArrangeImportJob(controlNumber, folder, SampleDocPdfFileName);
 
 			// Act
 			job.Execute();
@@ -86,7 +86,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			// Arrange
 			string controlNumber = GenerateControlNumber();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job =
-				this.ArrangeImportJob(controlNumber, folder, SamplePdfFileName);
+				this.ArrangeImportJob(controlNumber, folder, SampleDocPdfFileName);
 
 			// Act
 			job.Execute();
@@ -108,13 +108,13 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 		[Test]
 		[TestCase(10)]
-		[TestCase(100)]
-		[TestCase(500)]
+		[TestCase(25)]
+		[TestCase(50)]
 		public void ShouldSupportTheMaxFolderDepth(int maxDepth)
 		{
 			// Arrange
 			string folderPath = GenerateFolderPath(maxDepth);
-			List<DocImportRecord> records = AllSampleFileNames.Select(fileName => new DocImportRecord
+			List<DocImportRecord> records = AllSampleDocFileNames.Select(fileName => new DocImportRecord
 			{
 				ControlNumber = GenerateControlNumber(),
 				File = TestHelper.GetDocsResourceFilePath(fileName),

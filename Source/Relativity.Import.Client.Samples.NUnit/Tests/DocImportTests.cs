@@ -13,7 +13,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	using global::NUnit.Framework;
 
 	/// <summary>
-	/// Represents a test that creates a new workspace, import documents, validates the results, and deletes the workspace.
+	/// Represents a test that imports native documents and validates the results.
 	/// </summary>
 	[TestFixture]
 	public class DocImportTests : DocImportTestsBase
@@ -23,16 +23,16 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			get
 			{
 				// Ensure that duplicate folders never cause failures.
-				yield return new TestCaseData(SamplePdfFileName, null);
-				yield return new TestCaseData(SampleWordFileName, string.Empty);
-				yield return new TestCaseData(SampleExcelFileName, "\\doc-import-root1");
-				yield return new TestCaseData(SampleMsgFileName, "\\doc-import-root1");
-				yield return new TestCaseData(SampleHtmFileName, "\\doc-import-root1\\doc-import-root2");
-				yield return new TestCaseData(SampleEmfFileName, "\\doc-import-root1\\doc-import-root2");
-				yield return new TestCaseData(SamplePptFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3");
-				yield return new TestCaseData(SamplePngFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3");
-				yield return new TestCaseData(SampleTxtFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4");
-				yield return new TestCaseData(SampleWmfFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4");
+				yield return new TestCaseData(SampleDocPdfFileName, null);
+				yield return new TestCaseData(SampleDocWordFileName, string.Empty);
+				yield return new TestCaseData(SampleDocExcelFileName, "\\doc-import-root1");
+				yield return new TestCaseData(SampleDocMsgFileName, "\\doc-import-root1");
+				yield return new TestCaseData(SampleDocHtmFileName, "\\doc-import-root1\\doc-import-root2");
+				yield return new TestCaseData(SampleDocEmfFileName, "\\doc-import-root1\\doc-import-root2");
+				yield return new TestCaseData(SampleDocPptFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3");
+				yield return new TestCaseData(SampleDocPngFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3");
+				yield return new TestCaseData(SampleDocTxtFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4");
+				yield return new TestCaseData(SampleDocWmfFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4");
 			}
 		}
 
@@ -45,7 +45,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			string controlNumber = GenerateControlNumber();
 			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
-			this.ConfigureJobSettings(
+			ConfigureJobSettings(
 				job,
 				this.ArtifactTypeId,
 				this.IdentifierFieldId,

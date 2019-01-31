@@ -12,7 +12,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	using global::NUnit.Framework;
 
 	/// <summary>
-	/// Represents tests that create a new workspace, fail to import objects, validates the results, and deletes the workspace.
+	/// Represents tests that fails to import objects and validates the results.
 	/// </summary>
 	[TestFixture]
 	public class ObjectNegativeImportTests : ObjectImportTestsBase

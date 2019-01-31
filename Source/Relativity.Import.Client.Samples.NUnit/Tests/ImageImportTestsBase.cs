@@ -9,45 +9,43 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	using System;
 	using System.Text;
 
-	/// <summary>
-	/// Represents an abstract test class object that creates a new workspace, import images, validates the results, and deletes the workspace.
-	/// </summary>
-	public abstract class ImageImportTestsBase : ImportTestsBase
+    using kCura.EDDS.WebAPI.BulkImportManagerBase;
+
+    /// <summary>
+    /// Represents an abstract test class object that imports images and validates the results.
+    /// </summary>
+    public abstract class ImageImportTestsBase : ImportTestsBase
 	{
-		protected const string ArtifactTypeName = "Document";
-		protected const string FieldBatesNumber = "Bates Number";
-		protected const string FieldControlNumber = "Control Number";
-		protected const string FieldFileLocation = "File Location";
-		protected int ArtifactTypeId;
-		protected int IdentifierFieldId;
-
-		protected override void OnSetup()
-		{
-			base.OnSetup();
-			this.ArtifactTypeId = this.QueryArtifactTypeId(ArtifactTypeName);
-			this.IdentifierFieldId = this.QueryIdentifierFieldId(ArtifactTypeName);
-		}
-
-		protected void ConfigureJobSettings(kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job)
-		{
-			kCura.Relativity.DataReaderClient.ImageSettings settings = job.Settings;
+        protected void ConfigureJobSettings(kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job)
+        {
+            kCura.Relativity.DataReaderClient.ImageSettings settings = job.Settings;
 			settings.ArtifactTypeId = this.ArtifactTypeId;
-			settings.AutoNumberImages = true;
-			settings.BatesNumberField = FieldBatesNumber;
-			settings.CaseArtifactId = TestSettings.WorkspaceId;
+            settings.AutoNumberImages = false;
+			settings.BatesNumberField = BatesNumberFieldName;
+            settings.Billable = false;
+            settings.CaseArtifactId = TestSettings.WorkspaceId;
 			settings.CopyFilesToDocumentRepository = true;
-			settings.DisableImageLocationValidation = false;
+            settings.DisableExtractedTextEncodingCheck = true;
+            settings.DisableImageLocationValidation = false;
 			settings.DisableImageTypeValidation = false;
-			settings.DocumentIdentifierField = FieldControlNumber;
+            settings.DisableUserSecurityCheck = true;
+			settings.DocumentIdentifierField = this.IdentifierFieldName;
 			settings.ExtractedTextEncoding = Encoding.Unicode;
-			settings.ExtractedTextFieldContainsFilePath = false;
-			settings.FileLocationField = FieldFileLocation;
-			settings.IdentityFieldId = this.IdentifierFieldId;
-			settings.LoadImportedFullTextFromServer = false;
-			settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.CopyFiles;
-			settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append;
-			settings.SelectedIdentifierFieldName = FieldControlNumber;
-		}
+            settings.ExtractedTextFieldContainsFilePath = false;
+			settings.FileLocationField = FileLocationFieldName;
+            settings.IdentityFieldId = this.IdentifierFieldId;
+            settings.ImageFilePathSourceFieldName = FileLocationFieldName;
+            settings.LoadImportedFullTextFromServer = false;
+            settings.MaximumErrorCount = int.MaxValue - 1;
+            settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.CopyFiles;
+            settings.OverlayBehavior = OverlayBehavior.MergeAll;
+            settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append;
+			settings.SelectedIdentifierFieldName = this.IdentifierFieldName;
+
+            // Note: production related settings are automatically set by ImportAPI.
+            ////settings.ForProduction = true;
+            ////settings.ProductionArtifactID = 1;
+        }
 
 		protected void ConfigureJobEvents(kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job)
 		{

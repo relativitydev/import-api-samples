@@ -14,97 +14,10 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	using global::NUnit.Framework;
 
 	/// <summary>
-	/// Represents an abstract test class object that creates a new workspace, import documents, validates the results, and deletes the workspace.
+	/// Represents an abstract test class object that imports native documents and validates the results.
 	/// </summary>
 	public abstract class DocImportTestsBase : ImportTestsBase
 	{
-		/// <summary>
-		/// The document artifact type name.
-		/// </summary>
-		protected const string ArtifactTypeName = "Document";
-
-		/// <summary>
-		/// The control number field name.
-		/// </summary>
-		protected const string ControlNumberFieldName = "control number";
-
-		/// <summary>
-		/// The file path field name.
-		/// </summary>
-		protected const string FilePathFieldName = "file path";
-
-		/// <summary>
-		/// The folder field name.
-		/// </summary>
-		protected const string FolderFieldName = "folder name";
-
-		/// <summary>
-		/// The sample PDF file name that's available for testing within the output directory.
-		/// </summary>
-		protected const string SamplePdfFileName = "EDRM-Sample1.pdf";
-
-		/// <summary>
-		/// The sample Word doc file name that's available for testing within the output directory.
-		/// </summary>
-		protected const string SampleWordFileName = "EDRM-Sample2.doc";
-
-		/// <summary>
-		/// The sample Excel file name that's available for testing within the output directory.
-		/// </summary>
-		protected const string SampleExcelFileName = "EDRM-Sample3.xlsx";
-
-		/// <summary>
-		/// The sample MSG file name that's available for testing within the output directory.
-		/// </summary>
-		protected const string SampleMsgFileName = "EDRM-Sample4.msg";
-
-		/// <summary>
-		/// The sample HTM file name that's available for testing within the output directory.
-		/// </summary>
-		protected const string SampleHtmFileName = "EDRM-Sample5.htm";
-
-		/// <summary>
-		/// The sample EMF file name that's available for testing within the output directory.
-		/// </summary>
-		protected const string SampleEmfFileName = "EDRM-Sample6.emf";
-
-		/// <summary>
-		/// The sample PPT file name that's available for testing within the output directory.
-		/// </summary>
-		protected const string SamplePptFileName = "EDRM-Sample7.ppt";
-
-		/// <summary>
-		/// The sample PNG file name that's available for testing within the output directory.
-		/// </summary>
-		protected const string SamplePngFileName = "EDRM-Sample8.png";
-
-		/// <summary>
-		/// The sample TXT file name that's available for testing within the output directory.
-		/// </summary>
-		protected const string SampleTxtFileName = "EDRM-Sample9.txt";
-
-		/// <summary>
-		/// The sample WMF file name that's available for testing within the output directory.
-		/// </summary>
-		protected const string SampleWmfFileName = "EDRM-Sample10.wmf";
-
-		/// <summary>
-		/// The list of all sample file names available for testing within the output directory.
-		/// </summary>
-		protected static IEnumerable<string> AllSampleFileNames = new[]
-		{
-			SamplePdfFileName,
-			SampleWordFileName,
-			SampleExcelFileName,
-			SampleMsgFileName,
-			SampleHtmFileName,
-			SampleEmfFileName,
-			SamplePptFileName,
-			SamplePngFileName,
-			SampleTxtFileName,
-			SampleWmfFileName
-		};
-
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DocImportTestsBase"/> class.
 		/// </summary>
@@ -125,28 +38,16 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		{
 		}
 
-		protected int ArtifactTypeId
-		{
-			get;
-			private set;
-		}
-
-		protected int IdentifierFieldId
-		{
-			get;
-			private set;
-		}
-
-		/// <summary>
-		/// Splits the folder path into one or more individual folders.
-		/// </summary>
-		/// <param name="folderPath">
-		/// The folder path.
-		/// </param>
-		/// <returns>
-		/// The list of folders.
-		/// </returns>
-		protected static IEnumerable<string> SplitFolderPath(string folderPath)
+        /// <summary>
+        /// Splits the folder path into one or more individual folders.
+        /// </summary>
+        /// <param name="folderPath">
+        /// The folder path.
+        /// </param>
+        /// <returns>
+        /// The list of folders.
+        /// </returns>
+        protected static IEnumerable<string> SplitFolderPath(string folderPath)
 		{
 			return folderPath.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
 		}
@@ -188,7 +89,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			// Arrange
 			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
-			this.ConfigureJobSettings(
+            ConfigureJobSettings(
 				job,
 				this.ArtifactTypeId,
 				this.IdentifierFieldId,
@@ -274,39 +175,6 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Assert.That(this.PublishedErrors[errorIndex]["Message"], Contains.Substring(expectedMessageSubstring));
 		}
 
-		protected void ConfigureJobSettings(
-			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job,
-			int artifactTypeId,
-			int identityFieldId,
-			string nativeFilePathSourceFieldName,
-			string identifierFieldName,
-			string folderFieldName)
-		{
-			kCura.Relativity.DataReaderClient.Settings settings = job.Settings;
-			settings.ArtifactTypeId = artifactTypeId;
-			settings.BulkLoadFileFieldDelimiter = ";";
-			settings.CaseArtifactId = TestSettings.WorkspaceId;
-			settings.CopyFilesToDocumentRepository = true;
-			settings.DisableControlNumberCompatibilityMode = true;
-			settings.DisableExtractedTextFileLocationValidation = false;
-			settings.DisableNativeLocationValidation = false;
-			settings.DisableNativeValidation = false;
-			settings.ExtractedTextEncoding = Encoding.Unicode;
-			settings.ExtractedTextFieldContainsFilePath = false;
-			settings.FileSizeColumn = "NativeFileSize";
-			settings.FileSizeMapped = true;
-			settings.FolderPathSourceFieldName = folderFieldName;
-			settings.IdentityFieldId = identityFieldId;
-			settings.LoadImportedFullTextFromServer = false;
-			settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.CopyFiles;
-			settings.NativeFilePathSourceFieldName = nativeFilePathSourceFieldName;
-			settings.OIFileIdColumnName = "OutsideInFileId";
-			settings.OIFileIdMapped = true;
-			settings.OIFileTypeColumnName = "OutsideInFileType";
-			settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append;
-			settings.SelectedIdentifierFieldName = identifierFieldName;
-		}
-
 		protected void ConfigureJobEvents(kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job)
 		{
 			job.OnComplete += report =>
@@ -341,13 +209,6 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			{
 				this.PublishedProgressRows.Add(row);
 			};
-		}
-
-		protected override void OnSetup()
-		{
-			base.OnSetup();
-			this.ArtifactTypeId = this.QueryArtifactTypeId(ArtifactTypeName);
-			this.IdentifierFieldId = this.QueryIdentifierFieldId(ArtifactTypeName);
 		}
 	}
 

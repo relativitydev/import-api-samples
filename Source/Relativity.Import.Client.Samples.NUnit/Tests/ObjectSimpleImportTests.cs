@@ -12,7 +12,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	using global::NUnit.Framework;
 
 	/// <summary>
-	/// Represents a test that creates a new workspace, import simple objects, validates the results, and deletes the workspace.
+	/// Represents a test that imports simple objects and validates the results.
 	/// </summary>
 	[TestFixture]
 	public class ObjectSimpleImportTests : ObjectImportTestsBase

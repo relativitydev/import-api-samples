@@ -6,44 +6,33 @@
 
 namespace Relativity.Import.Client.Sample.NUnit.Tests
 {
-	using System;
 	using System.Collections.Generic;
 	using System.Data;
 
 	using global::NUnit.Framework;
 
 	/// <summary>
-	/// Represents a test that creates a new workspace, import images, validates the results, and deletes the workspace.
+	/// Represents a test that imports images and validates the results.
 	/// </summary>
 	[TestFixture]
 	public class ImageImportTests : ImageImportTestsBase
 	{
-		private static IEnumerable<string> TestCases
-		{
-			get
-			{
-				yield return "EDRM-Sample1.tif";
-				yield return "EDRM-Sample2.tif";
-				yield return "EDRM-Sample3.tif";
-			}
-		}
-
-		[Test]
-		[TestCaseSource(nameof(TestCases))]
+        [Test]
+		[TestCaseSource(nameof(AllSampleImageFileNames))]
 		public void ShouldImportTheImage(string fileName)
 		{
 			// Arrange
 			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job = importApi.NewImageImportJob();
-			this.ConfigureJobSettings(job);
-			this.ConfigureJobEvents(job);
+            this.ConfigureJobSettings(job);
+            this.ConfigureJobEvents(job);
 			string file = TestHelper.GetImagesResourceFilePath(fileName);
-			this.DataSource.Columns.AddRange(new[]
-			{
-				new DataColumn(FieldBatesNumber, typeof(string)),
-				new DataColumn(FieldControlNumber, typeof(string)),
-				new DataColumn(FieldFileLocation, typeof(string))
-			});
+            this.DataSource.Columns.AddRange(new[]
+            {
+                new DataColumn(BatesNumberFieldName, typeof(string)),
+                new DataColumn(ControlNumberFieldName, typeof(string)),
+                new DataColumn(FileLocationFieldName, typeof(string))
+            });
 
 			int initialDocumentCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
 			string batesNumber = GenerateBatesNumber();
@@ -69,23 +58,23 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Assert.That(this.PublishedJobReport.FileBytes, Is.Zero);
 			Assert.That(this.PublishedJobReport.MetadataBytes, Is.Zero);
 			Assert.That(this.PublishedJobReport.StartTime, Is.GreaterThan(this.StartTime));
-			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(1));
+			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(this.DataSource.Rows.Count));
 
-			// Assert - the events match the expected values.
-			Assert.That(this.PublishedErrors.Count, Is.Zero);
+            // Assert - the events match the expected values.
+            Assert.That(this.PublishedErrors.Count, Is.Zero);
 			Assert.That(this.PublishedFatalException, Is.Null);
 			Assert.That(this.PublishedMessages.Count, Is.Positive);
 			Assert.That(this.PublishedProcessProgress.Count, Is.Positive);
 			Assert.That(this.PublishedProgressRows.Count, Is.Positive);
 
-			// Assert - the object count is incremented by 1.
+			// Assert - the object count is incremented by the number of imported documents.
 			int expectedDocCount = initialDocumentCount + this.DataSource.Rows.Count;
 			int actualDocCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
 			Assert.That(actualDocCount, Is.EqualTo(expectedDocCount));
 
 			// Assert - the imported document exists.
 			IList<Relativity.Services.Objects.DataContracts.RelativityObject> docs =
-				this.QueryRelativityObjects(this.ArtifactTypeId, new[] { FieldControlNumber });
+				this.QueryRelativityObjects(this.ArtifactTypeId, new[] { ControlNumberFieldName });
 			Assert.That(docs, Is.Not.Null);
 			Assert.That(docs.Count, Is.EqualTo(expectedDocCount));
 		}
