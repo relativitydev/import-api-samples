@@ -33,14 +33,17 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			settings.ExtractedTextEncoding = Encoding.Unicode;
             settings.ExtractedTextFieldContainsFilePath = false;
 			settings.FileLocationField = FileLocationFieldName;
+            settings.FolderPathSourceFieldName = null;
             settings.IdentityFieldId = this.IdentifierFieldId;
             settings.ImageFilePathSourceFieldName = FileLocationFieldName;
             settings.LoadImportedFullTextFromServer = false;
             settings.MaximumErrorCount = int.MaxValue - 1;
+            settings.MoveDocumentsInAppendOverlayMode = false;
             settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.CopyFiles;
             settings.OverlayBehavior = OverlayBehavior.MergeAll;
             settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append;
 			settings.SelectedIdentifierFieldName = this.IdentifierFieldName;
+            settings.StartRecordNumber = 0;
 
             // Note: production related settings are automatically set by ImportAPI.
             ////settings.ForProduction = true;
