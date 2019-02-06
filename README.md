@@ -304,6 +304,21 @@ job.SourceData.SourceData = dataSource.CreateDataReader();
 ### Events
 The `ImportBulkArtifactJob` or `ImageImportBulkArtifactJob` objects expose a number of useful events to obtain document-level errors, completion, fatal exception, and progress.
 
+#### JobReport
+This object is exposed by several events and provides useful import details.
+
+| Property                      | Description                                                                                                          |
+| ------------------------------| ---------------------------------------------------------------------------------------------------------------------|
+| EndTime                       | The import end time.                                                                                                 |
+| ErrorRowCount                 | The total number of non-fatal document-level errors that occurred.                                                   |
+| ErrorRows                     | The collection of non-fatal document-level errors that occurred.                                                     |
+| FatalException                | The exception that resulted in a fatal job error.                                                                    |
+| FieldMap                      | The collection of field map entries that map source fields to destination fields in the workspace.                   |
+| FileBytes                     | The total number of transferred native file bytes.                                                                   |
+| MetadataBytes                 | The total number of transferred metadata bytes.                                                                      |
+| StartTime                     | The import start time.                                                                                               |
+| TotalRows                     | The total number of processed rows. This value doesn't indicate the number of successful rows.                       |
+
 #### OnComplete
 This event is published when an import job is finished. A `JobReport` object is passed with detailed information about the job. A completed job may have errors if the data wasn't imported properly.
 
@@ -331,7 +346,7 @@ job.OnError += row =>
 **Note:** The MaximumErrorCount is a configurable setting available on all import jobs that determines the number of errors to return.
 
 #### OnFatalException
-This event is published when an import job encounters a fatal exception caused by invalid import settings or other issues.
+This event is published when an import job encounters a fatal exception caused by invalid import settings or other issues. The fatal exception can be retrieved by the passed `JobReport` object.
 
 ```csharp
 // This event provides the JobReport object.
