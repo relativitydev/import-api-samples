@@ -216,7 +216,7 @@ When configuring either native document or object import jobs, the `Settings` pr
 
 </details>
 
-#### ImageImportBulkArtifactJob
+#### ImageImportBulkArtifactJob Settings
 When configuring either image or production import jobs, the `Settings` property exposes a number of options to control import behavior.
 
 <details><summary>View settings</summary>
