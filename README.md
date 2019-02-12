@@ -29,13 +29,13 @@ This page contains the following information:
 
 ## Prerequisites
 
-* Visual Studio 2017
+* Visual Studio 2017 and above
 * NUnit Test Adapter
 * A bluestem (9.7) or above test environment
-* Visual C++ 2010 x86 Runtime
-* Visual C++ 2015 x64 Runtime
+* Visual C++ 2010 x86 Runtime (Aspera transfers)
+* Visual C++ 2015 x64 Runtime (Outside In and FreeImage)
 
-**Note:** Relativity strongly recommends [using a developer Dev VM](https://platform.relativity.com/9.6/Content/Relativity_Platform/Testing_custom_applications.htm?Highlight=vm#_Developer_test_VMs) for the test environment.
+**Note:** Visual Studio 2017 and above is required due to C# 7.0 language feature usage and Relativity strongly recommends [using a developer Dev VM](https://platform.relativity.com/9.6/Content/Relativity_Platform/Testing_custom_applications.htm?Highlight=vm#_Developer_test_VMs) for the test environment.
 
 ## Setup
 The steps below should only be required when the repository is being cloned for the first time.
@@ -97,6 +97,8 @@ At this point, the setup is complete and should now be able to run all of the te
 If everything is working properly, the Test Explorer should look something like this:
 
 ![Test Explorer](Documentation/TestExplorer.png "Test Explorer")
+
+**Note:** If the Test Explorer lists the tests but none of the tests run, **ensure the value is set to X64**. Although this setting is cached, Visual Studio is known to reset the value to X86.
 
 </details>
 

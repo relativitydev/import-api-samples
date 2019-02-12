@@ -17,18 +17,22 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	[TestFixture]
 	public class ObjectSimpleImportTests : ObjectImportTestsBase
 	{
-		private static IEnumerable<TestCaseData> TestCases
-		{
-			get
+		/// <summary>
+		/// Gets the test case data.
+		/// </summary>
+		/// <value>
+		/// The <see cref="TestCaseData"/> instances.
+		/// </value>
+		private static IEnumerable<TestCaseData> TestCases =>
+			new List<TestCaseData>
 			{
-				yield return new TestCaseData("Simple-Transfer-Small-1");
-				yield return new TestCaseData("Simple-Transfer-Small-2");
-				yield return new TestCaseData("Simple-Transfer-Medium-1");
-				yield return new TestCaseData("Simple-Transfer-Medium-2");
-				yield return new TestCaseData("Simple-Transfer-Large-1");
-				yield return new TestCaseData("Simple-Transfer-Large-2");
-			}
-		}
+				new TestCaseData("Simple-Transfer-Small-1"),
+				new TestCaseData("Simple-Transfer-Small-2"),
+				new TestCaseData("Simple-Transfer-Medium-1"),
+				new TestCaseData("Simple-Transfer-Medium-2"),
+				new TestCaseData("Simple-Transfer-Large-1"),
+				new TestCaseData("Simple-Transfer-Large-2"),
+			};
 
 		[Test]
 		[TestCaseSource(nameof(TestCases))]

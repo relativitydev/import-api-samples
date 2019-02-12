@@ -17,13 +17,17 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	[TestFixture]
 	public class ObjectNegativeImportTests : ObjectImportTestsBase
 	{
-		private static IEnumerable<TestCaseData> TestCases
-		{
-			get
+		/// <summary>
+		/// Gets the test case data.
+		/// </summary>
+		/// <value>
+		/// The <see cref="TestCaseData"/> instances.
+		/// </value>
+		private static IEnumerable<TestCaseData> TestCases =>
+			new List<TestCaseData>
 			{
-				yield return new TestCaseData("Negative-Transfer-1", "Negative-Detail-1", "Negative-DataSourceName-1");
-			}
-		}
+				new TestCaseData("Negative-Transfer-1", "Negative-Detail-1", "Negative-DataSourceName-1")
+			};
 
 		[Test]
 		[TestCaseSource(nameof(TestCases))]

@@ -18,18 +18,22 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 	[TestFixture]
 	public class ObjectAdvancedImportTests : ObjectImportTestsBase
 	{
-		private static IEnumerable<TestCaseData> TestCases
-		{
-			get
+		/// <summary>
+		/// Gets the test case data.
+		/// </summary>
+		/// <value>
+		/// The <see cref="TestCaseData"/> instances.
+		/// </value>
+		private static IEnumerable<TestCaseData> TestCases =>
+			new List<TestCaseData>
 			{
-				yield return new TestCaseData("Advanced-Transfer-Small-1", "Advanced-Detail-1", "Advanced-DataSourceName-1", true);
-				yield return new TestCaseData("Advanced-Transfer-Small-2", "Advanced-Detail-2", "Advanced-DataSourceName-2", false);
-				yield return new TestCaseData("Advanced-Transfer-Medium-1", "Advanced-Detail-3", "Advanced-DataSourceName-3", true);
-				yield return new TestCaseData("Advanced-Transfer-Medium-2", "Advanced-Detail-4", "Advanced-DataSourceName-4", false);
-				yield return new TestCaseData("Advanced-Transfer-Large-1", "Advanced-Detail-5", "Advanced-DataSourceName-5", true);
-				yield return new TestCaseData("Advanced-Transfer-Large-2", "Advanced-Detail-6", "Advanced-DataSourceName-6", false);
-			}
-		}
+				new TestCaseData("Advanced-Transfer-Small-1", "Advanced-Detail-1", "Advanced-DataSourceName-1", true),
+				new TestCaseData("Advanced-Transfer-Small-2", "Advanced-Detail-2", "Advanced-DataSourceName-2", false),
+				new TestCaseData("Advanced-Transfer-Medium-1", "Advanced-Detail-3", "Advanced-DataSourceName-3", true),
+				new TestCaseData("Advanced-Transfer-Medium-2", "Advanced-Detail-4", "Advanced-DataSourceName-4", false),
+				new TestCaseData("Advanced-Transfer-Large-1", "Advanced-Detail-5", "Advanced-DataSourceName-5", true),
+				new TestCaseData("Advanced-Transfer-Large-2", "Advanced-Detail-6", "Advanced-DataSourceName-6", false)
+			};
 
 		[Test]
 		[TestCaseSource(nameof(TestCases))]
