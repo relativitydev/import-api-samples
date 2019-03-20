@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Sample.NUnit.Tests
+namespace Relativity.Import.Client.Samples.NUnit.Tests
 {
 	using System;
 	using System.Collections.Generic;
@@ -13,13 +13,15 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
     using global::NUnit.Framework;
 
+    using Relativity.Import.Export.TestFramework;
+
 	/// <summary>
-	/// Represents a test that imports production images and validates the results.
-	/// </summary>
-	/// <remarks>
-	/// This test requires the Relativity.Productions.Client package but hasn't yet been published to nuget.org.
-	/// </remarks>
-	[TestFixture]
+    /// Represents a test that imports production images and validates the results.
+    /// </summary>
+    /// <remarks>
+    /// This test requires the Relativity.Productions.Client package but hasn't yet been published to nuget.org.
+    /// </remarks>
+    [TestFixture]
 	public class ProductionImportTests : ImageImportTestsBase
     {
         /// <summary>
@@ -76,13 +78,46 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
             string expectedLastBatesValue = SecondDocumentControlNumber;
             Assert.That(batesNumbers.Item1, Is.EqualTo(expectedFirstBatesValue));
             Assert.That(batesNumbers.Item2, Is.EqualTo(expectedLastBatesValue));
-        }
+
+			// Assert the field values match the expected values.
+            IList<Relativity.Services.Objects.DataContracts.RelativityObject> documents = this.QueryDocuments();
+            Assert.That(documents, Is.Not.Null);
+            Relativity.Services.Objects.DataContracts.RelativityObject firstDocument = SearchRelativityObject(
+	            documents,
+	            WellKnownFields.ControlNumber,
+	            FirstDocumentControlNumber);
+            Assert.That(firstDocument, Is.Not.Null);
+            Relativity.Services.Objects.DataContracts.RelativityObject secondDocument = SearchRelativityObject(
+	            documents,
+	            WellKnownFields.ControlNumber,
+	            SecondDocumentControlNumber);
+			Assert.That(secondDocument, Is.Not.Null);
+			foreach (var document in new[] { firstDocument, secondDocument })
+			{
+				Relativity.Services.Objects.DataContracts.Choice hasImagesField = GetChoiceField(
+					document,
+					WellKnownFields.HasImages);
+				Assert.That(hasImagesField, Is.Not.Null);
+				Assert.That(hasImagesField.Name, Is.Not.Null);
+				Assert.That(hasImagesField.Name, Is.EqualTo("No"));
+				bool hasNativeField = GetBooleanFieldValue(document, WellKnownFields.HasNative);
+				Assert.That(hasNativeField, Is.False);
+				int? relativityImageCount = GetInt32FieldValue(document, WellKnownFields.RelativityImageCount);
+				Assert.That(relativityImageCount, Is.Null);
+			}
+
+			// Assert that importing doesn't add a file record.
+			IList<FileDto> firstDocumentImages = this.QueryImageFileInfo(firstDocument.ArtifactID).ToList();
+			Assert.That(firstDocumentImages.Count, Is.Zero);
+			IList<FileDto> secondDocumentImages = this.QueryImageFileInfo(secondDocument.ArtifactID).ToList();
+			Assert.That(secondDocumentImages.Count, Is.Zero);
+		}
 
         private void ImportProduction(int productionId)
         {
-            kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+            kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
             IEnumerable<kCura.Relativity.ImportAPI.Data.ProductionSet> productionSets =
-                importApi.GetProductionSets(TestSettings.WorkspaceId).ToList();
+                importApi.GetProductionSets(this.TestParameters.WorkspaceId).ToList();
             Assert.That(productionSets.Count, Is.GreaterThan(0));
             kCura.Relativity.ImportAPI.Data.ProductionSet productionSet =
                 productionSets.FirstOrDefault(x => x.ArtifactID == productionId);
@@ -95,8 +130,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
             this.DataSource.Columns.AddRange(new[]
             {
                 new DataColumn(this.IdentifierFieldName, typeof(string)),
-                new DataColumn(BatesNumberFieldName, typeof(string)),
-                new DataColumn(FileLocationFieldName, typeof(string))
+                new DataColumn(WellKnownFields.BatesNumber, typeof(string)),
+                new DataColumn(WellKnownFields.FileLocation, typeof(string))
             });
 
             DataRow row;
@@ -104,15 +139,15 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
             {
                 row = this.DataSource.NewRow();
                 row[this.IdentifierFieldName] = FirstDocumentControlNumber;
-                row[BatesNumberFieldName] = $"EDRM-Sample-{i:D6}";
-                row[FileLocationFieldName] = TestHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
+                row[WellKnownFields.BatesNumber] = $"EDRM-Sample-{i:D6}";
+                row[WellKnownFields.FileLocation] = ResourceFileHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
                 this.DataSource.Rows.Add(row);
             }
 
             row = this.DataSource.NewRow();
             row[this.IdentifierFieldName] = SecondDocumentControlNumber;
-            row[BatesNumberFieldName] = SecondDocumentControlNumber;
-            row[FileLocationFieldName] = TestHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
+            row[WellKnownFields.BatesNumber] = SecondDocumentControlNumber;
+            row[WellKnownFields.FileLocation] = ResourceFileHelper.GetImagesResourceFilePath(SampleProductionImage1FileName);
             this.DataSource.Rows.Add(row);
             job.SourceData.SourceData = this.DataSource;
             job.Execute();

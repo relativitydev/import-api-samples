@@ -6,7 +6,7 @@
 
 using System.Reflection;
 
-[assembly: AssemblyTitle("Relativity.Import.Client.Samples.NUnit")]
+[assembly: AssemblyTitle("Relativity.Import.Client.Samples.NUnit.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyProduct("Relativity.Import.Client.Samples.NUnit")]
+[assembly: AssemblyProduct("Relativity.Import.Client.Samples.NUnit.Tests")]

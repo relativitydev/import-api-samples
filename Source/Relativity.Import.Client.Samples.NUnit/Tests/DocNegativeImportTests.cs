@@ -4,14 +4,16 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Sample.NUnit.Tests
+namespace Relativity.Import.Client.Samples.NUnit.Tests
 {
 	using global::NUnit.Framework;
 
-	/// <summary>
-	/// Represents tests that fails to import documents and validates the results.
-	/// </summary>
-	[TestFixture]
+    using Relativity.Import.Export.TestFramework;
+
+    /// <summary>
+    /// Represents tests that fails to import documents and validates the results.
+    /// </summary>
+    [TestFixture]
 	public class DocNegativeImportTests : DocImportTestsBase
 	{
 		[Test]
@@ -19,7 +21,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		{
 			// Arrange
 			string controlNumber = GenerateControlNumber();
-			string folder = "\\" + new string('x', TestSettings.MaxFolderLength + 1);
+			string folder = "\\" + new string('x', IntegrationTestParameters.MaxFolderLength + 1);
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job =
 				this.ArrangeImportJob(controlNumber, folder, SampleDocPdfFileName);
 
@@ -30,7 +32,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.AssertImportFailed(1);
 
 			// Assert - exceeding the max folder length yields a doc-level error.
-			this.AssertError(0, 1, controlNumber, TestSettings.MaxFolderLength.ToString());
+			this.AssertError(0, 1, controlNumber, IntegrationTestParameters.MaxFolderLength.ToString());
 		}
 	}
 }

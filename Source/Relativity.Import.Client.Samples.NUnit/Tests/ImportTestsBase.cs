@@ -4,55 +4,28 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Sample.NUnit.Tests
+namespace Relativity.Import.Client.Samples.NUnit.Tests
 {
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Linq;
+	using System.Net;
 
 	using global::NUnit.Framework;
 
+	using Relativity.Import.Export.TestFramework;
+
 	/// <summary>
-	/// Represents an abstract base class object to provide common functionality and helper methods.
-	/// </summary>
-	public abstract class ImportTestsBase
+    /// Represents an abstract base class object to provide common functionality and helper methods.
+    /// </summary>
+    public abstract class ImportTestsBase
 	{
         /// <summary>
         /// The default bates prefix constant.
         /// </summary>
         protected const string BatesPrefix = "BATES";
-
-        /// <summary>
-        /// The control number field name constant.
-        /// </summary>
-        protected const string ControlNumberFieldName = "control number";
-
-        /// <summary>
-        /// The document artifact type name constant.
-        /// </summary>
-        protected const string DocumentArtifactTypeName = "Document";
-
-        /// <summary>
-        /// The file path field name.
-        /// </summary>
-        protected const string FilePathFieldName = "file path";
-
-        /// <summary>
-        /// The file location field name.
-        /// </summary>
-        protected const string FileLocationFieldName = "file location";
-
-        /// <summary>
-        /// The folder field name.
-        /// </summary>
-        protected const string FolderFieldName = "folder name";
-
-        /// <summary>
-        /// The control number field name.
-        /// </summary>
-        protected const string BatesNumberFieldName = "bates number";
 
         /// <summary>
 		/// The sample PDF file name that's available for testing within the output directory.
@@ -125,53 +98,15 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
         protected const string SampleProductionImage1FileName = "EDRM-Sample-000001.tif";
 
         /// <summary>
-        /// The well-known document artifact type identifier constant.
-        /// </summary>
-        protected const int WellKnownDocumentArtifactTypeId = 10;
-
-        /// <summary>
-        /// The well-known control number field identifier constant.
-        /// </summary>
-        protected const int WellKnownControlNumberFieldId = 1003667;
-
-        /// <summary>
         /// The default data source table name constant.
         /// </summary>
         protected const string DefaultDataSourceTableName = "Input Data";
 
         /// <summary>
-        /// The list of all sample document file names available for testing within the output directory.
-        /// </summary>
-        protected static IEnumerable<string> AllSampleDocFileNames = new[]
-        {
-            SampleDocPdfFileName,
-            SampleDocWordFileName,
-            SampleDocExcelFileName,
-            SampleDocMsgFileName,
-            SampleDocHtmFileName,
-            SampleDocEmfFileName,
-            SampleDocPptFileName,
-            SampleDocPngFileName,
-            SampleDocTxtFileName,
-            SampleDocWmfFileName
-        };
-
-        /// <summary>
-        /// The list of all sample image file names available for testing within the output directory.
-        /// </summary>
-        protected static IEnumerable<string> AllSampleImageFileNames = new[]
-        {
-            SampleImage1FileName,
-            SampleImage2FileName,
-            SampleImage3FileName,
-            SampleProductionImage1FileName
-        };
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ImportTestsBase"/> class.
         /// </summary>
         protected ImportTestsBase()
-			: this(AssemblySetup.Logger)
+			: this(IntegrationTestHelper.Logger)
 		{
 			// Assume that AssemblySetup has already setup the singleton.
 		}
@@ -193,20 +128,56 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Assert.That(this.Logger, Is.Not.Null);
 		}
 
-        /// <summary>
-        /// Gets the artifact type identifier.
-        /// </summary>
-        /// <value>
-        /// The unique identifier.
-        /// </value>
-        protected int ArtifactTypeId
+		/// <summary>
+		/// Gets the list of all sample document file names available for testing within the output directory.
+		/// </summary>
+		/// <value>
+		/// The file names.
+		/// </value>
+		protected static IReadOnlyList<string> AllSampleDocFileNames =>
+			new List<string>
+				{
+					SampleDocPdfFileName,
+					SampleDocWordFileName,
+					SampleDocExcelFileName,
+					SampleDocMsgFileName,
+					SampleDocHtmFileName,
+					SampleDocEmfFileName,
+					SampleDocPptFileName,
+					SampleDocPngFileName,
+					SampleDocTxtFileName,
+					SampleDocWmfFileName
+				};
+
+		/// <summary>
+		/// Gets the list of all sample image file names available for testing within the output directory.
+		/// </summary>
+		/// <value>
+		/// The file names.
+		/// </value>
+		protected static IReadOnlyList<string> AllSampleImageFileNames =>
+			new List<string>
+				{
+					SampleImage1FileName,
+					SampleImage2FileName,
+					SampleImage3FileName,
+					SampleProductionImage1FileName
+				};
+
+		/// <summary>
+		/// Gets or sets the artifact type identifier.
+		/// </summary>
+		/// <value>
+		/// The unique identifier.
+		/// </value>
+		protected int ArtifactTypeId
         {
             get;
             set;
         }
 
         /// <summary>
-        /// Gets the identifier field unique identifier.
+        /// Gets or sets the identifier field unique identifier.
         /// </summary>
         /// <value>
         /// The unique identifier.
@@ -218,7 +189,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
         }
 
         /// <summary>
-        /// Gets the identifier field name.
+        /// Gets or sets the identifier field name.
         /// </summary>
         /// <value>
         /// The field name.
@@ -241,16 +212,16 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			private set;
 		}
 
-		/// <summary>
-		/// Gets the Relativity logger.
-		/// </summary>
-		/// <value>
-		/// The <see cref="Relativity.Logging.ILog"/> value.
-		/// </value>
-		protected Relativity.Logging.ILog Logger
-		{
-			get;
-		}
+        /// <summary>
+        /// Gets the Relativity logger.
+        /// </summary>
+        /// <value>
+        /// The <see cref="Relativity.Logging.ILog"/> value.
+        /// </value>
+        protected Relativity.Logging.ILog Logger
+        {
+	        get;
+        }
 
 		/// <summary>
 		/// Gets the published errors.
@@ -258,7 +229,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// <value>
 		/// The <see cref="IDictionary"/> instances.
 		/// </value>
-		public IList<IDictionary> PublishedErrors
+		protected IList<IDictionary> PublishedErrors
 		{
 			get;
 			private set;
@@ -309,7 +280,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected IList<kCura.Relativity.DataReaderClient.FullStatus> PublishedProcessProgress
 		{
 			get;
-			set;
+			private set;
 		}
 
 		/// <summary>
@@ -336,10 +307,29 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			private set;
 		}
 
+		/// <summary>
+		/// Gets integration test parameters.
+		/// </summary>
+		/// <value>
+		/// The <see cref="IntegrationTestParameters"/> instance.
+		/// </value>
+		protected IntegrationTestParameters TestParameters
+		{
+			get;
+			private set;
+		}
+
 		[SetUp]
 		public void Setup()
 		{
-			Assert.That(TestSettings.WorkspaceId, Is.Positive);
+			ServicePointManager.SecurityProtocol =
+				SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11
+				| SecurityProtocolType.Tls12;
+			this.AssignTestSettings();
+			Assert.That(
+				this.TestParameters.WorkspaceId,
+				Is.Positive,
+				() => "The test workspace must be created or specified in order to run this sample test.");
 			this.DataSource = new DataTable(DefaultDataSourceTableName);
 			this.PublishedErrors = new List<IDictionary>();
 			this.PublishedFatalException = null;
@@ -348,9 +338,9 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.PublishedMessages = new List<string>();
 			this.PublishedProgressRows = new List<long>();
 			this.PublishedProcessProgress = new List<kCura.Relativity.DataReaderClient.FullStatus>();
-            this.ArtifactTypeId = this.QueryArtifactTypeId(DocumentArtifactTypeName);
-            this.IdentifierFieldId = this.QueryIdentifierFieldId(DocumentArtifactTypeName);
-            this.IdentifierFieldName = this.QueryIdentifierFieldName(DocumentArtifactTypeName);
+            this.ArtifactTypeId = this.QueryArtifactTypeId(WellKnownArtifactTypes.DocumentArtifactTypeName);
+            this.IdentifierFieldId = this.QueryIdentifierFieldId(WellKnownArtifactTypes.DocumentArtifactTypeName);
+            this.IdentifierFieldName = this.QueryIdentifierFieldName(WellKnownArtifactTypes.DocumentArtifactTypeName);
             SetWinEddsConfigValue(false, "CreateFoldersInWebAPI", true);
 			this.OnSetup();
 		}
@@ -358,27 +348,59 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		[TearDown]
 		public void Teardown()
 		{
-			DataSource?.Dispose();
+			this.DataSource?.Dispose();
 			SetWinEddsConfigValue(false, "CreateFoldersInWebAPI", true);
 			this.OnTearDown();
 		}
 
 		/// <summary>
-		/// Creates the import API object using the app config settings for authentication and WebAPI URL.
+		/// Gets the boolean field value for the supplied RDO.
 		/// </summary>
+		/// <param name="relativityObject">
+		/// The relativity object.
+		/// </param>
+		/// <param name="name">
+		/// The field name to search.
+		/// </param>
 		/// <returns>
-		/// The <see cref="kCura.Relativity.ImportAPI.ImportAPI"/> instance.
+		/// The <see cref="bool"/> value.
 		/// </returns>
-		protected static kCura.Relativity.ImportAPI.ImportAPI CreateImportApiObject()
+		protected static bool GetBooleanFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return new kCura.Relativity.ImportAPI.ImportAPI(
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.RelativityWebApiUrl.ToString());
+			object field = GetObjectFieldValue(relativityObject, name);
+			if (field == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a boolean field but was null.");
+			}
+
+			return Convert.ToBoolean(field);
 		}
 
 		/// <summary>
-		/// Finds the date field value within the supplied Relativity object.
+		/// Gets the choice field value for the supplied RDO.
+		/// </summary>
+		/// <param name="relativityObject">
+		/// The relativity object.
+		/// </param>
+		/// <param name="name">
+		/// The field name to search.
+		/// </param>
+		/// <returns>
+		/// The <see cref="Relativity.Services.Objects.DataContracts.Choice"/> instance.
+		/// </returns>
+		protected static Relativity.Services.Objects.DataContracts.Choice GetChoiceField(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		{
+			object value = GetObjectFieldValue(relativityObject, name);
+			if (value == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a choice field but is null.");
+			}
+
+			return value as Relativity.Services.Objects.DataContracts.Choice;
+		}
+
+		/// <summary>
+		/// Gets the date field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -389,13 +411,19 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// <returns>
 		/// The <see cref="DateTime"/> value.
 		/// </returns>
-		protected static DateTime FindDateFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static DateTime GetDateFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return (DateTime)FindFieldValue(relativityObject, name);
+			object value = GetObjectFieldValue(relativityObject, name);
+			if (value == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a Date-Time field but is null.");
+			}
+
+			return Convert.ToDateTime(value);
 		}
 
 		/// <summary>
-		/// Finds the decimal field value within the supplied Relativity object.
+		/// Gets the decimal field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -406,13 +434,19 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// <returns>
 		/// The <see cref="decimal"/> value.
 		/// </returns>
-		protected static decimal FindDecimalFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static decimal GetDecimalFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return (decimal)FindFieldValue(relativityObject, name);
+			object value = GetObjectFieldValue(relativityObject, name);
+			if (value == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a decimal field but is null.");
+			}
+
+			return Convert.ToDecimal(value);
 		}
 
 		/// <summary>
-		/// Finds the single-object field value within the supplied Relativity object.
+		/// Gets the 32-bit integer field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -421,15 +455,21 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// The field name to search.
 		/// </param>
 		/// <returns>
-		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObjectValue"/> instance.
+		/// The nullable <see cref="int"/> value.
 		/// </returns>
-		protected static Relativity.Services.Objects.DataContracts.RelativityObjectValue FindSingleObjectFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static int? GetInt32FieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return FindFieldValue(relativityObject, name) as Relativity.Services.Objects.DataContracts.RelativityObjectValue;
+			object field = GetObjectFieldValue(relativityObject, name);
+			if (field == null)
+			{
+				return null;
+			}
+
+			return Convert.ToInt32(field);
 		}
 
 		/// <summary>
-		/// Finds the multi-object field values within the supplied Relativity object.
+		/// Gets the multi-object field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -440,13 +480,19 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// <returns>
 		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObjectValue"/> instances.
 		/// </returns>
-		protected static List<Relativity.Services.Objects.DataContracts.RelativityObjectValue> FindMultiObjectFieldValues(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static List<Relativity.Services.Objects.DataContracts.RelativityObjectValue> GetMultiObjectFieldValues(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return FindFieldValue(relativityObject, name) as List<Relativity.Services.Objects.DataContracts.RelativityObjectValue>;
+			object value = GetObjectFieldValue(relativityObject, name);
+			if (value == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a multi-object field but is null.");
+			}
+
+			return value as List<Relativity.Services.Objects.DataContracts.RelativityObjectValue>;
 		}
 
 		/// <summary>
-		/// Finds the object field value within the supplied Relativity object.
+		/// Gets the object field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -457,37 +503,37 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// <returns>
 		/// The field value.
 		/// </returns>
-		protected static object FindFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static object GetObjectFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
 			Relativity.Services.Objects.DataContracts.FieldValuePair pair = relativityObject.FieldValues.FirstOrDefault(x => x.Field.Name == name);
 			return pair?.Value;
 		}
 
 		/// <summary>
-		/// Finds the object whose identity name and value match the specified values.
+		/// Gets the single-object field value for the supplied RDO.
 		/// </summary>
-		/// <param name="objects">
+		/// <param name="relativityObject">
 		/// The relativity object.
 		/// </param>
-		/// <param name="identityFieldName">
-		/// The identity field name to search.
-		/// </param>
-		/// <param name="identityFieldValue">
-		/// The identity field value to search.
+		/// <param name="name">
+		/// The field name to search.
 		/// </param>
 		/// <returns>
-		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObject"/> instance.
+		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObjectValue"/> instance.
 		/// </returns>
-		protected static Relativity.Services.Objects.DataContracts.RelativityObject FindRelativityObject(IList<Relativity.Services.Objects.DataContracts.RelativityObject> objects, string identityFieldName, string identityFieldValue)
+		protected static Relativity.Services.Objects.DataContracts.RelativityObjectValue GetSingleObjectFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return (from obj in objects
-				from pair in obj.FieldValues
-				where pair.Field.Name == identityFieldName && pair.Value.ToString() == identityFieldValue
-				select obj).FirstOrDefault();
+			object value = GetObjectFieldValue(relativityObject, name);
+			if (value == null)
+			{
+				throw new InvalidOperationException($"The field '{name}' is expected to be a single-object field but is null.");
+			}
+
+			return value as Relativity.Services.Objects.DataContracts.RelativityObjectValue;
 		}
 
 		/// <summary>
-		/// Finds the string field value within the supplied Relativity object.
+		/// Gets the string field value for the supplied RDO.
 		/// </summary>
 		/// <param name="relativityObject">
 		/// The relativity object.
@@ -498,12 +544,13 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// <returns>
 		/// The field value.
 		/// </returns>
-		protected static string FindStringFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
+		protected static string GetStringFieldValue(Relativity.Services.Objects.DataContracts.RelativityObject relativityObject, string name)
 		{
-			return FindFieldValue(relativityObject, name) as string;
+			// This can be null.
+			return GetObjectFieldValue(relativityObject, name) as string;
 		}
 
-        /// <summary>
+		/// <summary>
         /// Generates a unique production set name.
         /// </summary>
         /// <returns>
@@ -566,18 +613,55 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			}
 		}
 
-        protected static void ConfigureDocumentJobSettings(kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job)
+		/// <summary>
+		/// Searches the list of RDO's for the object whose field name and value match the specified parameters.
+		/// </summary>
+		/// <param name="objects">
+		/// The relativity object.
+		/// </param>
+		/// <param name="fieldName">
+		/// The field name to search.
+		/// </param>
+		/// <param name="fieldValue">
+		/// The field value to search.
+		/// </param>
+		/// <returns>
+		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObject"/> instance.
+		/// </returns>
+		protected static Relativity.Services.Objects.DataContracts.RelativityObject SearchRelativityObject(
+			IList<Relativity.Services.Objects.DataContracts.RelativityObject> objects,
+			string fieldName,
+			string fieldValue)
+		{
+			return (from obj in objects
+			        from pair in obj.FieldValues
+			        where pair.Field.Name == fieldName && pair.Value.ToString() == fieldValue
+			        select obj).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Assign the test parameters. This should always be called from methods with <see cref="SetUpAttribute"/> or <see cref="OneTimeSetUpAttribute"/>.
+		/// </summary>
+		protected void AssignTestSettings()
+		{
+			if (this.TestParameters == null)
+			{
+				this.TestParameters = AssemblySetup.TestParameters.DeepCopy();
+			}
+		}
+
+		protected void ConfigureDocumentJobSettings(kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job)
         {
-            ConfigureJobSettings(
+            this.ConfigureJobSettings(
                 job,
-                WellKnownDocumentArtifactTypeId,
-                WellKnownControlNumberFieldId,
-                FilePathFieldName,
-                ControlNumberFieldName,
+				WellKnownArtifactTypes.DocumentArtifactTypeId,
+				WellKnownFields.ControlNumberId,
+				WellKnownFields.FilePath,
+                WellKnownFields.ControlNumber,
                 null);
         }
 
-        protected static void ConfigureJobSettings(
+        protected void ConfigureJobSettings(
             kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job,
             int artifactTypeId,
             int identityFieldId,
@@ -589,7 +673,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
             settings.ArtifactTypeId = artifactTypeId;
             settings.Billable = false;
             settings.BulkLoadFileFieldDelimiter = ";";
-            settings.CaseArtifactId = TestSettings.WorkspaceId;
+            settings.CaseArtifactId = this.TestParameters.WorkspaceId;
             settings.CopyFilesToDocumentRepository = true;
             settings.DisableControlNumberCompatibilityMode = true;
             settings.DisableExtractedTextFileLocationValidation = false;
@@ -597,7 +681,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
             settings.DisableNativeValidation = false;
             settings.ExtractedTextEncoding = System.Text.Encoding.Unicode;
             settings.ExtractedTextFieldContainsFilePath = false;
-            settings.FileSizeColumn = "NativeFileSize";
+            settings.FileSizeColumn = WellKnownFields.NativeFileSize;
             settings.FileSizeMapped = true;
             settings.FolderPathSourceFieldName = folderFieldName;
             settings.IdentityFieldId = identityFieldId;
@@ -606,9 +690,9 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
             settings.MoveDocumentsInAppendOverlayMode = false;
             settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.CopyFiles;
             settings.NativeFilePathSourceFieldName = nativeFilePathSourceFieldName;
-            settings.OIFileIdColumnName = "OutsideInFileId";
+            settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
             settings.OIFileIdMapped = true;
-            settings.OIFileTypeColumnName = "OutsideInFileType";
+            settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
             settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append;
             settings.SelectedIdentifierFieldName = identifierFieldName;
             settings.StartRecordNumber = 0;
@@ -631,14 +715,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 				Wrapping = true
 			};
 
-			TestHelper.CreateField(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				workspaceObjectTypeId,
-				field);
+			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
 		}
 
 		protected void CreateDecimalField(int workspaceObjectTypeId, string fieldName)
@@ -658,14 +735,22 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 				Wrapping = true
 			};
 
-			TestHelper.CreateField(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				workspaceObjectTypeId,
-				field);
+			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
+		}
+
+		/// <summary>
+		/// Creates the export search manager.
+		/// </summary>
+		/// <returns>
+		/// The <see cref="kCura.WinEDDS.Service.Export.ISearchManager"/> instance.
+		/// </returns>
+		/// <remarks>
+		/// The <see cref="kCura.WinEDDS.Service.Export.ISearchManager"/> service is not officially supported and should NEVER be used in production code.
+		/// </remarks>
+		protected kCura.WinEDDS.Service.Export.ISearchManager CreateExportSearchManager()
+		{
+			var credentials = new NetworkCredential(this.TestParameters.RelativityUserName, this.TestParameters.RelativityPassword);
+			return new kCura.WinEDDS.Service.SearchManager(credentials, new CookieContainer());
 		}
 
 		protected void CreateFixedLengthTextField(int workspaceObjectTypeId, string fieldName, int length)
@@ -685,18 +770,25 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 				Name = fieldName,
 				OpenToAssociations = false,
 				Unicode = false,
-				Width = "",
+				Width = string.Empty,
 				Wrapping = false
 			};
 
-			TestHelper.CreateField(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				workspaceObjectTypeId,
-				field);
+			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
+		}
+
+		/// <summary>
+		/// Creates the import API object using the app config parameters for authentication and WebAPI URL.
+		/// </summary>
+		/// <returns>
+		/// The <see cref="kCura.Relativity.ImportAPI.ImportAPI"/> instance.
+		/// </returns>
+		protected kCura.Relativity.ImportAPI.ImportAPI CreateImportApiObject()
+		{
+			return new kCura.Relativity.ImportAPI.ImportAPI(
+				this.TestParameters.RelativityUserName,
+				this.TestParameters.RelativityPassword,
+				this.TestParameters.RelativityWebApiUrl.ToString());
 		}
 
 		protected void CreateSingleObjectField(int workspaceObjectTypeId, int descriptorArtifactTypeId, string fieldName)
@@ -717,14 +809,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 				Wrapping = false
 			};
 
-			TestHelper.CreateField(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				workspaceObjectTypeId,
-				field);
+			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
 		}
 
 		protected void CreateMultiObjectField(int workspaceObjectTypeId, int descriptorArtifactTypeId, string fieldName)
@@ -741,59 +826,36 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 				Width = "12"
 			};
 
-			TestHelper.CreateField(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				workspaceObjectTypeId,
-				field);
+			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
 		}
 
 		protected int CreateObjectType(string objectTypeName)
 		{
-			int artifactId = TestHelper.CreateObjectType(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				objectTypeName);
+			int artifactId = RdoHelper.CreateObjectType(this.TestParameters, objectTypeName);
 			this.Logger.LogInformation(
 				"Successfully created object type '{ObjectTypeName}' - {ArtifactId}.",
-				objectTypeName, artifactId);
+				objectTypeName,
+				artifactId);
 			return artifactId;
 		}
 
 		protected int CreateObjectTypeInstance(int artifactTypeId, IDictionary<string, object> fields)
 		{
-			int artifactId = TestHelper.CreateObjectTypeInstance(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				artifactTypeId,
-				fields);
-			this.Logger.LogInformation("Successfully created instance {ArtifactId} of object type {ArtifactTypeId}.",
-				artifactId, artifactTypeId);
+			int artifactId = RdoHelper.CreateObjectTypeInstance(this.TestParameters, artifactTypeId, fields);
+			this.Logger.LogInformation(
+				"Successfully created instance {ArtifactId} of object type {ArtifactTypeId}.",
+				artifactId,
+				artifactTypeId);
 			return artifactId;
 		}
 
         protected int CreateProduction(string productionName, string batesPrefix)
         {
-            int artifactId = TestHelper.CreateProduction(
-                TestSettings.RelativityRestUrl,
-                TestSettings.RelativityServicesUrl,
-                TestSettings.RelativityUserName,
-                TestSettings.RelativityPassword,
-                TestSettings.WorkspaceId,
+            int artifactId = ProductionHelper.CreateProduction(this.TestParameters, productionName, batesPrefix, this.Logger);
+            this.Logger.LogInformation(
+	            "Successfully created production {ProductionName} - {ArtifactId}.",
                 productionName,
-                batesPrefix,
-                this.Logger);
-            this.Logger.LogInformation("Successfully created production {ProductionName} - {ArtifactId}.",
-                productionName, artifactId);
+	            artifactId);
             return artifactId;
         }
 
@@ -808,13 +870,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 		protected void DeleteObject(int artifactId)
 		{
-			TestHelper.DeleteObject(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				artifactId);
+			RdoHelper.DeleteObject(this.TestParameters, artifactId);
 		}
 
         /// <summary>
@@ -828,9 +884,9 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
         /// </exception>
         protected void ImportDocuments(IEnumerable<string> controlNumbers)
         {
-            kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+            kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
             kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
-            ConfigureDocumentJobSettings(job);
+            this.ConfigureDocumentJobSettings(job);
             job.Settings.CopyFilesToDocumentRepository = false;
             job.Settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.DoNotImportNativeFiles;
             job.Settings.NativeFilePathSourceFieldName = null;
@@ -864,111 +920,174 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 		protected int QueryArtifactTypeId(string objectTypeName)
 		{
-			return TestHelper.QueryArtifactTypeId(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				objectTypeName);
+			return RdoHelper.QueryArtifactTypeId(this.TestParameters, objectTypeName);
 		}
 
 		protected int QueryIdentifierFieldId(string artifactTypeName)
 		{
-			return TestHelper.QueryIdentifierFieldId(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				artifactTypeName);
+			return FieldHelper.QueryIdentifierFieldId(this.TestParameters, artifactTypeName);
 		}
 
         protected string GetDocumentIdentifierFieldName()
         {
-            return this.QueryIdentifierFieldName(DocumentArtifactTypeName);
+            return this.QueryIdentifierFieldName(WellKnownArtifactTypes.DocumentArtifactTypeName);
         }
 
         protected string QueryIdentifierFieldName(string artifactTypeName)
         {
-            return TestHelper.QueryIdentifierFieldName(
-                TestSettings.RelativityRestUrl,
-                TestSettings.RelativityServicesUrl,
-                TestSettings.RelativityUserName,
-                TestSettings.RelativityPassword,
-                TestSettings.WorkspaceId,
-                artifactTypeName);
+            return FieldHelper.QueryIdentifierFieldName(this.TestParameters, artifactTypeName);
         }
 
-        protected Tuple<string, string> QueryProductionBatesNumbers(int productionId)
+		/// <summary>
+		/// Queries for the list of file information associated with the specified imported image.
+		/// </summary>
+		/// <param name="artifactId">
+		/// The imported image artifact unique identifier.
+		/// </param>
+		/// <returns>
+		/// The <see cref="FileDto"/> instances.
+		/// </returns>
+		/// <remarks>
+		/// The <see cref="kCura.WinEDDS.Service.Export.ISearchManager"/> service is not officially supported and should NEVER be used in production code.
+		/// </remarks>
+		protected IEnumerable<FileDto> QueryImageFileInfo(int artifactId)
         {
-            var production = TestHelper.QueryProduction(
-                TestSettings.RelativityRestUrl,
-                TestSettings.RelativityServicesUrl,
-                TestSettings.RelativityUserName,
-                TestSettings.RelativityPassword,
-                TestSettings.WorkspaceId,
-                productionId);
+			using (kCura.WinEDDS.Service.Export.ISearchManager searchManager = this.CreateExportSearchManager())
+			{
+				var ds = searchManager.RetrieveImagesForDocuments(
+					this.TestParameters.WorkspaceId,
+					new[] { artifactId });
+		        if (ds == null || ds.Tables.Count == 0)
+		        {
+			        return new List<FileDto>();
+		        }
+
+		        DataTable table = ds.Tables[0];
+				return table.Rows.Cast<DataRow>().Select(x => new FileDto(x));
+	        }
+        }
+
+		/// <summary>
+		/// Queries for the file information associated with the specified native document.
+		/// </summary>
+		/// <param name="artifactId">
+		/// The imported document artifact unique identifier.
+		/// </param>
+		/// <returns>
+		/// The <see cref="FileDto"/> instance.
+		/// </returns>
+		/// <remarks>
+		/// The <see cref="kCura.WinEDDS.Service.Export.ISearchManager"/> service is not officially supported and should NEVER be used in production code.
+		/// </remarks>
+		protected FileDto QueryNativeFileInfo(int artifactId)
+		{
+			using (kCura.WinEDDS.Service.Export.ISearchManager searchManager = this.CreateExportSearchManager())
+			{
+				var ds = searchManager.RetrieveNativesForSearch(this.TestParameters.WorkspaceId, artifactId.ToString());
+				if (ds == null || ds.Tables.Count == 0)
+				{
+					return null;
+				}
+
+				DataTable table = ds.Tables[0];
+				if (table.Rows.Count != 1)
+				{
+					throw new InvalidOperationException("The search manager natives endpoint was expected to return exactly 1 row.");
+				}
+
+				return table.Rows.Cast<DataRow>().Select(x => new FileDto(x)).Single();
+			}
+		}
+
+		/// <summary>
+		/// Queries for a structure that provides the first and last Bates numbers for the specified production.
+		/// </summary>
+		/// <param name="productionId">
+		/// The production artifact identifier.
+		/// </param>
+		/// <returns>
+		/// The tuple.
+		/// </returns>
+		protected Tuple<string, string> QueryProductionBatesNumbers(int productionId)
+        {
+            var production = ProductionHelper.QueryProduction(this.TestParameters, productionId);
             Tuple<string, string> batesNumbers =
                 new Tuple<string, string>(production.Details.FirstBatesValue, production.Details.LastBatesValue);
             return batesNumbers;
         }
 
-        protected int QueryRelativityObjectCount(int artifactTypeId)
+		/// <summary>
+		/// Queries for the total number of objects for the specified RDO type.
+		/// </summary>
+		/// <param name="artifactTypeId">
+		/// The RDO artifact type identifier.
+		/// </param>
+		/// <returns>
+		/// The total number of objects.
+		/// </returns>
+		protected int QueryRelativityObjectCount(int artifactTypeId)
 		{
-			return TestHelper.QueryRelativityObjectCount(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword, TestSettings.WorkspaceId,
-				artifactTypeId);
+			return RdoHelper.QueryRelativityObjectCount(this.TestParameters, artifactTypeId);
 		}
 
+		/// <summary>
+		/// Queries for the list of document RDO's and includes the standard well-known fields.
+		/// </summary>
+		/// <returns>
+		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObject"/> instance.
+		/// </returns>
+		protected IList<Relativity.Services.Objects.DataContracts.RelativityObject> QueryDocuments()
+		{
+			return this.QueryDocuments(
+				new string[]
+					{
+						WellKnownFields.ArtifactId, WellKnownFields.ControlNumber, WellKnownFields.HasImages,
+						WellKnownFields.HasNative, WellKnownFields.BatesNumber, WellKnownFields.RelativityImageCount
+					});
+		}
+
+		/// <summary>
+		/// Queries for the list of document RDO's and includes the specified list of fields.
+		/// </summary>
+		/// <param name="fields">The fields.</param>
+		/// <returns>
+		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObject"/> instance.
+		/// </returns>
+		protected IList<Relativity.Services.Objects.DataContracts.RelativityObject> QueryDocuments(IEnumerable<string> fields)
+		{
+			return this.QueryRelativityObjects(WellKnownArtifactTypes.DocumentArtifactTypeId, fields);
+		}
+
+		/// <summary>
+		/// Queries for the list of RDO's of the specified type and includes the specified list of fields.
+		/// </summary>
+		/// <param name="artifactTypeId">
+		/// The artifact type identifier that specifies the RDO type.
+		/// </param>
+		/// <param name="fields">The fields.</param>
+		/// <returns>
+		/// The <see cref="Relativity.Services.Objects.DataContracts.RelativityObject"/> instance.
+		/// </returns>
 		protected IList<Relativity.Services.Objects.DataContracts.RelativityObject> QueryRelativityObjects(int artifactTypeId, IEnumerable<string> fields)
 		{
-			return TestHelper.QueryRelativityObjects(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				artifactTypeId,
-				fields);
+			return RdoHelper.QueryRelativityObjects(this.TestParameters, artifactTypeId, fields);
 		}
 
 		protected IList<string> QueryWorkspaceFolders()
 		{
-			return TestHelper.QueryWorkspaceFolders(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				this.Logger);
+			return WorkspaceHelper.QueryWorkspaceFolders(this.TestParameters, this.Logger);
 		}
 
 		protected int QueryWorkspaceObjectTypeDescriptorId(int artifactId)
 		{
-			return TestHelper.QueryWorkspaceObjectTypeDescriptorId(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				artifactId);
+			return RdoHelper.QueryWorkspaceObjectTypeDescriptorId(this.TestParameters, artifactId);
 		}
 
-		protected Relativity.Services.Objects.DataContracts.RelativityObject ReadRelativityObject(int artifactId,
+		protected Relativity.Services.Objects.DataContracts.RelativityObject ReadRelativityObject(
+			int artifactId,
 			IEnumerable<string> fields)
 		{
-			return TestHelper.ReadRelativityObject(
-				TestSettings.RelativityRestUrl,
-				TestSettings.RelativityServicesUrl,
-				TestSettings.RelativityUserName,
-				TestSettings.RelativityPassword,
-				TestSettings.WorkspaceId,
-				artifactId,
-				fields);
+			return RdoHelper.ReadRelativityObject(this.TestParameters, artifactId, fields);
 		}
 
 		protected virtual void OnSetup()

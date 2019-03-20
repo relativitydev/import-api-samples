@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Sample.NUnit.Tests
+namespace Relativity.Import.Client.Samples.NUnit.Tests
 {
 	using System;
 	using System.Collections.Generic;
@@ -12,10 +12,12 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-	/// <summary>
-	/// Represents a test that imports advanced objects containing single/multi-object fields and validates the results.
-	/// </summary>
-	[TestFixture]
+    using Relativity.Import.Export.TestFramework;
+
+    /// <summary>
+    /// Represents a test that imports advanced objects containing single/multi-object fields and validates the results.
+    /// </summary>
+    [TestFixture]
 	public class ObjectAdvancedImportTests : ObjectImportTestsBase
 	{
 		/// <summary>
@@ -26,14 +28,14 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// </value>
 		private static IEnumerable<TestCaseData> TestCases =>
 			new List<TestCaseData>
-			{
-				new TestCaseData("Advanced-Transfer-Small-1", "Advanced-Detail-1", "Advanced-DataSourceName-1", true),
-				new TestCaseData("Advanced-Transfer-Small-2", "Advanced-Detail-2", "Advanced-DataSourceName-2", false),
-				new TestCaseData("Advanced-Transfer-Medium-1", "Advanced-Detail-3", "Advanced-DataSourceName-3", true),
-				new TestCaseData("Advanced-Transfer-Medium-2", "Advanced-Detail-4", "Advanced-DataSourceName-4", false),
-				new TestCaseData("Advanced-Transfer-Large-1", "Advanced-Detail-5", "Advanced-DataSourceName-5", true),
-				new TestCaseData("Advanced-Transfer-Large-2", "Advanced-Detail-6", "Advanced-DataSourceName-6", false)
-			};
+				{
+					new TestCaseData("Advanced-Transfer-Small-1", "Advanced-Detail-1", "Advanced-DataSourceName-1", true),
+					new TestCaseData("Advanced-Transfer-Small-2", "Advanced-Detail-2", "Advanced-DataSourceName-2", false),
+					new TestCaseData("Advanced-Transfer-Medium-1", "Advanced-Detail-3", "Advanced-DataSourceName-3", true),
+					new TestCaseData("Advanced-Transfer-Medium-2", "Advanced-Detail-4", "Advanced-DataSourceName-4", false),
+					new TestCaseData("Advanced-Transfer-Large-1", "Advanced-Detail-5", "Advanced-DataSourceName-5", true),
+					new TestCaseData("Advanced-Transfer-Large-2", "Advanced-Detail-6", "Advanced-DataSourceName-6", false)
+				};
 
 		[Test]
 		[TestCaseSource(nameof(TestCases))]
@@ -53,10 +55,10 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = this.CreateImportBulkArtifactJob();
 			int initialObjectCount = this.QueryRelativityObjectCount(this.TransferArtifactTypeId);
-			string description = TestHelper.NextString(50, 450);
-			decimal requestBytes = TestHelper.NextDecimal(10, 1000000);
+			string description = RandomHelper.NextString(50, 450);
+			decimal requestBytes = RandomHelper.NextDecimal(10, 1000000);
 			DateTime requestDate = DateTime.Now;
-			decimal requestFiles = TestHelper.NextDecimal(1000, 10000);		
+			decimal requestFiles = RandomHelper.NextDecimal(1000, 10000);
 			this.DataSource.Rows.Add(
 				name,
 				description,
@@ -78,7 +80,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Assert.That(this.PublishedJobReport.MetadataBytes, Is.Positive);
 			Assert.That(this.PublishedJobReport.StartTime, Is.GreaterThan(this.StartTime));
 			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(1));
-			
+
 			// Assert - the events match the expected values.
 			Assert.That(this.PublishedErrors.Count, Is.Zero);
 			Assert.That(this.PublishedFatalException, Is.Null);
@@ -91,35 +93,26 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			IList<Relativity.Services.Objects.DataContracts.RelativityObject> transfers =
 				this.QueryRelativityObjects(
 					this.TransferArtifactTypeId,
-					new[]
-					{
-						TransferFieldName,
-						TransferFieldDescription,
-						TransferFieldRequestBytes,
-						TransferFieldRequestFiles,
-						TransferFieldRequestDate,
-						TransferFieldDetailId,
-						TransferFieldDataSourceId
-					});
+					TransferFields);
 			Assert.That(transfers, Is.Not.Null);
 			Assert.That(transfers.Count, Is.EqualTo(expectedObjectCount));
 
 			// Assert - the imported object exists.
 			Relativity.Services.Objects.DataContracts.RelativityObject importedTransfers
-				= FindRelativityObject(transfers, TransferFieldName, name);
+				= SearchRelativityObject(transfers, TransferFieldName, name);
 			Assert.That(importedTransfers, Is.Not.Null);
 
 			// Assert - all standard field values matches the expected values.
-			string descriptionFieldValue = FindStringFieldValue(importedTransfers, TransferFieldDescription);
+			string descriptionFieldValue = GetStringFieldValue(importedTransfers, TransferFieldDescription);
 			Assert.That(descriptionFieldValue, Is.EqualTo(description));
-			decimal requestBytesFieldValue = FindDecimalFieldValue(importedTransfers, TransferFieldRequestBytes);
+			decimal requestBytesFieldValue = GetDecimalFieldValue(importedTransfers, TransferFieldRequestBytes);
 			Assert.That(requestBytesFieldValue, Is.EqualTo(requestBytes));
-			decimal requestFilesFieldValue = FindDecimalFieldValue(importedTransfers, TransferFieldRequestFiles);
+			decimal requestFilesFieldValue = GetDecimalFieldValue(importedTransfers, TransferFieldRequestFiles);
 			Assert.That(requestFilesFieldValue, Is.EqualTo(requestFiles));
-			DateTime requestDateFieldValue = FindDateFieldValue(importedTransfers, TransferFieldRequestDate);
+			DateTime requestDateFieldValue = GetDateFieldValue(importedTransfers, TransferFieldRequestDate);
 			Assert.That(requestDateFieldValue, Is.EqualTo(requestDate).Within(5).Seconds);
 			Relativity.Services.Objects.DataContracts.RelativityObjectValue transferDetailFieldValue
-				= FindSingleObjectFieldValue(importedTransfers, TransferFieldDetailId);
+				= GetSingleObjectFieldValue(importedTransfers, TransferFieldDetailId);
 			Assert.That(transferDetailFieldValue, Is.Not.Null);
 			Assert.That(transferDetailFieldValue.ArtifactID, Is.Positive);
 
@@ -127,21 +120,14 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Relativity.Services.Objects.DataContracts.RelativityObject transferDetail =
 				this.ReadRelativityObject(
 					transferDetailFieldValue.ArtifactID,
-					new[]
-					{
-						TransferDetailFieldName,
-						TransferDetailFieldTransferredBytes,
-						TransferDetailFieldTransferredFiles,
-						TransferDetailFieldStartDate,
-						TransferDetailFieldEndDate
-					});
+					TransferDetailFields);
 			Assert.That(transferDetail, Is.Not.Null);
-			string transferDetailNameFieldValue = FindStringFieldValue(transferDetail, TransferDetailFieldName);
+			string transferDetailNameFieldValue = GetStringFieldValue(transferDetail, TransferDetailFieldName);
 			Assert.That(transferDetailNameFieldValue, Is.EqualTo(detailName));
 
 			// Assert - the associated multi-object field is imported.
 			List<Relativity.Services.Objects.DataContracts.RelativityObjectValue> transferDataSourceFieldValues
-				= FindMultiObjectFieldValues(importedTransfers, TransferFieldDataSourceId);
+				= GetMultiObjectFieldValues(importedTransfers, TransferFieldDataSourceId);
 			Assert.That(transferDataSourceFieldValues, Is.Not.Null);
 			Assert.That(transferDataSourceFieldValues.Count, Is.EqualTo(1));
 			Relativity.Services.Objects.DataContracts.RelativityObjectValue transferDataSourceFieldValue
@@ -149,15 +135,10 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Relativity.Services.Objects.DataContracts.RelativityObject transferDataSource =
 				this.ReadRelativityObject(
 					transferDataSourceFieldValue.ArtifactID,
-					new[]
-					{
-						TransferDataSourceFieldName,
-						TransferDataSourceFieldNumber,
-						TransferDataSourceFieldConnectionString
-					});
+					TransferDataSourceFields);
 			Assert.That(transferDataSource, Is.Not.Null);
 			string transferDataSourceNameFieldValue =
-				FindStringFieldValue(transferDataSource, TransferDataSourceFieldName);
+				GetStringFieldValue(transferDataSource, TransferDataSourceFieldName);
 			Assert.That(transferDataSourceNameFieldValue, Is.EqualTo(dataSourceName));
 		}
 	}

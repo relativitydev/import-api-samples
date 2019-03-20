@@ -4,20 +4,22 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Sample.NUnit.Tests
+namespace Relativity.Import.Client.Samples.NUnit.Tests
 {
 	using System.Collections.Generic;
 	using System.Linq;
 
 	using global::NUnit.Framework;
 
-	/// <summary>
-	/// Represents a test that imports native documents with folders and validates the results.
-	/// </summary>
-	/// <remarks>
-	/// Due to poor performance, disabling client-side implementation by default.
-	/// </remarks>
-	[TestFixture(false)]
+    using Relativity.Import.Export.TestFramework;
+
+    /// <summary>
+    /// Represents a test that imports native documents with folders and validates the results.
+    /// </summary>
+    /// <remarks>
+    /// Due to poor performance, disabling client-side implementation by default.
+    /// </remarks>
+    [TestFixture(false)]
 	[TestFixture(true)]
 	public class DocImportFolderTests : DocImportTestsBase
 	{
@@ -35,12 +37,6 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		public DocImportFolderTests(bool serverSideFolders)
 		{
 			this.serverSideFolders = serverSideFolders;
-		}
-
-		protected override void OnSetup()
-		{
-			base.OnSetup();
-			SetWinEddsConfigValue(true, "CreateFoldersInWebAPI", this.serverSideFolders);
 		}
 
 		[Test]
@@ -117,7 +113,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			List<DocImportRecord> records = AllSampleDocFileNames.Select(fileName => new DocImportRecord
 			{
 				ControlNumber = GenerateControlNumber(),
-				File = TestHelper.GetDocsResourceFilePath(fileName),
+				File = ResourceFileHelper.GetDocsResourceFilePath(fileName),
 				Folder = folderPath
 			}).ToList();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = this.ArrangeImportJob(records);
@@ -131,6 +127,12 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			// Assert - all max depth folders were created.
 			IEnumerable<string> folders = SplitFolderPath(folderPath);
 			this.AssertDistinctFolders(folders.ToArray());
+		}
+
+		protected override void OnSetup()
+		{
+			base.OnSetup();
+			SetWinEddsConfigValue(true, "CreateFoldersInWebAPI", this.serverSideFolders);
 		}
 	}
 }

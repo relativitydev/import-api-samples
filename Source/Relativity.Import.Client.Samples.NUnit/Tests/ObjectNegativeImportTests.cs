@@ -4,17 +4,19 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Sample.NUnit.Tests
+namespace Relativity.Import.Client.Samples.NUnit.Tests
 {
 	using System;
 	using System.Collections.Generic;
 
 	using global::NUnit.Framework;
 
-	/// <summary>
-	/// Represents tests that fails to import objects and validates the results.
-	/// </summary>
-	[TestFixture]
+    using Relativity.Import.Export.TestFramework;
+
+    /// <summary>
+    /// Represents tests that fails to import objects and validates the results.
+    /// </summary>
+    [TestFixture]
 	public class ObjectNegativeImportTests : ObjectImportTestsBase
 	{
 		/// <summary>
@@ -25,9 +27,9 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// </value>
 		private static IEnumerable<TestCaseData> TestCases =>
 			new List<TestCaseData>
-			{
-				new TestCaseData("Negative-Transfer-1", "Negative-Detail-1", "Negative-DataSourceName-1")
-			};
+				{
+					new TestCaseData("Negative-Transfer-1", "Negative-Detail-1", "Negative-DataSourceName-1")
+				};
 
 		[Test]
 		[TestCaseSource(nameof(TestCases))]
@@ -41,10 +43,10 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.CreateAssociatedDetailInstance(detailName);
 			this.CreateAssociatedDataSourceInstance(dataSourceName);
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = this.CreateImportBulkArtifactJob();
-			string description = TestHelper.NextString(50, 450);
-			decimal requestBytes = TestHelper.NextDecimal(10, 1000000);
+			string description = RandomHelper.NextString(50, 450);
+			decimal requestBytes = RandomHelper.NextDecimal(10, 1000000);
 			DateTime requestDate = DateTime.Now;
-			decimal requestFiles = TestHelper.NextDecimal(1000, 10000);
+			decimal requestFiles = RandomHelper.NextDecimal(1000, 10000);
 			this.DataSource.Rows.Add(
 				name,
 				description,
@@ -87,10 +89,10 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			this.CreateAssociatedDataSourceInstance(dataSourceName);
 			this.CreateAssociatedDataSourceInstance(dataSourceName);
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = this.CreateImportBulkArtifactJob();
-			string description = TestHelper.NextString(50, 450);
-			decimal requestBytes = TestHelper.NextDecimal(10, 1000000);
+			string description = RandomHelper.NextString(50, 450);
+			decimal requestBytes = RandomHelper.NextDecimal(10, 1000000);
 			DateTime requestDate = DateTime.Now;
-			decimal requestFiles = TestHelper.NextDecimal(1000, 10000);
+			decimal requestFiles = RandomHelper.NextDecimal(1000, 10000);
 			this.DataSource.Rows.Add(
 				name,
 				description,

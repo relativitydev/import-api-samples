@@ -1,10 +1,10 @@
 ﻿// ----------------------------------------------------------------------------
-// <copyright file="ImportBulkArtifactJobTestsBase.cs" company="Relativity ODA LLC">
+// <copyright file="ObjectImportTestsBase.cs" company="Relativity ODA LLC">
 //   © Relativity All Rights Reserved.
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Sample.NUnit.Tests
+namespace Relativity.Import.Client.Samples.NUnit.Tests
 {
 	using System;
 	using System.Collections.Generic;
@@ -12,10 +12,12 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-	/// <summary>
-	/// Represents an abstract test class object that imports objects and validates the results.
-	/// </summary>
-	public abstract class ObjectImportTestsBase : ImportTestsBase
+    using Relativity.Import.Export.TestFramework;
+
+    /// <summary>
+    /// Represents an abstract test class object that imports objects and validates the results.
+    /// </summary>
+    public abstract class ObjectImportTestsBase : ImportTestsBase
 	{
 		// The custom object type under test.
 		protected const string TransferArtifactTypeName = "Transfer";
@@ -40,12 +42,12 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected const string TransferDataSourceFieldName = "Name";
 		protected const string TransferDataSourceFieldNumber = "Number";
 		protected const string TransferDataSourceFieldConnectionString = "ConnectionString";
-		private static int _objectTypeUniqueSuffix;
-		private readonly List<int> _dataSourceArtifacts = new List<int>();
-		private readonly List<int> _detailArtifacts = new List<int>();
+		private static int objectTypeUniqueSuffix;
+		private readonly List<int> dataSourceArtifacts = new List<int>();
+		private readonly List<int> detailArtifacts = new List<int>();
 
 		protected ObjectImportTestsBase()
-			: base(AssemblySetup.Logger)
+			: base(IntegrationTestHelper.Logger)
 		{
 			// Assume that AssemblySetup has already setup the singleton.
 		}
@@ -54,6 +56,54 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			: base(log)
 		{
 		}
+
+		/// <summary>
+		/// Gets the list of transfer RDO custom field names.
+		/// </summary>
+		/// <value>
+		/// The field names.
+		/// </value>
+		protected static IReadOnlyList<string> TransferFields =>
+			new List<string>
+				{
+					TransferFieldName,
+					TransferFieldDescription,
+					TransferFieldRequestBytes,
+					TransferFieldRequestFiles,
+					TransferFieldRequestDate,
+					TransferFieldDetailId,
+					TransferFieldDataSourceId
+				};
+
+		/// <summary>
+		/// Gets the list of transfer detail RDO custom field names.
+		/// </summary>
+		/// <value>
+		/// The field names.
+		/// </value>
+		protected static IReadOnlyList<string> TransferDetailFields =>
+			new List<string>
+				{
+					TransferDetailFieldName,
+					TransferDetailFieldTransferredBytes,
+					TransferDetailFieldTransferredFiles,
+					TransferDetailFieldStartDate,
+					TransferDetailFieldEndDate
+				};
+
+		/// <summary>
+		/// Gets the list of transfer data source RDO custom field names.
+		/// </summary>
+		/// <value>
+		/// The field names.
+		/// </value>
+		protected static IReadOnlyList<string> TransferDataSourceFields =>
+			new List<string>
+				{
+					TransferDataSourceFieldName,
+					TransferDataSourceFieldNumber,
+					TransferDataSourceFieldConnectionString
+				};
 
 		protected int TransferArtifactTypeId
 		{
@@ -78,6 +128,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			get;
 			set;
 		}
+
 		protected int TransferDetailWorkspaceObjectTypeId
 		{
 			get;
@@ -100,7 +151,8 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		public void OneTimeSetUp()
 		{
 			// Create the object types in reverse order.
-			_objectTypeUniqueSuffix++;
+			this.AssignTestSettings();
+			objectTypeUniqueSuffix++;
 			this.CreateTransferDetailObjectType();
 			this.CreateTransferDataSourceObjectType();
 			this.CreateTransferObjectType();
@@ -117,7 +169,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			settings.ArtifactTypeId = artifactTypeId;
 			settings.Billable = false;
 			settings.BulkLoadFileFieldDelimiter = ";";
-			settings.CaseArtifactId = TestSettings.WorkspaceId;
+			settings.CaseArtifactId = this.TestParameters.WorkspaceId;
 			settings.CopyFilesToDocumentRepository = false;
 			settings.DisableControlNumberCompatibilityMode = true;
 			settings.DisableExtractedTextEncodingCheck = true;
@@ -174,38 +226,42 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		}
 
 		protected int CreateAssociatedDetailInstance(string name)
-		{			
+		{
+			Dictionary<string, object> transferDetailFieldValues = new Dictionary<string, object>
+			{
+				{ TransferDetailFieldName, name },
+				{ TransferDetailFieldTransferredBytes, RandomHelper.NextDecimal(100000, 1000000) },
+				{ TransferDetailFieldTransferredFiles, RandomHelper.NextDecimal(1000, 500000) },
+				{ TransferDetailFieldStartDate, DateTime.Now },
+				{ TransferDetailFieldEndDate, DateTime.Now.AddDays(3) },
+			};
+
 			int artifactId = this.CreateObjectTypeInstance(
 				this.TransferDetailArtifactTypeId,
-				new Dictionary<string, object>
-				{
-					{ TransferDetailFieldName, name },
-					{ TransferDetailFieldTransferredBytes, TestHelper.NextDecimal(100000, 1000000) },
-					{ TransferDetailFieldTransferredFiles, TestHelper.NextDecimal(1000, 500000) },
-					{ TransferDetailFieldStartDate, DateTime.Now },
-					{ TransferDetailFieldEndDate, DateTime.Now.AddDays(3) },
-				});
-			this._detailArtifacts.Add(artifactId);
+				transferDetailFieldValues);
+			this.detailArtifacts.Add(artifactId);
 			return artifactId;
 		}
 
 		protected int CreateAssociatedDataSourceInstance(string name)
 		{
+			Dictionary<string, object> transferDataSourceFieldValues = new Dictionary<string, object>
+			{
+				{ TransferDataSourceFieldName, name },
+				{ TransferDataSourceFieldNumber, RandomHelper.NextDecimal(1, 100) },
+				{ TransferDataSourceFieldConnectionString, RandomHelper.NextString(50, 450) }
+			};
+
 			int artifactId = this.CreateObjectTypeInstance(
 				this.TransferDataSourceArtifactTypeId,
-				new Dictionary<string, object>
-				{
-					{ TransferDataSourceFieldName, name },
-					{ TransferDataSourceFieldNumber, TestHelper.NextDecimal(1, 100) },
-					{ TransferDataSourceFieldConnectionString, TestHelper.NextString(50, 450) }
-				});
-			this._dataSourceArtifacts.Add(artifactId);
+				transferDataSourceFieldValues);
+			this.dataSourceArtifacts.Add(artifactId);
 			return artifactId;
 		}
 
 		protected kCura.Relativity.DataReaderClient.ImportBulkArtifactJob CreateImportBulkArtifactJob()
 		{
-			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+			kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job =
 				importApi.NewObjectImportJob(this.TransferArtifactTypeId);
 			this.ConfigureJobEvents(job);
@@ -231,13 +287,15 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected void CreateTransferDetailObjectType()
 		{
 			// This is a 1-to-1 relationship.
-			string objectType = $"{TransferDetailArtifactTypeName}-{_objectTypeUniqueSuffix}";
+			string objectType = $"{TransferDetailArtifactTypeName}-{objectTypeUniqueSuffix}";
 			int transferDetailArtifactId = this.CreateObjectType(objectType);
 			this.TransferDetailWorkspaceObjectTypeId =
 				this.QueryWorkspaceObjectTypeDescriptorId(transferDetailArtifactId);
-			this.CreateDecimalField(this.TransferDetailWorkspaceObjectTypeId,
+			this.CreateDecimalField(
+				this.TransferDetailWorkspaceObjectTypeId,
 				TransferDetailFieldTransferredBytes);
-			this.CreateDecimalField(this.TransferDetailWorkspaceObjectTypeId,
+			this.CreateDecimalField(
+				this.TransferDetailWorkspaceObjectTypeId,
 				TransferDetailFieldTransferredFiles);
 			this.CreateDateField(this.TransferDetailWorkspaceObjectTypeId, TransferDetailFieldStartDate);
 			this.CreateDateField(this.TransferDetailWorkspaceObjectTypeId, TransferDetailFieldEndDate);
@@ -247,14 +305,17 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		protected void CreateTransferDataSourceObjectType()
 		{
 			// This is a many-to-many relationship.
-			string objectType = $"{TransferDataSourceArtifactTypeName}-{_objectTypeUniqueSuffix}";
+			string objectType = $"{TransferDataSourceArtifactTypeName}-{objectTypeUniqueSuffix}";
 			int transferDataSourceArtifactId = this.CreateObjectType(objectType);
 			this.TransferDataSourceWorkspaceObjectTypeId =
 				this.QueryWorkspaceObjectTypeDescriptorId(transferDataSourceArtifactId);
-			this.CreateDecimalField(this.TransferDataSourceWorkspaceObjectTypeId,
+			this.CreateDecimalField(
+				this.TransferDataSourceWorkspaceObjectTypeId,
 				TransferDataSourceFieldNumber);
-			this.CreateFixedLengthTextField(this.TransferDataSourceWorkspaceObjectTypeId,
-				TransferDataSourceFieldConnectionString, 500);
+			this.CreateFixedLengthTextField(
+				this.TransferDataSourceWorkspaceObjectTypeId,
+				TransferDataSourceFieldConnectionString,
+				500);
 			this.TransferDataSourceArtifactTypeId = this.QueryArtifactTypeId(objectType);
 		}
 
@@ -267,17 +328,19 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			base.OnTearDown();
 
 			// Note: this removes the artifacts from the supplied list.
-			this.DeleteObjects(this._dataSourceArtifacts);
-			this.DeleteObjects(this._detailArtifacts);
+			this.DeleteObjects(this.dataSourceArtifacts);
+			this.DeleteObjects(this.detailArtifacts);
 		}
 
 		private void CreateTransferObjectType()
 		{
-			string objectType = $"{TransferArtifactTypeName}-{_objectTypeUniqueSuffix}";
+			string objectType = $"{TransferArtifactTypeName}-{objectTypeUniqueSuffix}";
 			int transferArtifactId = this.CreateObjectType(objectType);
 			this.TransferWorkspaceObjectTypeId =
 				this.QueryWorkspaceObjectTypeDescriptorId(transferArtifactId);
-			this.CreateFixedLengthTextField(this.TransferWorkspaceObjectTypeId, TransferFieldDescription,
+			this.CreateFixedLengthTextField(
+				this.TransferWorkspaceObjectTypeId,
+				TransferFieldDescription,
 				500);
 			this.CreateSingleObjectField(
 				this.TransferWorkspaceObjectTypeId,

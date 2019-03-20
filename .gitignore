@@ -254,3 +254,4 @@ paket-files/
 /Source/Relativity.Import.Client.Samples.NUnit/oi/docs
 !buildtools/packages.config
 /buildtools/*
+/Source/Relativity.Import.Export.TestFramework/oi/unmanaged

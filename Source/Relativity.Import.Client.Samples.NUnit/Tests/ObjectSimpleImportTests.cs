@@ -4,17 +4,19 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Sample.NUnit.Tests
+namespace Relativity.Import.Client.Samples.NUnit.Tests
 {
 	using System;
 	using System.Collections.Generic;
 
 	using global::NUnit.Framework;
 
-	/// <summary>
-	/// Represents a test that imports simple objects and validates the results.
-	/// </summary>
-	[TestFixture]
+    using Relativity.Import.Export.TestFramework;
+
+    /// <summary>
+    /// Represents a test that imports simple objects and validates the results.
+    /// </summary>
+    [TestFixture]
 	public class ObjectSimpleImportTests : ObjectImportTestsBase
 	{
 		/// <summary>
@@ -25,14 +27,14 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 		/// </value>
 		private static IEnumerable<TestCaseData> TestCases =>
 			new List<TestCaseData>
-			{
-				new TestCaseData("Simple-Transfer-Small-1"),
-				new TestCaseData("Simple-Transfer-Small-2"),
-				new TestCaseData("Simple-Transfer-Medium-1"),
-				new TestCaseData("Simple-Transfer-Medium-2"),
-				new TestCaseData("Simple-Transfer-Large-1"),
-				new TestCaseData("Simple-Transfer-Large-2"),
-			};
+				{
+					new TestCaseData("Simple-Transfer-Small-1"),
+					new TestCaseData("Simple-Transfer-Small-2"),
+					new TestCaseData("Simple-Transfer-Medium-1"),
+					new TestCaseData("Simple-Transfer-Medium-2"),
+					new TestCaseData("Simple-Transfer-Large-1"),
+					new TestCaseData("Simple-Transfer-Large-2"),
+				};
 
 		[Test]
 		[TestCaseSource(nameof(TestCases))]
@@ -41,10 +43,10 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			// Arrange
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = this.CreateImportBulkArtifactJob();
 			int initialObjectCount = this.QueryRelativityObjectCount(this.TransferArtifactTypeId);
-			string description = TestHelper.NextString(50, 450);
-			decimal requestBytes = TestHelper.NextDecimal(10, 1000000);
+			string description = RandomHelper.NextString(50, 450);
+			decimal requestBytes = RandomHelper.NextDecimal(10, 1000000);
 			DateTime requestDate = DateTime.Now;
-			decimal requestFiles = TestHelper.NextDecimal(1000, 10000);
+			decimal requestFiles = RandomHelper.NextDecimal(1000, 10000);
 			this.DataSource.Rows.Add(
 				name,
 				description,
@@ -64,7 +66,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			Assert.That(this.PublishedJobReport.MetadataBytes, Is.Positive);
 			Assert.That(this.PublishedJobReport.StartTime, Is.GreaterThan(this.StartTime));
 			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(1));
-			
+
 			// Assert - the events match the expected values.
 			Assert.That(this.PublishedErrors.Count, Is.Zero);
 			Assert.That(this.PublishedFatalException, Is.Null);
@@ -77,30 +79,23 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			IList<Relativity.Services.Objects.DataContracts.RelativityObject> transfers =
 				this.QueryRelativityObjects(
 					this.TransferArtifactTypeId,
-					new[]
-					{
-						TransferFieldName,
-						TransferFieldDescription,
-						TransferFieldRequestBytes,
-						TransferFieldRequestFiles,
-						TransferFieldRequestDate
-					});
+					TransferFields);
 			Assert.That(transfers, Is.Not.Null);
 			Assert.That(transfers.Count, Is.EqualTo(expectedObjectCount));
 
 			// Assert - the imported object exists.
 			Relativity.Services.Objects.DataContracts.RelativityObject importedTransfer
-				= FindRelativityObject(transfers, TransferFieldName, name);
+				= SearchRelativityObject(transfers, TransferFieldName, name);
 			Assert.That(importedTransfer, Is.Not.Null);
 
 			// Assert - all standard field values matches the expected values.
-			string descriptionFieldValue = FindStringFieldValue(importedTransfer, TransferFieldDescription);
+			string descriptionFieldValue = GetStringFieldValue(importedTransfer, TransferFieldDescription);
 			Assert.That(descriptionFieldValue, Is.EqualTo(description));
-			decimal requestBytesFieldValue = FindDecimalFieldValue(importedTransfer, TransferFieldRequestBytes);
+			decimal requestBytesFieldValue = GetDecimalFieldValue(importedTransfer, TransferFieldRequestBytes);
 			Assert.That(requestBytesFieldValue, Is.EqualTo(requestBytes));
-			decimal requestFilesFieldValue = FindDecimalFieldValue(importedTransfer, TransferFieldRequestFiles);
+			decimal requestFilesFieldValue = GetDecimalFieldValue(importedTransfer, TransferFieldRequestFiles);
 			Assert.That(requestFilesFieldValue, Is.EqualTo(requestFiles));
-			DateTime requestDateFieldValue = FindDateFieldValue(importedTransfer, TransferFieldRequestDate);
+			DateTime requestDateFieldValue = GetDateFieldValue(importedTransfer, TransferFieldRequestDate);
 			Assert.That(requestDateFieldValue, Is.EqualTo(requestDate).Within(5).Seconds);
 		}
 	}

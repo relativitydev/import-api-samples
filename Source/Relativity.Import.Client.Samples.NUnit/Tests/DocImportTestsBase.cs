@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Sample.NUnit.Tests
+namespace Relativity.Import.Client.Samples.NUnit.Tests
 {
 	using System;
 	using System.Collections.Generic;
@@ -13,16 +13,18 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-	/// <summary>
-	/// Represents an abstract test class object that imports native documents and validates the results.
-	/// </summary>
-	public abstract class DocImportTestsBase : ImportTestsBase
+    using Relativity.Import.Export.TestFramework;
+
+    /// <summary>
+    /// Represents an abstract test class object that imports native documents and validates the results.
+    /// </summary>
+    public abstract class DocImportTestsBase : ImportTestsBase
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DocImportTestsBase"/> class.
 		/// </summary>
 		protected DocImportTestsBase()
-			: base(AssemblySetup.Logger)
+			: base(IntegrationTestHelper.Logger)
 		{
 			// Assume that AssemblySetup has already setup the singleton.
 		}
@@ -66,7 +68,7 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			StringBuilder sb = new StringBuilder();
 			for (var i = 0; i < maxDepth; i++)
 			{
-				string folderName = $"\\{Guid.NewGuid()}-{TestHelper.NextString(20, TestSettings.MaxFolderLength - 36)}";
+				string folderName = $"\\{Guid.NewGuid()}-{RandomHelper.NextString(20, IntegrationTestParameters.MaxFolderLength - 36)}";
 				sb.Append(folderName);
 			}
 
@@ -79,31 +81,31 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			string folder,
 			string fileName)
 		{
-			string file = TestHelper.GetDocsResourceFilePath(fileName);
+			string file = ResourceFileHelper.GetDocsResourceFilePath(fileName);
 			DocImportRecord record = new DocImportRecord { ControlNumber = controlNumber, File = file, Folder = folder };
-			return this.ArrangeImportJob(new[] { record  });
+			return this.ArrangeImportJob(new[] { record });
 		}
 
 		protected kCura.Relativity.DataReaderClient.ImportBulkArtifactJob ArrangeImportJob(IEnumerable<DocImportRecord> records)
 		{
 			// Arrange
-			kCura.Relativity.ImportAPI.ImportAPI importApi = CreateImportApiObject();
+			kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
-            ConfigureJobSettings(
+			this.ConfigureJobSettings(
 				job,
 				this.ArtifactTypeId,
 				this.IdentifierFieldId,
-				FilePathFieldName,
-				ControlNumberFieldName,
-				FolderFieldName);
+				WellKnownFields.FilePath,
+				WellKnownFields.ControlNumber,
+				WellKnownFields.FolderName);
 			this.ConfigureJobEvents(job);
 
 			// Setup the data source.
 			this.DataSource.Columns.AddRange(new[]
 			{
-				new DataColumn(ControlNumberFieldName, typeof(string)),
-				new DataColumn(FilePathFieldName, typeof(string)),
-				new DataColumn(FolderFieldName, typeof(string))
+				new DataColumn(WellKnownFields.ControlNumber, typeof(string)),
+				new DataColumn(WellKnownFields.FilePath, typeof(string)),
+				new DataColumn(WellKnownFields.FolderName, typeof(string))
 			});
 
 			// Add the file to the data source.
@@ -209,27 +211,6 @@ namespace Relativity.Import.Client.Sample.NUnit.Tests
 			{
 				this.PublishedProgressRows.Add(row);
 			};
-		}
-	}
-
-	public class DocImportRecord
-	{
-		public string ControlNumber
-		{
-			get;
-			set;
-		}
-
-		public string Folder
-		{
-			get;
-			set;
-		}
-
-		public string File
-		{
-			get;
-			set;
 		}
 	}
 }
