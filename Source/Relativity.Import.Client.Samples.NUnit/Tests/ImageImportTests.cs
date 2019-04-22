@@ -12,30 +12,33 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
-    /// Represents a test that imports images and validates the results.
-    /// </summary>
-    [TestFixture]
+	/// Represents a test that imports images and validates the results.
+	/// </summary>
+	[TestFixture]
 	public class ImageImportTests : ImageImportTestsBase
 	{
-        [Test]
+		[Test]
+		[Category(TestCategories.ImportImage)]
+		[Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(AllSampleImageFileNames))]
 		public void ShouldImportTheImage(string fileName)
 		{
 			// Arrange
 			kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
 			kCura.Relativity.DataReaderClient.ImageImportBulkArtifactJob job = importApi.NewImageImportJob();
-            this.ConfigureJobSettings(job);
-            this.ConfigureJobEvents(job);
+			this.ConfigureJobSettings(job);
+			this.ConfigureJobEvents(job);
 			string file = ResourceFileHelper.GetImagesResourceFilePath(fileName);
-            this.DataSource.Columns.AddRange(new[]
-            {
+			this.DataSource.Columns.AddRange(new[]
+			{
 				new DataColumn(WellKnownFields.BatesNumber, typeof(string)),
-                new DataColumn(WellKnownFields.ControlNumber, typeof(string)),
-                new DataColumn(WellKnownFields.FileLocation, typeof(string))
-            });
+				new DataColumn(WellKnownFields.ControlNumber, typeof(string)),
+				new DataColumn(WellKnownFields.FileLocation, typeof(string)),
+			});
 
 			int initialDocumentCount = this.QueryRelativityObjectCount((int)kCura.Relativity.Client.ArtifactType.Document);
 			string batesNumber = GenerateBatesNumber();
@@ -63,8 +66,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			Assert.That(this.PublishedJobReport.StartTime, Is.GreaterThan(this.StartTime));
 			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(this.DataSource.Rows.Count));
 
-            // Assert - the events match the expected values.
-            Assert.That(this.PublishedErrors.Count, Is.Zero);
+			// Assert - the events match the expected values.
+			Assert.That(this.PublishedErrors.Count, Is.Zero);
 			Assert.That(this.PublishedFatalException, Is.Null);
 			Assert.That(this.PublishedMessages.Count, Is.Positive);
 			Assert.That(this.PublishedProcessProgress.Count, Is.Positive);

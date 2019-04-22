@@ -8,15 +8,17 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 {
 	using global::NUnit.Framework;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.TestFramework;
 
-    /// <summary>
-    /// Represents tests that fails to import documents and validates the results.
-    /// </summary>
-    [TestFixture]
+	/// <summary>
+	/// Represents tests that fails to import documents and validates the results.
+	/// </summary>
+	[TestFixture]
 	public class DocNegativeImportTests : DocImportTestsBase
 	{
 		[Test]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
 		public void ShouldNotImportWhenTheFolderExceedsTheMaxLength()
 		{
 			// Arrange

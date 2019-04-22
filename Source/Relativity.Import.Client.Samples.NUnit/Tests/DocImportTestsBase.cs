@@ -13,12 +13,12 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.TestFramework;
 
-    /// <summary>
-    /// Represents an abstract test class object that imports native documents and validates the results.
-    /// </summary>
-    public abstract class DocImportTestsBase : ImportTestsBase
+	/// <summary>
+	/// Represents an abstract test class object that imports native documents and validates the results.
+	/// </summary>
+	public abstract class DocImportTestsBase : ImportTestsBase
 	{
 		/// <summary>
 		/// Initializes a new instance of the <see cref="DocImportTestsBase"/> class.
@@ -40,16 +40,16 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		{
 		}
 
-        /// <summary>
-        /// Splits the folder path into one or more individual folders.
-        /// </summary>
-        /// <param name="folderPath">
-        /// The folder path.
-        /// </param>
-        /// <returns>
-        /// The list of folders.
-        /// </returns>
-        protected static IEnumerable<string> SplitFolderPath(string folderPath)
+		/// <summary>
+		/// Splits the folder path into one or more individual folders.
+		/// </summary>
+		/// <param name="folderPath">
+		/// The folder path.
+		/// </param>
+		/// <returns>
+		/// The list of folders.
+		/// </returns>
+		protected static IEnumerable<string> SplitFolderPath(string folderPath)
 		{
 			return folderPath.Split(new[] { '\\' }, StringSplitOptions.RemoveEmptyEntries);
 		}
@@ -105,7 +105,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			{
 				new DataColumn(WellKnownFields.ControlNumber, typeof(string)),
 				new DataColumn(WellKnownFields.FilePath, typeof(string)),
-				new DataColumn(WellKnownFields.FolderName, typeof(string))
+				new DataColumn(WellKnownFields.FolderName, typeof(string)),
 			});
 
 			// Add the file to the data source.

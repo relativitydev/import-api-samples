@@ -15,97 +15,98 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
+	using Relativity.Import.Export;
 	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
-    /// Represents an abstract base class object to provide common functionality and helper methods.
-    /// </summary>
-    public abstract class ImportTestsBase
+	/// Represents an abstract base class object to provide common functionality and helper methods.
+	/// </summary>
+	public abstract class ImportTestsBase
 	{
-        /// <summary>
-        /// The default bates prefix constant.
-        /// </summary>
-        protected const string BatesPrefix = "BATES";
+		/// <summary>
+		/// The default bates prefix constant.
+		/// </summary>
+		protected const string BatesPrefix = "BATES";
 
-        /// <summary>
+		/// <summary>
 		/// The sample PDF file name that's available for testing within the output directory.
 		/// </summary>
 		protected const string SampleDocPdfFileName = "EDRM-Sample1.pdf";
 
-        /// <summary>
-        /// The sample Word doc file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleDocWordFileName = "EDRM-Sample2.doc";
+		/// <summary>
+		/// The sample Word doc file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocWordFileName = "EDRM-Sample2.doc";
 
-        /// <summary>
-        /// The sample Excel file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleDocExcelFileName = "EDRM-Sample3.xlsx";
+		/// <summary>
+		/// The sample Excel file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocExcelFileName = "EDRM-Sample3.xlsx";
 
-        /// <summary>
-        /// The sample MSG file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleDocMsgFileName = "EDRM-Sample4.msg";
+		/// <summary>
+		/// The sample MSG file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocMsgFileName = "EDRM-Sample4.msg";
 
-        /// <summary>
-        /// The sample HTM file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleDocHtmFileName = "EDRM-Sample5.htm";
+		/// <summary>
+		/// The sample HTM file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocHtmFileName = "EDRM-Sample5.htm";
 
-        /// <summary>
-        /// The sample EMF file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleDocEmfFileName = "EDRM-Sample6.emf";
+		/// <summary>
+		/// The sample EMF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocEmfFileName = "EDRM-Sample6.emf";
 
-        /// <summary>
-        /// The sample PPT file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleDocPptFileName = "EDRM-Sample7.ppt";
+		/// <summary>
+		/// The sample PPT file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocPptFileName = "EDRM-Sample7.ppt";
 
-        /// <summary>
-        /// The sample PNG file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleDocPngFileName = "EDRM-Sample8.png";
+		/// <summary>
+		/// The sample PNG file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocPngFileName = "EDRM-Sample8.png";
 
-        /// <summary>
-        /// The sample TXT file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleDocTxtFileName = "EDRM-Sample9.txt";
+		/// <summary>
+		/// The sample TXT file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocTxtFileName = "EDRM-Sample9.txt";
 
-        /// <summary>
-        /// The sample WMF file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleDocWmfFileName = "EDRM-Sample10.wmf";
+		/// <summary>
+		/// The sample WMF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleDocWmfFileName = "EDRM-Sample10.wmf";
 
-        /// <summary>
-        /// The sample TIFF file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleImage1FileName = "EDRM-Sample1.tif";
+		/// <summary>
+		/// The sample TIFF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleImage1FileName = "EDRM-Sample1.tif";
 
-        /// <summary>
-        /// The sample TIFF file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleImage2FileName = "EDRM-Sample2.tif";
+		/// <summary>
+		/// The sample TIFF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleImage2FileName = "EDRM-Sample2.tif";
 
-        /// <summary>
-        /// The sample TIFF file name that's available for testing within the output directory.
-        /// </summary>
-        protected const string SampleImage3FileName = "EDRM-Sample3.tif";
+		/// <summary>
+		/// The sample TIFF file name that's available for testing within the output directory.
+		/// </summary>
+		protected const string SampleImage3FileName = "EDRM-Sample3.tif";
 
-        /// <summary>
-        /// The sample production image file name.
-        /// </summary>
-        protected const string SampleProductionImage1FileName = "EDRM-Sample-000001.tif";
+		/// <summary>
+		/// The sample production image file name.
+		/// </summary>
+		protected const string SampleProductionImage1FileName = "EDRM-Sample-000001.tif";
 
-        /// <summary>
-        /// The default data source table name constant.
-        /// </summary>
-        protected const string DefaultDataSourceTableName = "Input Data";
+		/// <summary>
+		/// The default data source table name constant.
+		/// </summary>
+		protected const string DefaultDataSourceTableName = "Input Data";
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImportTestsBase"/> class.
-        /// </summary>
-        protected ImportTestsBase()
+		/// <summary>
+		/// Initializes a new instance of the <see cref="ImportTestsBase"/> class.
+		/// </summary>
+		protected ImportTestsBase()
 			: this(IntegrationTestHelper.Logger)
 		{
 			// Assume that AssemblySetup has already setup the singleton.
@@ -119,10 +120,10 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// </param>
 		protected ImportTestsBase(Relativity.Logging.ILog log)
 		{
-            if (log == null)
-            {
-                throw new ArgumentNullException(nameof(log));
-            }
+			if (log == null)
+			{
+				throw new ArgumentNullException(nameof(log));
+			}
 
 			this.Logger = log;
 			Assert.That(this.Logger, Is.Not.Null);
@@ -146,7 +147,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 					SampleDocPptFileName,
 					SampleDocPngFileName,
 					SampleDocTxtFileName,
-					SampleDocWmfFileName
+					SampleDocWmfFileName,
 				};
 
 		/// <summary>
@@ -161,7 +162,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 					SampleImage1FileName,
 					SampleImage2FileName,
 					SampleImage3FileName,
-					SampleProductionImage1FileName
+					SampleProductionImage1FileName,
 				};
 
 		/// <summary>
@@ -171,57 +172,57 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// The unique identifier.
 		/// </value>
 		protected int ArtifactTypeId
-        {
-            get;
-            set;
-        }
+		{
+			get;
+			set;
+		}
 
-        /// <summary>
-        /// Gets or sets the identifier field unique identifier.
-        /// </summary>
-        /// <value>
-        /// The unique identifier.
-        /// </value>
-        protected int IdentifierFieldId
-        {
-            get;
-            set;
-        }
+		/// <summary>
+		/// Gets or sets the identifier field unique identifier.
+		/// </summary>
+		/// <value>
+		/// The unique identifier.
+		/// </value>
+		protected int IdentifierFieldId
+		{
+			get;
+			set;
+		}
 
-        /// <summary>
-        /// Gets or sets the identifier field name.
-        /// </summary>
-        /// <value>
-        /// The field name.
-        /// </value>
-        protected string IdentifierFieldName
-        {
-            get;
-            set;
-        }
+		/// <summary>
+		/// Gets or sets the identifier field name.
+		/// </summary>
+		/// <value>
+		/// The field name.
+		/// </value>
+		protected string IdentifierFieldName
+		{
+			get;
+			set;
+		}
 
-        /// <summary>
-        /// Gets the import data source.
-        /// </summary>
-        /// <value>
-        /// The <see cref="DataTable"/> instance.
-        /// </value>
-        protected DataTable DataSource
+		/// <summary>
+		/// Gets the import data source.
+		/// </summary>
+		/// <value>
+		/// The <see cref="DataTable"/> instance.
+		/// </value>
+		protected DataTable DataSource
 		{
 			get;
 			private set;
 		}
 
-        /// <summary>
-        /// Gets the Relativity logger.
-        /// </summary>
-        /// <value>
-        /// The <see cref="Relativity.Logging.ILog"/> value.
-        /// </value>
-        protected Relativity.Logging.ILog Logger
-        {
-	        get;
-        }
+		/// <summary>
+		/// Gets the Relativity logger.
+		/// </summary>
+		/// <value>
+		/// The <see cref="Relativity.Logging.ILog"/> value.
+		/// </value>
+		protected Relativity.Logging.ILog Logger
+		{
+			get;
+		}
 
 		/// <summary>
 		/// Gets the published errors.
@@ -338,10 +339,10 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			this.PublishedMessages = new List<string>();
 			this.PublishedProgressRows = new List<long>();
 			this.PublishedProcessProgress = new List<kCura.Relativity.DataReaderClient.FullStatus>();
-            this.ArtifactTypeId = this.QueryArtifactTypeId(WellKnownArtifactTypes.DocumentArtifactTypeName);
-            this.IdentifierFieldId = this.QueryIdentifierFieldId(WellKnownArtifactTypes.DocumentArtifactTypeName);
-            this.IdentifierFieldName = this.QueryIdentifierFieldName(WellKnownArtifactTypes.DocumentArtifactTypeName);
-            SetWinEddsConfigValue(false, "CreateFoldersInWebAPI", true);
+			this.ArtifactTypeId = this.QueryArtifactTypeId(WellKnownArtifactTypes.DocumentArtifactTypeName);
+			this.IdentifierFieldId = this.QueryIdentifierFieldId(WellKnownArtifactTypes.DocumentArtifactTypeName);
+			this.IdentifierFieldName = this.QueryIdentifierFieldName(WellKnownArtifactTypes.DocumentArtifactTypeName);
+			AppSettings.Instance.CreateFoldersInWebApi = true;
 			this.OnSetup();
 		}
 
@@ -349,7 +350,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		public void Teardown()
 		{
 			this.DataSource?.Dispose();
-			SetWinEddsConfigValue(false, "CreateFoldersInWebAPI", true);
+			AppSettings.Instance.CreateFoldersInWebApi = true;
 			this.OnTearDown();
 		}
 
@@ -551,23 +552,23 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		}
 
 		/// <summary>
-        /// Generates a unique production set name.
-        /// </summary>
-        /// <returns>
-        /// The name.
-        /// </returns>
-        protected static string GenerateProductionSetName()
-        {
-            return $"ProductionSet-{Guid.NewGuid()}";
-        }
+		/// Generates a unique production set name.
+		/// </summary>
+		/// <returns>
+		/// The name.
+		/// </returns>
+		protected static string GenerateProductionSetName()
+		{
+			return $"ProductionSet-{Guid.NewGuid()}";
+		}
 
-        /// <summary>
-        /// Generates a unique bates number with a BATES prefix.
-        /// </summary>
-        /// <returns>
-        /// The bates number.
-        /// </returns>
-        protected static string GenerateBatesNumber()
+		/// <summary>
+		/// Generates a unique bates number with a BATES prefix.
+		/// </summary>
+		/// <returns>
+		/// The bates number.
+		/// </returns>
+		protected static string GenerateBatesNumber()
 		{
 			return $"{BatesPrefix}-{Guid.NewGuid()}";
 		}
@@ -581,36 +582,6 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		protected static string GenerateControlNumber()
 		{
 			return $"REL-{Guid.NewGuid()}";
-		}
-
-		/// <summary>
-		/// Sets a WinEDDS-based configuration value.
-		/// </summary>
-		/// <param name="log">
-		/// Specify whether to log the configuration assignment.
-		/// </param>
-		/// <param name="key">
-		/// The configuration key name.
-		/// </param>
-		/// <param name="value">
-		/// The configuration value name.
-		/// </param>
-		protected static void SetWinEddsConfigValue(bool log, string key, object value)
-		{
-			System.Collections.IDictionary configDictionary = kCura.WinEDDS.Config.ConfigSettings;
-			if (configDictionary.Contains(key))
-			{
-				configDictionary[key] = value;
-			}
-			else
-			{
-				configDictionary.Add(key, value);
-			}
-
-			if (log)
-			{
-				System.Console.WriteLine($"{key}={value}");
-			}
 		}
 
 		/// <summary>
@@ -634,9 +605,9 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			string fieldValue)
 		{
 			return (from obj in objects
-			        from pair in obj.FieldValues
-			        where pair.Field.Name == fieldName && pair.Value.ToString() == fieldValue
-			        select obj).FirstOrDefault();
+					from pair in obj.FieldValues
+					where pair.Field.Name == fieldName && pair.Value.ToString() == fieldValue
+					select obj).FirstOrDefault();
 		}
 
 		/// <summary>
@@ -651,54 +622,54 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		}
 
 		protected void ConfigureDocumentJobSettings(kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job)
-        {
-            this.ConfigureJobSettings(
-                job,
+		{
+			this.ConfigureJobSettings(
+				job,
 				WellKnownArtifactTypes.DocumentArtifactTypeId,
 				WellKnownFields.ControlNumberId,
 				WellKnownFields.FilePath,
-                WellKnownFields.ControlNumber,
-                null);
-        }
+				WellKnownFields.ControlNumber,
+				null);
+		}
 
-        protected void ConfigureJobSettings(
-            kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job,
-            int artifactTypeId,
-            int identityFieldId,
-            string nativeFilePathSourceFieldName,
-            string identifierFieldName,
-            string folderFieldName)
-        {
-            kCura.Relativity.DataReaderClient.Settings settings = job.Settings;
-            settings.ArtifactTypeId = artifactTypeId;
-            settings.Billable = false;
-            settings.BulkLoadFileFieldDelimiter = ";";
-            settings.CaseArtifactId = this.TestParameters.WorkspaceId;
-            settings.CopyFilesToDocumentRepository = true;
-            settings.DisableControlNumberCompatibilityMode = true;
-            settings.DisableExtractedTextFileLocationValidation = false;
-            settings.DisableNativeLocationValidation = false;
-            settings.DisableNativeValidation = false;
-            settings.ExtractedTextEncoding = System.Text.Encoding.Unicode;
-            settings.ExtractedTextFieldContainsFilePath = false;
-            settings.FileSizeColumn = WellKnownFields.NativeFileSize;
-            settings.FileSizeMapped = true;
-            settings.FolderPathSourceFieldName = folderFieldName;
-            settings.IdentityFieldId = identityFieldId;
-            settings.LoadImportedFullTextFromServer = false;
-            settings.MaximumErrorCount = int.MaxValue - 1;
-            settings.MoveDocumentsInAppendOverlayMode = false;
-            settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.CopyFiles;
-            settings.NativeFilePathSourceFieldName = nativeFilePathSourceFieldName;
-            settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
-            settings.OIFileIdMapped = true;
-            settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
-            settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append;
-            settings.SelectedIdentifierFieldName = identifierFieldName;
-            settings.StartRecordNumber = 0;
-        }
+		protected void ConfigureJobSettings(
+			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job,
+			int artifactTypeId,
+			int identityFieldId,
+			string nativeFilePathSourceFieldName,
+			string identifierFieldName,
+			string folderFieldName)
+		{
+			kCura.Relativity.DataReaderClient.Settings settings = job.Settings;
+			settings.ArtifactTypeId = artifactTypeId;
+			settings.Billable = false;
+			settings.BulkLoadFileFieldDelimiter = ";";
+			settings.CaseArtifactId = this.TestParameters.WorkspaceId;
+			settings.CopyFilesToDocumentRepository = true;
+			settings.DisableControlNumberCompatibilityMode = true;
+			settings.DisableExtractedTextFileLocationValidation = false;
+			settings.DisableNativeLocationValidation = false;
+			settings.DisableNativeValidation = false;
+			settings.ExtractedTextEncoding = System.Text.Encoding.Unicode;
+			settings.ExtractedTextFieldContainsFilePath = false;
+			settings.FileSizeColumn = WellKnownFields.NativeFileSize;
+			settings.FileSizeMapped = true;
+			settings.FolderPathSourceFieldName = folderFieldName;
+			settings.IdentityFieldId = identityFieldId;
+			settings.LoadImportedFullTextFromServer = false;
+			settings.MaximumErrorCount = int.MaxValue - 1;
+			settings.MoveDocumentsInAppendOverlayMode = false;
+			settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.CopyFiles;
+			settings.NativeFilePathSourceFieldName = nativeFilePathSourceFieldName;
+			settings.OIFileIdColumnName = WellKnownFields.OutsideInFileId;
+			settings.OIFileIdMapped = true;
+			settings.OIFileTypeColumnName = WellKnownFields.OutsideInFileType;
+			settings.OverwriteMode = kCura.Relativity.DataReaderClient.OverwriteModeEnum.Append;
+			settings.SelectedIdentifierFieldName = identifierFieldName;
+			settings.StartRecordNumber = 0;
+		}
 
-        protected void CreateDateField(int workspaceObjectTypeId, string fieldName)
+		protected void CreateDateField(int workspaceObjectTypeId, string fieldName)
 		{
 			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
 			{
@@ -712,7 +683,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				Name = fieldName,
 				OpenToAssociations = false,
 				Width = "12",
-				Wrapping = true
+				Wrapping = true,
 			};
 
 			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
@@ -732,7 +703,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				Name = fieldName,
 				OpenToAssociations = false,
 				Width = "12",
-				Wrapping = true
+				Wrapping = true,
 			};
 
 			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
@@ -771,7 +742,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				OpenToAssociations = false,
 				Unicode = false,
 				Width = string.Empty,
-				Wrapping = false
+				Wrapping = false,
 			};
 
 			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
@@ -806,7 +777,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				Name = fieldName,
 				OpenToAssociations = false,
 				Width = "12",
-				Wrapping = false
+				Wrapping = false,
 			};
 
 			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
@@ -823,7 +794,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				IgnoreWarnings = true,
 				IsRequired = false,
 				Name = fieldName,
-				Width = "12"
+				Width = "12",
 			};
 
 			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
@@ -849,17 +820,17 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			return artifactId;
 		}
 
-        protected int CreateProduction(string productionName, string batesPrefix)
-        {
-            int artifactId = ProductionHelper.CreateProduction(this.TestParameters, productionName, batesPrefix, this.Logger);
-            this.Logger.LogInformation(
-	            "Successfully created production {ProductionName} - {ArtifactId}.",
-                productionName,
-	            artifactId);
-            return artifactId;
-        }
+		protected int CreateProduction(string productionName, string batesPrefix)
+		{
+			int artifactId = ProductionHelper.CreateProduction(this.TestParameters, productionName, batesPrefix, this.Logger);
+			this.Logger.LogInformation(
+				"Successfully created production {ProductionName} - {ArtifactId}.",
+				productionName,
+				artifactId);
+			return artifactId;
+		}
 
-        protected void DeleteObjects(IList<int> artifacts)
+		protected void DeleteObjects(IList<int> artifacts)
 		{
 			foreach (int artifactId in artifacts.ToList())
 			{
@@ -873,50 +844,50 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			RdoHelper.DeleteObject(this.TestParameters, artifactId);
 		}
 
-        /// <summary>
-        /// Imports a list of documents without copying native files.
-        /// </summary>
-        /// <param name="controlNumbers">
-        /// The list of control numbers to import.
-        /// </param>
-        /// <exception cref="InvalidOperationException">
-        /// The exception thrown when the import fails.
-        /// </exception>
-        protected void ImportDocuments(IEnumerable<string> controlNumbers)
-        {
-            kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
-            kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
-            this.ConfigureDocumentJobSettings(job);
-            job.Settings.CopyFilesToDocumentRepository = false;
-            job.Settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.DoNotImportNativeFiles;
-            job.Settings.NativeFilePathSourceFieldName = null;
-            var dt = new DataTable(DefaultDataSourceTableName);
-            dt.Columns.Add(this.IdentifierFieldName);
-            foreach (var controlNumber in controlNumbers)
-            {
-                DataRow dr = dt.NewRow();
-                dr[this.IdentifierFieldName] = controlNumber;
-                dt.Rows.Add(dr);
-            }
+		/// <summary>
+		/// Imports a list of documents without copying native files.
+		/// </summary>
+		/// <param name="controlNumbers">
+		/// The list of control numbers to import.
+		/// </param>
+		/// <exception cref="InvalidOperationException">
+		/// The exception thrown when the import fails.
+		/// </exception>
+		protected void ImportDocuments(IEnumerable<string> controlNumbers)
+		{
+			kCura.Relativity.ImportAPI.ImportAPI importApi = this.CreateImportApiObject();
+			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = importApi.NewNativeDocumentImportJob();
+			this.ConfigureDocumentJobSettings(job);
+			job.Settings.CopyFilesToDocumentRepository = false;
+			job.Settings.NativeFileCopyMode = kCura.Relativity.DataReaderClient.NativeFileCopyModeEnum.DoNotImportNativeFiles;
+			job.Settings.NativeFilePathSourceFieldName = null;
+			var dt = new DataTable(DefaultDataSourceTableName);
+			dt.Columns.Add(this.IdentifierFieldName);
+			foreach (var controlNumber in controlNumbers)
+			{
+				DataRow dr = dt.NewRow();
+				dr[this.IdentifierFieldName] = controlNumber;
+				dt.Rows.Add(dr);
+			}
 
-            job.SourceData.SourceData = dt.CreateDataReader();
-            job.OnFatalException += report => throw report.FatalException;
-            job.OnComplete += report =>
-            {
-                if (report.FatalException != null)
-                {
-                    throw report.FatalException;
-                }
+			job.SourceData.SourceData = dt.CreateDataReader();
+			job.OnFatalException += report => throw report.FatalException;
+			job.OnComplete += report =>
+			{
+				if (report.FatalException != null)
+				{
+					throw report.FatalException;
+				}
 
-                if (report.ErrorRowCount > 0)
-                {
-                    IEnumerable<string> errors = report.ErrorRows.Select(x => $"{x.Identifier} - {x.Message}");
-                    throw new InvalidOperationException(string.Join("\n", errors));
-                }
-            };
+				if (report.ErrorRowCount > 0)
+				{
+					IEnumerable<string> errors = report.ErrorRows.Select(x => $"{x.Identifier} - {x.Message}");
+					throw new InvalidOperationException(string.Join("\n", errors));
+				}
+			};
 
-            job.Execute();
-        }
+			job.Execute();
+		}
 
 		protected int QueryArtifactTypeId(string objectTypeName)
 		{
@@ -928,15 +899,15 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			return FieldHelper.QueryIdentifierFieldId(this.TestParameters, artifactTypeName);
 		}
 
-        protected string GetDocumentIdentifierFieldName()
-        {
-            return this.QueryIdentifierFieldName(WellKnownArtifactTypes.DocumentArtifactTypeName);
-        }
+		protected string GetDocumentIdentifierFieldName()
+		{
+			return this.QueryIdentifierFieldName(WellKnownArtifactTypes.DocumentArtifactTypeName);
+		}
 
-        protected string QueryIdentifierFieldName(string artifactTypeName)
-        {
-            return FieldHelper.QueryIdentifierFieldName(this.TestParameters, artifactTypeName);
-        }
+		protected string QueryIdentifierFieldName(string artifactTypeName)
+		{
+			return FieldHelper.QueryIdentifierFieldName(this.TestParameters, artifactTypeName);
+		}
 
 		/// <summary>
 		/// Queries for the list of file information associated with the specified imported image.
@@ -951,21 +922,21 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// The <see cref="kCura.WinEDDS.Service.Export.ISearchManager"/> service is not officially supported and should NEVER be used in production code.
 		/// </remarks>
 		protected IEnumerable<FileDto> QueryImageFileInfo(int artifactId)
-        {
+		{
 			using (kCura.WinEDDS.Service.Export.ISearchManager searchManager = this.CreateExportSearchManager())
 			{
 				var ds = searchManager.RetrieveImagesForDocuments(
 					this.TestParameters.WorkspaceId,
 					new[] { artifactId });
-		        if (ds == null || ds.Tables.Count == 0)
-		        {
-			        return new List<FileDto>();
-		        }
+				if (ds == null || ds.Tables.Count == 0)
+				{
+					return new List<FileDto>();
+				}
 
-		        DataTable table = ds.Tables[0];
+				DataTable table = ds.Tables[0];
 				return table.Rows.Cast<DataRow>().Select(x => new FileDto(x));
-	        }
-        }
+			}
+		}
 
 		/// <summary>
 		/// Queries for the file information associated with the specified native document.
@@ -1009,12 +980,12 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		/// The tuple.
 		/// </returns>
 		protected Tuple<string, string> QueryProductionBatesNumbers(int productionId)
-        {
-            var production = ProductionHelper.QueryProduction(this.TestParameters, productionId);
-            Tuple<string, string> batesNumbers =
-                new Tuple<string, string>(production.Details.FirstBatesValue, production.Details.LastBatesValue);
-            return batesNumbers;
-        }
+		{
+			var production = ProductionHelper.QueryProduction(this.TestParameters, productionId);
+			Tuple<string, string> batesNumbers =
+				new Tuple<string, string>(production.Details.FirstBatesValue, production.Details.LastBatesValue);
+			return batesNumbers;
+		}
 
 		/// <summary>
 		/// Queries for the total number of objects for the specified RDO type.
@@ -1042,7 +1013,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				new string[]
 					{
 						WellKnownFields.ArtifactId, WellKnownFields.ControlNumber, WellKnownFields.HasImages,
-						WellKnownFields.HasNative, WellKnownFields.BatesNumber, WellKnownFields.RelativityImageCount
+						WellKnownFields.HasNative, WellKnownFields.BatesNumber, WellKnownFields.RelativityImageCount,
 					});
 		}
 

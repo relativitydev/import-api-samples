@@ -12,12 +12,11 @@ namespace Relativity.Import.Export.TestFramework
 	using System.Data;
 	using System.Data.SqlClient;
 	using System.IO;
+	using System.Linq;
 	using System.Net;
 	using System.Reflection;
 
-	using kCura.WinEDDS.TApi;
-
-	using Relativity.Transfer;
+	using Newtonsoft.Json;
 
 	/// <summary>
 	/// Defines static methods to setup and teardown integration tests.
@@ -64,20 +63,22 @@ namespace Relativity.Import.Export.TestFramework
 
 			Console.WriteLine("Creating a test workspace...");
 			WorkspaceHelper.CreateTestWorkspace(parameters, Logger);
-			using (ITransferLog transferLog = new RelativityTransferLog(Logger, false))
+			kCura.Relativity.ImportAPI.ImportAPI iapi = new kCura.Relativity.ImportAPI.ImportAPI(
+				parameters.RelativityUserName,
+				parameters.RelativityPassword,
+				parameters.RelativityWebApiUrl.ToString());
+			IEnumerable<kCura.Relativity.ImportAPI.Data.Workspace> workspaces = iapi.Workspaces();
+			kCura.Relativity.ImportAPI.Data.Workspace workspace =
+				workspaces.FirstOrDefault(x => x.ArtifactID == parameters.WorkspaceId);
+			if (workspace == null)
 			{
-				IHttpCredential credential =
-					new BasicAuthenticationCredential(parameters.RelativityUserName, parameters.RelativityPassword);
-				RelativityConnectionInfo connectionInfo = new RelativityConnectionInfo(
-					parameters.RelativityUrl,
-					credential,
-					parameters.WorkspaceId);
-				WorkspaceService workspaceService = new WorkspaceService(connectionInfo, transferLog);
-				Workspace workspace = workspaceService.GetWorkspaceAsync().GetAwaiter().GetResult();
-				parameters.FileShareUncPath = workspace.DefaultFileShareUncPath;
-				Console.WriteLine($"Created {parameters.WorkspaceId} test workspace.");
-				return parameters;
+				throw new InvalidOperationException(
+					$"This operation cannot be performed because the workspace {parameters.WorkspaceId} that was just created doesn't exist.");
 			}
+
+			parameters.FileShareUncPath = workspace.DocumentPath;
+			Console.WriteLine($"Created {parameters.WorkspaceId} test workspace.");
+			return parameters;
 		}
 
 		/// <summary>
@@ -111,7 +112,7 @@ namespace Relativity.Import.Export.TestFramework
 						IntegratedSecurity = false,
 						UserID = parameters.SqlAdminUserName,
 						Password = parameters.SqlAdminPassword,
-						InitialCatalog = string.Empty
+						InitialCatalog = string.Empty,
 					};
 
 					SqlConnection.ClearAllPools();
@@ -148,33 +149,87 @@ END";
 		private static IntegrationTestParameters GetIntegrationTestParameters()
 		{
 			Console.WriteLine("Retrieving and dumping all integration test parameters...");
+			bool decryptParameters = false;
 			IntegrationTestParameters parameters = new IntegrationTestParameters();
+			string testEnvironment = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_ENV");
+			string jsonFile = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_JSON_FILE");
+			if (!string.IsNullOrWhiteSpace(testEnvironment))
+			{
+				string resourceFile;
+				switch (testEnvironment.ToUpperInvariant())
+				{
+					case "HYPERV":
+						resourceFile = "test-parameters-hyperv.json";
+						break;
+
+					case "E2E":
+						resourceFile = "test-parameters-e2e.json";
+						break;
+
+					default:
+						throw new InvalidOperationException($"The test environment '{testEnvironment}' is not recognized or supported.");
+				}
+
+				using (Stream stream = ResourceFileHelper.ExtractToStream(
+					Assembly.GetExecutingAssembly(),
+					$"Relativity.Import.Export.TestFramework.Resources.{resourceFile}"))
+				{
+					StreamReader reader = new StreamReader(stream);
+					JsonSerializer serializer = new JsonSerializer();
+					parameters = serializer.Deserialize<IntegrationTestParameters>(new JsonTextReader(reader));
+					decryptParameters = true;
+				}
+			}
+			else if (!string.IsNullOrWhiteSpace(jsonFile))
+			{
+				parameters = JsonConvert.DeserializeObject<IntegrationTestParameters>(File.ReadAllText(jsonFile));
+				decryptParameters = true;
+			}
+			else
+			{
+				foreach (var prop in parameters.GetType().GetProperties())
+				{
+					IntegrationTestParameterAttribute attribute =
+						prop.GetCustomAttribute<IntegrationTestParameterAttribute>();
+					if (attribute == null || !attribute.IsMapped)
+					{
+						continue;
+					}
+
+					string value = GetConfigurationStringValue(prop.Name);
+					if (prop.PropertyType == typeof(string))
+					{
+						prop.SetValue(parameters, value);
+					}
+					else if (prop.PropertyType == typeof(bool))
+					{
+						prop.SetValue(parameters, bool.Parse(value));
+					}
+					else if (prop.PropertyType == typeof(Uri))
+					{
+						prop.SetValue(parameters, new Uri(value));
+					}
+					else
+					{
+						string message =
+							$"The integration test parameter '{prop.Name}' of type '{prop.PropertyType}' isn't supported by the integration test helper.";
+						throw new ConfigurationErrorsException(message);
+					}
+				}
+			}
+
+			if (decryptParameters)
+			{
+				DecryptTestParameters(parameters);
+			}
+
 			foreach (var prop in parameters.GetType().GetProperties())
 			{
-				IntegrationTestParameterAttribute attribute = prop.GetCustomAttribute<IntegrationTestParameterAttribute>();
+				IntegrationTestParameterAttribute attribute =
+					prop.GetCustomAttribute<IntegrationTestParameterAttribute>();
 				if (attribute == null || !attribute.IsMapped)
 				{
 					continue;
-				}
-
-				string value = GetConfigurationStringValue(prop.Name);
-				if (prop.PropertyType == typeof(string))
-				{
-					prop.SetValue(parameters, value);
-				}
-				else if (prop.PropertyType == typeof(bool))
-				{
-					prop.SetValue(parameters, bool.Parse(value));
-				}
-				else if (prop.PropertyType == typeof(Uri))
-				{
-					prop.SetValue(parameters, new Uri(value));
-				}
-				else
-				{
-					string message =
-						$"The integration test parameter '{prop.Name}' of type '{prop.PropertyType}' isn't supported by the integration test helper.";
-					throw new ConfigurationErrorsException(message);
 				}
 
 				if (attribute.IsSecret)
@@ -191,9 +246,49 @@ END";
 			return parameters;
 		}
 
+		private static void DecryptTestParameters(IntegrationTestParameters parameters)
+		{
+			if (!string.IsNullOrWhiteSpace(parameters.RelativityPassword))
+			{
+				parameters.RelativityPassword = CryptoHelper.Decrypt(parameters.RelativityPassword);
+			}
+
+			if (!string.IsNullOrWhiteSpace(parameters.RelativityUserName))
+			{
+				parameters.RelativityUserName = CryptoHelper.Decrypt(parameters.RelativityUserName);
+			}
+
+			if (!string.IsNullOrWhiteSpace(parameters.SqlAdminPassword))
+			{
+				parameters.SqlAdminPassword = CryptoHelper.Decrypt(parameters.SqlAdminPassword);
+			}
+
+			if (!string.IsNullOrWhiteSpace(parameters.SqlAdminUserName))
+			{
+				parameters.SqlAdminUserName = CryptoHelper.Decrypt(parameters.SqlAdminUserName);
+			}
+		}
+
 		private static string GetConfigurationStringValue(string key)
 		{
 			string envVariable = $"IAPI_INTEGRATION_{key.ToUpperInvariant()}";
+			string value = GetEnvironmentVariable(envVariable);
+			if (!string.IsNullOrWhiteSpace(value))
+			{
+				return value;
+			}
+
+			value = System.Configuration.ConfigurationManager.AppSettings.Get(key);
+			if (!string.IsNullOrEmpty(value))
+			{
+				return value;
+			}
+
+			throw new InvalidOperationException($"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
+		}
+
+		private static string GetEnvironmentVariable(string envVariable)
+		{
 			if (EnvironmentVariablesEnabled)
 			{
 				// Note: these targets are intentionally ordered to favor process vars!
@@ -201,7 +296,7 @@ END";
 					                                                 {
 						                                                 EnvironmentVariableTarget.Process,
 						                                                 EnvironmentVariableTarget.User,
-						                                                 EnvironmentVariableTarget.Machine
+						                                                 EnvironmentVariableTarget.Machine,
 					                                                 };
 				foreach (EnvironmentVariableTarget target in targets)
 				{
@@ -213,13 +308,7 @@ END";
 				}
 			}
 
-			string value = System.Configuration.ConfigurationManager.AppSettings.Get(key);
-			if (!string.IsNullOrEmpty(value))
-			{
-				return value;
-			}
-
-			throw new InvalidOperationException($"The '{key}' app.config setting or '{envVariable}' environment variable is not specified.");
+			return string.Empty;
 		}
 
 		private static void SetupServerCertificateValidation(IntegrationTestParameters parameters)
@@ -238,7 +327,7 @@ END";
 				Application = "8A1A6418-29B3-4067-8C9E-51E296F959DE",
 				ConfigurationFileLocation = Path.Combine(ResourceFileHelper.GetBasePath(), "LogConfig.xml"),
 				System = "Import-API",
-				SubSystem = "Samples"
+				SubSystem = "Samples",
 			};
 
 			// Configure the optional SEQ sink to periodically send logs to the local SEQ server for improved debugging.

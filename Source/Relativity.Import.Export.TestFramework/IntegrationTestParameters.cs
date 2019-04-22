@@ -8,6 +8,8 @@ namespace Relativity.Import.Export.TestFramework
 {
 	using System;
 
+	using Newtonsoft.Json;
+
 	/// <summary>
 	/// Represents the parameters used by all integration tests.
 	/// </summary>
@@ -74,6 +76,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The full path.
 		/// </value>
+		[JsonProperty("FileShareUncPath")]
 		[IntegrationTestParameter(false)]
 		public string FileShareUncPath
 		{
@@ -87,6 +90,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The password.
 		/// </value>
+		[JsonProperty("RelativityPassword")]
 #if DEBUG
 		[IntegrationTestParameter(true, false)]
 #else
@@ -105,6 +109,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
+		[JsonProperty("RelativityRestUrl")]
 		[IntegrationTestParameter(true)]
 		public Uri RelativityRestUrl
 		{
@@ -118,6 +123,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
+		[JsonProperty("RelativityServicesUrl")]
 		[IntegrationTestParameter(true)]
 		public Uri RelativityServicesUrl
 		{
@@ -131,6 +137,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
+		[JsonProperty("RelativityUrl")]
 		[IntegrationTestParameter(true)]
 		public Uri RelativityUrl
 		{
@@ -144,6 +151,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The user name.
 		/// </value>
+		[JsonProperty("RelativityUserName")]
 		[IntegrationTestParameter(true)]
 		public string RelativityUserName
 		{
@@ -157,6 +165,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The <see cref="Uri"/> instance.
 		/// </value>
+		[JsonProperty("RelativityWebApiUrl")]
 		[IntegrationTestParameter(true)]
 		public Uri RelativityWebApiUrl
 		{
@@ -170,6 +179,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// <see langword="true" /> to enforce server certificate validation errors; otherwise, <see langword="false" />.
 		/// </value>
+		[JsonProperty("ServerCertificateValidation")]
 		[IntegrationTestParameter(true)]
 		public bool ServerCertificateValidation
 		{
@@ -183,6 +193,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The password.
 		/// </value>
+		[JsonProperty("SqlAdminPassword")]
 #if DEBUG
 		[IntegrationTestParameter(true, false)]
 #else
@@ -201,6 +212,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The user name.
 		/// </value>
+		[JsonProperty("SqlAdminUserName")]
 		[IntegrationTestParameter(true)]
 		public string SqlAdminUserName
 		{
@@ -214,6 +226,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// <see langword="true" /> to drop the workspace SQL database; otherwise, <see langword="false" />.
 		/// </value>
+		[JsonProperty("SqlDropWorkspaceDatabase")]
 		[IntegrationTestParameter(true)]
 		public bool SqlDropWorkspaceDatabase
 		{
@@ -227,6 +240,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The SQL instance name.
 		/// </value>
+		[JsonProperty("SqlInstanceName")]
 		[IntegrationTestParameter(true)]
 		public string SqlInstanceName
 		{
@@ -240,6 +254,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// <see langword="true" /> to skip the tests; otherwise, <see langword="false" />.
 		/// </value>
+		[JsonProperty("SkipAsperaModeTests")]
 		[IntegrationTestParameter(true)]
 		public bool SkipAsperaModeTests
 		{
@@ -253,6 +268,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// <see langword="true" /> to skip the tests; otherwise, <see langword="false" />.
 		/// </value>
+		[JsonProperty("SkipDirectModeTests")]
 		[IntegrationTestParameter(true)]
 		public bool SkipDirectModeTests
 		{
@@ -266,6 +282,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// <see langword="true" /> to skip the integration tests; otherwise, <see langword="false" />.
 		/// </value>
+		[JsonProperty("SkipIntegrationTests")]
 		[IntegrationTestParameter(true)]
 		public bool SkipIntegrationTests
 		{
@@ -279,6 +296,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The artifact identifier.
 		/// </value>
+		[JsonProperty("WorkspaceId")]
 		[IntegrationTestParameter(false)]
 		public int WorkspaceId
 		{
@@ -292,6 +310,7 @@ namespace Relativity.Import.Export.TestFramework
 		/// <value>
 		/// The template name.
 		/// </value>
+		[JsonProperty("WorkspaceTemplate")]
 		[IntegrationTestParameter(true)]
 		public string WorkspaceTemplate
 		{

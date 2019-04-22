@@ -11,12 +11,12 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.TestFramework;
 
-    /// <summary>
-    /// Represents tests that fails to import objects and validates the results.
-    /// </summary>
-    [TestFixture]
+	/// <summary>
+	/// Represents tests that fails to import objects and validates the results.
+	/// </summary>
+	[TestFixture]
 	public class ObjectNegativeImportTests : ObjectImportTestsBase
 	{
 		/// <summary>
@@ -28,10 +28,12 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		private static IEnumerable<TestCaseData> TestCases =>
 			new List<TestCaseData>
 				{
-					new TestCaseData("Negative-Transfer-1", "Negative-Detail-1", "Negative-DataSourceName-1")
+					new TestCaseData("Negative-Transfer-1", "Negative-Detail-1", "Negative-DataSourceName-1"),
 				};
 
 		[Test]
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldNotImportDuplicateSingleObjectFields(
 			string name,
@@ -78,6 +80,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		}
 
 		[Test]
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldNotImportDuplicateMultiObjectFields(
 			string name,

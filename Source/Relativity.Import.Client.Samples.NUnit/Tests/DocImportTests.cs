@@ -12,12 +12,13 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.Services;
+	using Relativity.Import.Export.TestFramework;
 
 	/// <summary>
-    /// Represents a test that imports native documents and validates the results.
-    /// </summary>
-    [TestFixture]
+	/// Represents a test that imports native documents and validates the results.
+	/// </summary>
+	[TestFixture]
 	public class DocImportTests : DocImportTestsBase
 	{
 		/// <summary>
@@ -41,10 +42,12 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 					new TestCaseData(SampleDocPptFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3"),
 					new TestCaseData(SampleDocPngFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3"),
 					new TestCaseData(SampleDocTxtFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4"),
-					new TestCaseData(SampleDocWmfFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4")
+					new TestCaseData(SampleDocWmfFileName, "\\doc-import-root1\\doc-import-root2\\doc-import-root3\\doc-import-root4"),
 				};
 
 		[Test]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldImportTheDoc(string fileName, string folderPath)
 		{
@@ -67,7 +70,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			{
 				new DataColumn(WellKnownFields.ControlNumber, typeof(string)),
 				new DataColumn(WellKnownFields.FilePath, typeof(string)),
-				new DataColumn(WellKnownFields.FolderName, typeof(string))
+				new DataColumn(WellKnownFields.FolderName, typeof(string)),
 			});
 
 			// Add the file to the data source.

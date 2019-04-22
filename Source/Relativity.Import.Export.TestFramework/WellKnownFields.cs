@@ -72,7 +72,7 @@ namespace Relativity.Import.Export.TestFramework
 		public const string OutsideInFileType = "OutsideInFileType";
 
 		/// <summary>
-		/// The relativity image count
+		/// The relativity image count.
 		/// </summary>
 		public const string RelativityImageCount = "relativity image count";
 	}

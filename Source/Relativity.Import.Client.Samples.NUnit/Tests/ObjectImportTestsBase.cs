@@ -12,12 +12,12 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.TestFramework;
 
-    /// <summary>
-    /// Represents an abstract test class object that imports objects and validates the results.
-    /// </summary>
-    public abstract class ObjectImportTestsBase : ImportTestsBase
+	/// <summary>
+	/// Represents an abstract test class object that imports objects and validates the results.
+	/// </summary>
+	public abstract class ObjectImportTestsBase : ImportTestsBase
 	{
 		// The custom object type under test.
 		protected const string TransferArtifactTypeName = "Transfer";
@@ -72,7 +72,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 					TransferFieldRequestFiles,
 					TransferFieldRequestDate,
 					TransferFieldDetailId,
-					TransferFieldDataSourceId
+					TransferFieldDataSourceId,
 				};
 
 		/// <summary>
@@ -88,7 +88,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 					TransferDetailFieldTransferredBytes,
 					TransferDetailFieldTransferredFiles,
 					TransferDetailFieldStartDate,
-					TransferDetailFieldEndDate
+					TransferDetailFieldEndDate,
 				};
 
 		/// <summary>
@@ -102,7 +102,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				{
 					TransferDataSourceFieldName,
 					TransferDataSourceFieldNumber,
-					TransferDataSourceFieldConnectionString
+					TransferDataSourceFieldConnectionString,
 				};
 
 		protected int TransferArtifactTypeId
@@ -249,7 +249,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			{
 				{ TransferDataSourceFieldName, name },
 				{ TransferDataSourceFieldNumber, RandomHelper.NextDecimal(1, 100) },
-				{ TransferDataSourceFieldConnectionString, RandomHelper.NextString(50, 450) }
+				{ TransferDataSourceFieldConnectionString, RandomHelper.NextString(50, 450) },
 			};
 
 			int artifactId = this.CreateObjectTypeInstance(
@@ -278,7 +278,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				new DataColumn(TransferFieldRequestFiles, typeof(decimal)),
 				new DataColumn(TransferFieldRequestDate, typeof(DateTime)),
 				new DataColumn(TransferFieldDetailId, typeof(string)),
-				new DataColumn(TransferFieldDataSourceId, typeof(string))
+				new DataColumn(TransferFieldDataSourceId, typeof(string)),
 			});
 
 			return job;

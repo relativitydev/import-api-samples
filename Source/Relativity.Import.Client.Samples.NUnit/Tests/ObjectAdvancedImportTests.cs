@@ -12,12 +12,12 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.TestFramework;
 
-    /// <summary>
-    /// Represents a test that imports advanced objects containing single/multi-object fields and validates the results.
-    /// </summary>
-    [TestFixture]
+	/// <summary>
+	/// Represents a test that imports advanced objects containing single/multi-object fields and validates the results.
+	/// </summary>
+	[TestFixture]
 	public class ObjectAdvancedImportTests : ObjectImportTestsBase
 	{
 		/// <summary>
@@ -34,10 +34,12 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 					new TestCaseData("Advanced-Transfer-Medium-1", "Advanced-Detail-3", "Advanced-DataSourceName-3", true),
 					new TestCaseData("Advanced-Transfer-Medium-2", "Advanced-Detail-4", "Advanced-DataSourceName-4", false),
 					new TestCaseData("Advanced-Transfer-Large-1", "Advanced-Detail-5", "Advanced-DataSourceName-5", true),
-					new TestCaseData("Advanced-Transfer-Large-2", "Advanced-Detail-6", "Advanced-DataSourceName-6", false)
+					new TestCaseData("Advanced-Transfer-Large-2", "Advanced-Detail-6", "Advanced-DataSourceName-6", false),
 				};
 
 		[Test]
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldImportTheObject(
 			string name,

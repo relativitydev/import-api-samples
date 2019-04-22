@@ -11,15 +11,16 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export;
+	using Relativity.Import.Export.TestFramework;
 
-    /// <summary>
-    /// Represents a test that imports native documents with folders and validates the results.
-    /// </summary>
-    /// <remarks>
-    /// Due to poor performance, disabling client-side implementation by default.
-    /// </remarks>
-    [TestFixture(false)]
+	/// <summary>
+	/// Represents a test that imports native documents with folders and validates the results.
+	/// </summary>
+	/// <remarks>
+	/// Due to poor performance, disabling client-side implementation by default.
+	/// </remarks>
+	[TestFixture(false)]
 	[TestFixture(true)]
 	public class DocImportFolderTests : DocImportTestsBase
 	{
@@ -40,6 +41,9 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		}
 
 		[Test]
+		[Category(TestCategories.Folder)]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
 		[TestCase("00-te/st")]
 		[TestCase("01-te:st")]
 		[TestCase("02-te?st")]
@@ -70,6 +74,9 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		}
 
 		[Test]
+		[Category(TestCategories.Folder)]
+		[Category(TestCategories.ImportDoc)]
+		[Category(TestCategories.Integration)]
 		[TestCase("\\case-root1")]
 		[TestCase("\\case-root1\\")]
 		[TestCase("\\case-root1\\case-root2")]
@@ -103,6 +110,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		}
 
 		[Test]
+		[Category(TestCategories.Integration)]
+		[Category(TestCategories.ImportDoc)]
 		[TestCase(10)]
 		[TestCase(25)]
 		[TestCase(50)]
@@ -114,7 +123,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			{
 				ControlNumber = GenerateControlNumber(),
 				File = ResourceFileHelper.GetDocsResourceFilePath(fileName),
-				Folder = folderPath
+				Folder = folderPath,
 			}).ToList();
 			kCura.Relativity.DataReaderClient.ImportBulkArtifactJob job = this.ArrangeImportJob(records);
 
@@ -132,7 +141,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		protected override void OnSetup()
 		{
 			base.OnSetup();
-			SetWinEddsConfigValue(true, "CreateFoldersInWebAPI", this.serverSideFolders);
+			AppSettings.Instance.CreateFoldersInWebApi = this.serverSideFolders;
 		}
 	}
 }

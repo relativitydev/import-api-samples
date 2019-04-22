@@ -11,12 +11,12 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-    using Relativity.Import.Export.TestFramework;
+	using Relativity.Import.Export.TestFramework;
 
-    /// <summary>
-    /// Represents a test that imports simple objects and validates the results.
-    /// </summary>
-    [TestFixture]
+	/// <summary>
+	/// Represents a test that imports simple objects and validates the results.
+	/// </summary>
+	[TestFixture]
 	public class ObjectSimpleImportTests : ObjectImportTestsBase
 	{
 		/// <summary>
@@ -37,6 +37,8 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 				};
 
 		[Test]
+		[Category(TestCategories.ImportObject)]
+		[Category(TestCategories.Integration)]
 		[TestCaseSource(nameof(TestCases))]
 		public void ShouldImportTheObject(string name)
 		{

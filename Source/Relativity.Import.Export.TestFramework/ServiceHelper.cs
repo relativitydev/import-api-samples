@@ -51,7 +51,7 @@ namespace Relativity.Import.Export.TestFramework
 				                                                credentials)
 				                                                {
 					                                                ProtocolVersion = Relativity.Services.Pipeline
-						                                                .WireProtocolVersion.V2
+						                                                .WireProtocolVersion.V2,
 				                                                };
 			Relativity.Services.ServiceProxy.ServiceFactory serviceFactory =
 				new Relativity.Services.ServiceProxy.ServiceFactory(serviceFactorySettings);

@@ -33,7 +33,12 @@ namespace Relativity.Import.Export.TestFramework
 			this.Identifier = row["Identifier"] as string;
 			this.InRepository = (bool)row["InRepository"];
 			this.Path = row["Location"] as string;
-			this.Size = kCura.Utility.NullableTypesHelper.DBNullConvertToNullable<long>(row["Size"]);
+			this.Size = null;
+			object sizeValue = row["Size"];
+			if (sizeValue != DBNull.Value)
+			{
+				this.Size = (long)sizeValue;
+			}
 		}
 
 		/// <summary>
