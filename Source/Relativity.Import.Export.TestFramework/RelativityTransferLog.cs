@@ -7,7 +7,7 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.TestFramework
+namespace Relativity.DataExchange.TestFramework
 {
 	using System;
 

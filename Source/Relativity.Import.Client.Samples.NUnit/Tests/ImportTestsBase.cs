@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Samples.NUnit.Tests
+namespace Relativity.DataExchange.Samples.NUnit.Tests
 {
 	using System;
 	using System.Collections;
@@ -15,8 +15,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents an abstract base class object to provide common functionality and helper methods.
@@ -342,7 +341,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 			this.ArtifactTypeId = this.QueryArtifactTypeId(WellKnownArtifactTypes.DocumentArtifactTypeName);
 			this.IdentifierFieldId = this.QueryIdentifierFieldId(WellKnownArtifactTypes.DocumentArtifactTypeName);
 			this.IdentifierFieldName = this.QueryIdentifierFieldName(WellKnownArtifactTypes.DocumentArtifactTypeName);
-			AppSettings.Instance.CreateFoldersInWebApi = true;
+			Relativity.DataExchange.AppSettings.Instance.CreateFoldersInWebApi = true;
 			this.OnSetup();
 		}
 
@@ -350,7 +349,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		public void Teardown()
 		{
 			this.DataSource?.Dispose();
-			AppSettings.Instance.CreateFoldersInWebApi = true;
+			Relativity.DataExchange.AppSettings.Instance.CreateFoldersInWebApi = true;
 			this.OnTearDown();
 		}
 

@@ -4,9 +4,9 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Samples.NUnit
+namespace Relativity.DataExchange.Samples.NUnit
 {
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.TestFramework;
 
 	using global::NUnit.Framework;
 

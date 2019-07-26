@@ -4,13 +4,13 @@
 // </copyright>
 // -----------------------------------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.TestFramework
+namespace Relativity.DataExchange.TestFramework
 {
 	using System.Collections.Generic;
 	using System.Data;
 	using System.Globalization;
 
-	using Relativity.Import.Export.Services;
+	using Relativity.DataExchange.Service;
 
 	public class QueryFieldFactory
 	{

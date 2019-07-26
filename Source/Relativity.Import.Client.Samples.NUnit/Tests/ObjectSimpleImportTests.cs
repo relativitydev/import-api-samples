@@ -4,14 +4,14 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Samples.NUnit.Tests
+namespace Relativity.DataExchange.Samples.NUnit.Tests
 {
 	using System;
 	using System.Collections.Generic;
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents a test that imports simple objects and validates the results.

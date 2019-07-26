@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Samples.NUnit.Tests
+namespace Relativity.DataExchange.Samples.NUnit.Tests
 {
 	using System;
 	using System.Collections.Generic;
@@ -12,7 +12,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents an abstract test class object that imports objects and validates the results.

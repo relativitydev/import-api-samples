@@ -4,14 +4,14 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Samples.NUnit.Tests
+namespace Relativity.DataExchange.Samples.NUnit.Tests
 {
 	using System;
 	using System.Text;
 
 	using kCura.EDDS.WebAPI.BulkImportManagerBase;
 
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents an abstract test class object that imports images and validates the results.

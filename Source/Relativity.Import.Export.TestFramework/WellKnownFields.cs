@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.TestFramework
+namespace Relativity.DataExchange.TestFramework
 {
 	/// <summary>
 	/// Defines well-known field constants.

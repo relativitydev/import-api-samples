@@ -4,7 +4,7 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Export.TestFramework
+namespace Relativity.DataExchange.TestFramework
 {
 	using System;
 	using System.Collections.Generic;
@@ -172,7 +172,7 @@ END";
 
 				using (Stream stream = ResourceFileHelper.ExtractToStream(
 					Assembly.GetExecutingAssembly(),
-					$"Relativity.Import.Export.TestFramework.Resources.{resourceFile}"))
+					$"Relativity.DataExchange.TestFramework.Resources.{resourceFile}"))
 				{
 					StreamReader reader = new StreamReader(stream);
 					JsonSerializer serializer = new JsonSerializer();
@@ -322,7 +322,7 @@ END";
 
 		private static void SetupLogger(IntegrationTestParameters parameters)
 		{
-			Logging.LoggerOptions loggerOptions = new Logging.LoggerOptions
+			Relativity.Logging.LoggerOptions loggerOptions = new Relativity.Logging.LoggerOptions
 			{
 				Application = "8A1A6418-29B3-4067-8C9E-51E296F959DE",
 				ConfigurationFileLocation = Path.Combine(ResourceFileHelper.GetBasePath(), "LogConfig.xml"),
@@ -333,17 +333,17 @@ END";
 			// Configure the optional SEQ sink to periodically send logs to the local SEQ server for improved debugging.
 			// See https://getseq.net/ for more details.
 			loggerOptions.AddSinkParameter(
-				Logging.Configuration.SeqSinkConfig.ServerUrlSinkParameterKey,
+				Relativity.Logging.Configuration.SeqSinkConfig.ServerUrlSinkParameterKey,
 				new Uri("http://localhost:5341"));
 
 			// Configure the optional HTTP sink to periodically send logs to Relativity.
 			loggerOptions.AddSinkParameter(
-				Logging.Configuration.RelativityHttpSinkConfig.CredentialSinkParameterKey,
+				Relativity.Logging.Configuration.RelativityHttpSinkConfig.CredentialSinkParameterKey,
 				new NetworkCredential(parameters.RelativityUserName, parameters.RelativityPassword));
 			loggerOptions.AddSinkParameter(
-				Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
+				Relativity.Logging.Configuration.RelativityHttpSinkConfig.InstanceUrlSinkParameterKey,
 				parameters.RelativityUrl);
-			Logger = Logging.Factory.LogFactory.GetLogger(loggerOptions);
+			Logger = Relativity.Logging.Factory.LogFactory.GetLogger(loggerOptions);
 
 			// Until Import API supports passing a logger instance via constructor, the API
 			// internally uses the Logger singleton instance if defined.

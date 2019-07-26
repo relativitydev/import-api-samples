@@ -4,15 +4,14 @@
 // </copyright>
 // ----------------------------------------------------------------------------
 
-namespace Relativity.Import.Client.Samples.NUnit.Tests
+namespace Relativity.DataExchange.Samples.NUnit.Tests
 {
 	using System.Collections.Generic;
 	using System.Linq;
 
 	using global::NUnit.Framework;
 
-	using Relativity.Import.Export;
-	using Relativity.Import.Export.TestFramework;
+	using Relativity.DataExchange.TestFramework;
 
 	/// <summary>
 	/// Represents a test that imports native documents with folders and validates the results.
@@ -141,7 +140,7 @@ namespace Relativity.Import.Client.Samples.NUnit.Tests
 		protected override void OnSetup()
 		{
 			base.OnSetup();
-			AppSettings.Instance.CreateFoldersInWebApi = this.serverSideFolders;
+			Relativity.DataExchange.AppSettings.Instance.CreateFoldersInWebApi = this.serverSideFolders;
 		}
 	}
 }

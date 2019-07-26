@@ -1,14 +1,14 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Relativity.DataExchange.TestFramework")]
+[assembly: AssemblyTitle("Relativity.DataExchange.Samples.NUnit")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Relativity.DataExchange.TestFramework")]
+[assembly: AssemblyProduct("Relativity.DataExchange.Samples.NUnit")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("7ab76851-2156-4e2b-bdc2-b138254e6b70")]
+[assembly: Guid("D955E3D9-7105-4A60-B155-263CDCCF83CD")]
 
 // Version information for an assembly consists of the following four values:
 //
