@@ -263,7 +263,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Relativity.Import.Export.TestFramework\Relativity.Import.Export.TestFramework.csproj">
+    <ProjectReference Include="..\Relativity.DataExchange.TestFramework\Relativity.DataExchange.TestFramework.csproj">
       <Project>{7ab76851-2156-4e2b-bdc2-b138254e6b70}</Project>
       <Name>Relativity.Import.Export.TestFramework</Name>
     </ProjectReference>
