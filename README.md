@@ -60,7 +60,7 @@ git clone -b release-9.7-bluestem https://github.com/relativitydev/import-api-sa
 ```
 
 ## Step 4 - Open the solution
-Launch Visual Studio 2017 and open the Relativity.Import.Client.Samples.NUnit.sln solution file.
+Launch Visual Studio 2017 and open the Relativity.DataExchange.Samples.NUnit.sln solution file.
 
 ## Step 5 - Update app settings
 Double-click the app.config file and update the following underneath the `appSettings` element:
@@ -352,21 +352,21 @@ job.Execute();
 The section below outlines each of the import job test samples.
 
 ### Import documents
-* The [DocImportTests](Source/Relativity.Import.Client.Samples.NUnit/Tests/DocImportTests.cs "DocImportTests")  imports sample documents.
-* The [DocImportFolderTests](Source/Relativity.Import.Client.Samples.NUnit/Tests/DocImportFolderTests.cs "DocImportFolderTests") imports sample documents and also specifies folder paths. 
-* The [DocNegativeImportTests](Source/Relativity.Import.Client.Samples.NUnit/Tests/DocNegativeImportTests.cs "DocNegativeImportTests") imports documents that expect job-level import failures.
+* The [DocImportTests](Source/Relativity.DataExchange.Samples.NUnit/Tests/DocImportTests.cs "DocImportTests")  imports sample documents.
+* The [DocImportFolderTests](Source/Relativity.DataExchange.Samples.NUnit/Tests/DocImportFolderTests.cs "DocImportFolderTests") imports sample documents and also specifies folder paths. 
+* The [DocNegativeImportTests](Source/Relativity.DataExchange.Samples.NUnit/Tests/DocNegativeImportTests.cs "DocNegativeImportTests") imports documents that expect job-level import failures.
 
 ### Import objects
-* The [ObjectSimpleImportTests](Source/Relativity.Import.Client.Samples.NUnit/Tests/ObjectSimpleImportTests.cs "ObjectSimpleImportTests") imports a custom object with a single-object field.
-* The [ObjectAdvancedImportTests](Source/Relativity.Import.Client.Samples.NUnit/Tests/ObjectAdvancedImportTests.cs "ObjectAdvancedImportTests") imports a custom object with a multi-object field.
-* The [ObjectNegativeImportTests](Source/Relativity.Import.Client.Samples.NUnit/Tests/ObjectNegativeImportTests.cs "ObjectNegativeImportTests") imports single-object and multi-object fields that expect document-level and job-level import failures.
+* The [ObjectSimpleImportTests](Source/Relativity.DataExchange.Samples.NUnit/Tests/ObjectSimpleImportTests.cs "ObjectSimpleImportTests") imports a custom object with a single-object field.
+* The [ObjectAdvancedImportTests](Source/Relativity.DataExchange.Samples.NUnit/Tests/ObjectAdvancedImportTests.cs "ObjectAdvancedImportTests") imports a custom object with a multi-object field.
+* The [ObjectNegativeImportTests](Source/Relativity.DataExchange.Samples.NUnit/Tests/ObjectNegativeImportTests.cs "ObjectNegativeImportTests") imports single-object and multi-object fields that expect document-level and job-level import failures.
 
 **Note:** The tests create custom RDO types during the test setup.
 
 ### Import images
-* The [ImageImportTests](Source/Relativity.Import.Client.Samples.NUnit/Tests/ImageImportTests.cs "ImageImportTests") imports sample images.
+* The [ImageImportTests](Source/Relativity.DataExchange.Samples.NUnit/Tests/ImageImportTests.cs "ImageImportTests") imports sample images.
 
 ### Import productions
-* The [ProductionImportTests](Source/Relativity.Import.Client.Samples.NUnit/Tests/ProductionImportTests.cs "ProductionImportTests") imports sample documents, creates a production, and then validates the bates numbers.
+* The [ProductionImportTests](Source/Relativity.DataExchange.Samples.NUnit/Tests/ProductionImportTests.cs "ProductionImportTests") imports sample documents, creates a production, and then validates the bates numbers.
 
 **Note:** This test relies upon the [Productions NuGet package](https://www.nuget.org/packages/Relativity.Productions.Client/) to perform all required functionality.
