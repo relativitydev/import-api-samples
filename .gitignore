@@ -255,3 +255,6 @@ paket-files/
 !buildtools/packages.config
 /buildtools/*
 /Source/Relativity.Import.Export.TestFramework/oi/unmanaged
+
+# Outside In nuget package
+**/oi/
