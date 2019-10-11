@@ -250,8 +250,8 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
-/Source/Relativity.DataExchange.Samples.NUnit/oi/unmanaged
-/Source/Relativity.DataExchange.Samples.NUnit/oi/docs
 !buildtools/packages.config
 /buildtools/*
-/Source/Relativity.DataExchange.TestFramework/oi/unmanaged
+
+# Outside In nuget package
+**/oi/
