@@ -122,6 +122,9 @@
       <HintPath>..\packages\Relativity.Telemetry.Client.9.4.164\lib\net462\Relativity.Telemetry.MetricsCollection.Interface.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Relativity.Telemetry.Services.Interface, Version=2019.1.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.Services.Interface.2019.1.0\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Transfer.Client, Version=6.2.4.3, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Transfer.Client.6.2.4\lib\net462\Relativity.Transfer.Client.dll</HintPath>
     </Reference>
