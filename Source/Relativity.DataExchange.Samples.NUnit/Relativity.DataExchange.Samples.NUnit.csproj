@@ -41,16 +41,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="FaspManager, Version=3.7.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Transfer.Client.6.3.7\lib\net462\FaspManager.dll</HintPath>
+      <HintPath>..\packages\relativity.faspmanager.3.7.2.0\lib\net40\FaspManager.dll</HintPath>
     </Reference>
     <Reference Include="FizzWare.NBuilder, Version=1.0.0.0, Culture=neutral, PublicKeyToken=5651b03e12e42c12, processorArchitecture=MSIL">
       <HintPath>..\packages\NBuilder.6.0.0\lib\net40\FizzWare.NBuilder.dll</HintPath>
     </Reference>
     <Reference Include="FreeImageNET, Version=3.18.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.7.9\lib\net462\FreeImageNET.dll</HintPath>
+      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.7.14\lib\net462\FreeImageNET.dll</HintPath>
     </Reference>
-    <Reference Include="kCura.Relativity.Client, Version=11.0.162.34, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.Rsapi.11.0.162.34\lib\net462\kCura.Relativity.Client.dll</HintPath>
+    <Reference Include="kCura.Relativity.Client, Version=11.0.232.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Rsapi.11.0.232.1\lib\net462\kCura.Relativity.Client.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -66,11 +66,11 @@
       <HintPath>..\packages\Polly.5.3.1\lib\net45\Polly.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Relativity.DataExchange.Client.SDK, Version=1.7.9.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.7.9\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
+    <Reference Include="Relativity.DataExchange.Client.SDK, Version=1.7.14.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.DataExchange.Client.SDK.1.7.14\lib\net462\Relativity.DataExchange.Client.SDK.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Kepler, Version=1.0.1.627, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ObjectManager.11.0.162.34\lib\net462\Relativity.Kepler.dll</HintPath>
+      <HintPath>..\packages\Relativity.ObjectManager.11.0.232.1\lib\net462\Relativity.Kepler.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Logging, Version=2019.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Logging.2019.5.1\lib\net462\Relativity.Logging.dll</HintPath>
@@ -103,14 +103,14 @@
     <Reference Include="Relativity.Productions.Services.Interfaces, Version=11.0.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Productions.Client.11.0.7\lib\net462\Relativity.Productions.Services.Interfaces.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.DataContracts, Version=11.0.162.34, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ObjectManager.11.0.162.34\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+    <Reference Include="Relativity.Services.DataContracts, Version=11.0.232.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ObjectManager.11.0.232.1\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
     </Reference>
-    <Reference Include="Relativity.Services.Interfaces, Version=11.0.162.34, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ObjectManager.11.0.162.34\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+    <Reference Include="Relativity.Services.Interfaces, Version=11.0.232.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.ObjectManager.11.0.232.1\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=1.0.1.627, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Relativity.ObjectManager.11.0.162.34\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+      <HintPath>..\packages\Relativity.ObjectManager.11.0.232.1\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
     <Reference Include="Relativity.Telemetry.APM, Version=9.4.164.2, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.Client.9.4.164\lib\net462\Relativity.Telemetry.APM.dll</HintPath>
@@ -262,8 +262,8 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\NUnit.3.11.0\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.11.0\build\NUnit.props'))" />
     <Error Condition="!Exists('..\packages\Relativity.OutsideIn.2019.4.1\build\Relativity.OutsideIn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.OutsideIn.2019.4.1\build\Relativity.OutsideIn.targets'))" />
-    <Error Condition="!Exists('..\packages\Relativity.DataExchange.Client.SDK.1.7.9\build\Relativity.DataExchange.Client.SDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.DataExchange.Client.SDK.1.7.9\build\Relativity.DataExchange.Client.SDK.targets'))" />
+    <Error Condition="!Exists('..\packages\Relativity.DataExchange.Client.SDK.1.7.14\build\Relativity.DataExchange.Client.SDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.DataExchange.Client.SDK.1.7.14\build\Relativity.DataExchange.Client.SDK.targets'))" />
   </Target>
   <Import Project="..\packages\Relativity.OutsideIn.2019.4.1\build\Relativity.OutsideIn.targets" Condition="Exists('..\packages\Relativity.OutsideIn.2019.4.1\build\Relativity.OutsideIn.targets')" />
-  <Import Project="..\packages\Relativity.DataExchange.Client.SDK.1.7.9\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\packages\Relativity.DataExchange.Client.SDK.1.7.9\build\Relativity.DataExchange.Client.SDK.targets')" />
+  <Import Project="..\packages\Relativity.DataExchange.Client.SDK.1.7.14\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\packages\Relativity.DataExchange.Client.SDK.1.7.14\build\Relativity.DataExchange.Client.SDK.targets')" />
 </Project>
