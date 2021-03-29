@@ -61,9 +61,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 			Assert.That(this.PublishedJobReport.EndTime, Is.GreaterThan(this.PublishedJobReport.StartTime));
 			Assert.That(this.PublishedJobReport.ErrorRowCount, Is.Zero);
 
-			// Note: Importing images do NOT currently update FileBytes/MetadataBytes.
-			Assert.That(this.PublishedJobReport.FileBytes, Is.Zero);
-			Assert.That(this.PublishedJobReport.MetadataBytes, Is.Zero);
 			Assert.That(this.PublishedJobReport.StartTime, Is.GreaterThan(this.StartTime));
 			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(this.DataSource.Rows.Count));
 
