@@ -115,13 +115,15 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 			Assert.That(this.PublishedJobReport.EndTime, Is.GreaterThan(this.PublishedJobReport.StartTime));
 
 			// Assert - duplicate multi-object field currently yields a fatal error.
-			Assert.That(this.PublishedJobReport.ErrorRowCount, Is.EqualTo(1));
-			Assert.That(this.PublishedJobReport.FatalException, Is.Null);
+			const string expectedExceptionMessage = "Failed to create the associated multi-object artifact";
+			Assert.That(this.PublishedJobReport.FatalException, Is.Not.Null);
+			Assert.That(this.PublishedJobReport.FatalException.Message, Contains.Substring(expectedExceptionMessage));
+			Assert.That(this.PublishedJobReport.ErrorRowCount, Is.Zero);
 			Assert.That(this.PublishedJobReport.TotalRows, Is.EqualTo(1));
 
 			// Assert - the events match the expected values.
-			Assert.That(this.PublishedErrors.Count, Is.EqualTo(1));
-			Assert.That(this.PublishedFatalException, Is.Null);
+			Assert.That(this.PublishedErrors.Count, Is.Zero);
+			Assert.That(this.PublishedFatalException, Is.Not.Null);
 			Assert.That(this.PublishedMessages.Count, Is.Positive);
 			Assert.That(this.PublishedProcessProgress.Count, Is.Positive);
 			Assert.That(this.PublishedProgressRows.Count, Is.Positive);
