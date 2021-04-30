@@ -33,3 +33,6 @@ jobs:
         
       - name: Restore NuGet Packages
         run: nuget restore 'Source/Relativity.DataExchange.Samples.NUnit.sln'
+        
+      - name: Build samples
+        run: msbuild 'Source/Relativity.DataExchange.Samples.NUnit.sln' /p:Configuration=Release
