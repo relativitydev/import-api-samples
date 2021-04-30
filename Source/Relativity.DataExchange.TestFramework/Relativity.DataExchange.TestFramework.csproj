@@ -79,6 +79,9 @@
     <Reference Include="Relativity.Services.ServiceProxy, Version=2.14.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.12.1.171.20\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
     </Reference>
+    <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=3003.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.3003.1.0\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
+    </Reference>
     <Reference Include="Relativity.Telemetry.Services.Interface, Version=3000.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.Services.Interface.3000.0.1\lib\net462\Relativity.Telemetry.Services.Interface.dll</HintPath>
     </Reference>
