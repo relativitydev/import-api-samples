@@ -49,6 +49,9 @@
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="oi, Version=2020.7.0.20, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Relativity.OutsideIn.2020.7.0\lib\net40\oi.dll</HintPath>
+    </Reference>
     <Reference Include="Polly, Version=5.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Polly.5.7.0\lib\net45\Polly.dll</HintPath>
     </Reference>
@@ -60,6 +63,7 @@
     </Reference>
     <Reference Include="Relativity.Kepler, Version=2.9.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.12.1.171.20\lib\net462\Relativity.Kepler.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Relativity.Logging, Version=2019.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Logging.2019.5.1\lib\net462\Relativity.Logging.dll</HintPath>
@@ -72,12 +76,15 @@
     </Reference>
     <Reference Include="Relativity.Services.DataContracts, Version=13.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.12.1.171.20\lib\net462\Relativity.Services.DataContracts.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Relativity.Services.Interfaces, Version=13.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.12.1.171.20\lib\net462\Relativity.Services.Interfaces.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Relativity.Services.ServiceProxy, Version=2.9.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.ObjectManager.12.1.171.20\lib\net462\Relativity.Services.ServiceProxy.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Relativity.Telemetry.DataContracts.Shared, Version=3003.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Relativity.Telemetry.DataContracts.Shared.3003.1.0\lib\net462\Relativity.Telemetry.DataContracts.Shared.dll</HintPath>
@@ -147,16 +154,34 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="oi\unmanaged\cmmap000.bin" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="oi\unmanaged\oilink.exe" />
+    <Content Include="oi\unmanaged\oilink.jar" />
+    <Content Include="oi\unmanaged\sccca-R1.dll" />
+    <Content Include="oi\unmanaged\sccch-R1.dll" />
+    <Content Include="oi\unmanaged\sccda-R1.dll" />
+    <Content Include="oi\unmanaged\sccex-R1.dll" />
+    <Content Include="oi\unmanaged\sccfa-R1.dll" />
+    <Content Include="oi\unmanaged\sccfi-R1.dll" />
+    <Content Include="oi\unmanaged\sccfmt-R1.dll" />
+    <Content Include="oi\unmanaged\sccfnt-R1.dll" />
+    <Content Include="oi\unmanaged\sccfut-R1.dll" />
+    <Content Include="oi\unmanaged\sccind-R1.dll" />
+    <Content Include="oi\unmanaged\scclo-R1.dll" />
+    <Content Include="oi\unmanaged\sccut-R1.dll" />
+    <Content Include="oi\unmanaged\wvcore-R1.dll" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Relativity.OutsideIn.2020.7.0\build\Relativity.OutsideIn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.OutsideIn.2020.7.0\build\Relativity.OutsideIn.targets'))" />
     <Error Condition="!Exists('..\packages\Relativity.DataExchange.Client.SDK.1.13.16\build\Relativity.DataExchange.Client.SDK.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.DataExchange.Client.SDK.1.13.16\build\Relativity.DataExchange.Client.SDK.targets'))" />
+    <Error Condition="!Exists('..\packages\Relativity.OutsideIn.2020.7.0\build\Relativity.OutsideIn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Relativity.OutsideIn.2020.7.0\build\Relativity.OutsideIn.targets'))" />
   </Target>
-  <Import Project="..\packages\Relativity.OutsideIn.2020.7.0\build\Relativity.OutsideIn.targets" Condition="Exists('..\packages\Relativity.OutsideIn.2020.7.0\build\Relativity.OutsideIn.targets')" />
   <Import Project="..\packages\Relativity.DataExchange.Client.SDK.1.13.16\build\Relativity.DataExchange.Client.SDK.targets" Condition="Exists('..\packages\Relativity.DataExchange.Client.SDK.1.13.16\build\Relativity.DataExchange.Client.SDK.targets')" />
+  <Import Project="..\packages\Relativity.OutsideIn.2020.7.0\build\Relativity.OutsideIn.targets" Condition="Exists('..\packages\Relativity.OutsideIn.2020.7.0\build\Relativity.OutsideIn.targets')" />
 </Project>
