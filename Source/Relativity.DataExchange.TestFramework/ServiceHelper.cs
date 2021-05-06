@@ -8,7 +8,6 @@ namespace Relativity.DataExchange.TestFramework
 {
 	using System;
 	using System.Net;
-
 	using Relativity.Services.ServiceProxy;
 
 	/// <summary>
@@ -41,23 +40,21 @@ namespace Relativity.DataExchange.TestFramework
 				throw new ArgumentNullException(nameof(parameters));
 			}
 
-			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls
-			                                                                            | SecurityProtocolType.Tls11
-			                                                                            | SecurityProtocolType.Tls12;
-			Credentials credentials = new UsernamePasswordCredentials(parameters.RelativityUserName, parameters.RelativityPassword);
+			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls12;
+			Credentials credentials = new Relativity.Services.ServiceProxy.UsernamePasswordCredentials(parameters.RelativityUserName, parameters.RelativityPassword);
 			ServiceFactorySettings serviceFactorySettings = new ServiceFactorySettings(
-				                                                parameters.RelativityServicesUrl,
-				                                                parameters.RelativityRestUrl,
-				                                                credentials)
-				                                                {
-					                                                ProtocolVersion = Relativity.Services.Pipeline
-						                                                .WireProtocolVersion.V2,
-				                                                };
+				parameters.RelativityServicesUrl,
+				parameters.RelativityRestUrl,
+				credentials)
+			{
+				ProtocolVersion = Relativity.Services.Pipeline
+					.WireProtocolVersion.V2,
+			};
 			Relativity.Services.ServiceProxy.ServiceFactory serviceFactory =
 				new Relativity.Services.ServiceProxy.ServiceFactory(serviceFactorySettings);
 			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls
-			                                                                            | SecurityProtocolType.Tls11
-			                                                                            | SecurityProtocolType.Tls12;
+				| SecurityProtocolType.Tls11
+				| SecurityProtocolType.Tls12;
 			T proxy = serviceFactory.CreateProxy<T>();
 			return proxy;
 		}

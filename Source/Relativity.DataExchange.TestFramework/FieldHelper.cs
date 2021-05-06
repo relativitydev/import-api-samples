@@ -9,10 +9,8 @@ namespace Relativity.DataExchange.TestFramework
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-
 	using kCura.Relativity.Client;
 	using kCura.Relativity.Client.DTOs;
-
 	using Relativity.Services.Objects;
 	using Relativity.Services.Objects.DataContracts;
 
