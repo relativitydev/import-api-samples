@@ -288,9 +288,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 		{
 			// This is a 1-to-1 relationship.
 			string objectType = $"{TransferDetailArtifactTypeName}-{objectTypeUniqueSuffix}";
-			int transferDetailArtifactId = this.CreateObjectType(objectType);
-			this.TransferDetailWorkspaceObjectTypeId =
-				this.QueryWorkspaceObjectTypeDescriptorId(transferDetailArtifactId);
+			this.TransferDetailWorkspaceObjectTypeId = this.CreateObjectType(objectType);
 			this.CreateDecimalField(
 				this.TransferDetailWorkspaceObjectTypeId,
 				TransferDetailFieldTransferredBytes);
@@ -306,9 +304,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 		{
 			// This is a many-to-many relationship.
 			string objectType = $"{TransferDataSourceArtifactTypeName}-{objectTypeUniqueSuffix}";
-			int transferDataSourceArtifactId = this.CreateObjectType(objectType);
-			this.TransferDataSourceWorkspaceObjectTypeId =
-				this.QueryWorkspaceObjectTypeDescriptorId(transferDataSourceArtifactId);
+			this.TransferDataSourceWorkspaceObjectTypeId = this.CreateObjectType(objectType);
 			this.CreateDecimalField(
 				this.TransferDataSourceWorkspaceObjectTypeId,
 				TransferDataSourceFieldNumber);
@@ -335,9 +331,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 		private void CreateTransferObjectType()
 		{
 			string objectType = $"{TransferArtifactTypeName}-{objectTypeUniqueSuffix}";
-			int transferArtifactId = this.CreateObjectType(objectType);
-			this.TransferWorkspaceObjectTypeId =
-				this.QueryWorkspaceObjectTypeDescriptorId(transferArtifactId);
+			this.TransferWorkspaceObjectTypeId = this.CreateObjectType(objectType);
 			this.CreateFixedLengthTextField(
 				this.TransferWorkspaceObjectTypeId,
 				TransferFieldDescription,

@@ -1046,11 +1046,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 			return WorkspaceHelper.QueryWorkspaceFolders(this.TestParameters, this.Logger);
 		}
 
-		protected int QueryWorkspaceObjectTypeDescriptorId(int artifactId)
-		{
-			return RdoHelper.QueryWorkspaceObjectTypeDescriptorId(this.TestParameters, artifactId);
-		}
-
 		protected Relativity.Services.Objects.DataContracts.RelativityObject ReadRelativityObject(
 			int artifactId,
 			IEnumerable<string> fields)
