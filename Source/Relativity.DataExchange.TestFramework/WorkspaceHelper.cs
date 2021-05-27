@@ -9,10 +9,12 @@ namespace Relativity.DataExchange.TestFramework
 	using System;
 	using System.Collections.Generic;
 	using System.Linq;
-	using System.Threading.Tasks;
-
-	using kCura.Relativity.Client;
-	using kCura.Relativity.Client.DTOs;
+	using Relativity.Services.Folder;
+	using Relativity.Services.Interfaces.Shared;
+	using Relativity.Services.Interfaces.Shared.Models;
+	using Relativity.Services.Interfaces.Workspace;
+	using Relativity.Services.Interfaces.Workspace.Models;
+	using Relativity.Services.Objects.DataContracts;
 
 	/// <summary>
 	/// Defines static helper methods to manage workspaces.
@@ -21,76 +23,66 @@ namespace Relativity.DataExchange.TestFramework
 	{
 		public static void CreateTestWorkspace(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{
-			if (parameters == null)
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+			logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+			int templateWorkspaceId = RetrieveWorkspaceId(parameters, logger, parameters.WorkspaceTemplate);
+
+			// pasted:
+			using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
 			{
-				throw new ArgumentNullException(nameof(parameters));
-			}
+				WorkspaceResponse readResponse = workspaceManager.ReadAsync(templateWorkspaceId).GetAwaiter().GetResult();
 
-			if (logger == null)
-			{
-				throw new ArgumentNullException(nameof(logger));
-			}
-
-			using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
-			{
-				logger.LogInformation(
-					"Retrieving the {TemplateName} workspace template...",
-					parameters.WorkspaceTemplate);
-				client.APIOptions.WorkspaceID = -1;
-				QueryResultSet<Workspace> resultSet = QueryWorkspaceTemplate(client, parameters.WorkspaceTemplate);
-				if (!resultSet.Success)
-				{
-					throw new InvalidOperationException(
-						$"An error occurred while attempting to create a workspace from template {parameters.WorkspaceTemplate}: {resultSet.Message}");
-				}
-
-				if (resultSet.Results.Count == 0)
-				{
-					throw new InvalidOperationException(
-						$"Trying to create a workspace. Template with the following name does not exist: {parameters.WorkspaceTemplate}");
-				}
-
-				int templateWorkspaceId = resultSet.Results[0].Artifact.ArtifactID;
-				logger.LogInformation(
-					"Retrieved the {TemplateName} workspace template. TemplateWorkspaceId={TemplateWorkspaceId}.",
-					parameters.WorkspaceTemplate,
-					templateWorkspaceId);
-				Workspace workspace = new Workspace
+				var createRequest = new WorkspaceRequest(readResponse)
 				{
 					Name = $"Import API Sample Workspace ({DateTime.Now:MM-dd HH.mm.ss.fff})",
-					DownloadHandlerApplicationPath = "Relativity.Distributed",
+					Template = new Securable<ObjectIdentifier>(new ObjectIdentifier { ArtifactID = templateWorkspaceId }),
 				};
 
-				logger.LogInformation("Creating the {WorkspaceName} workspace...", workspace.Name);
-				ProcessOperationResult result =
-					client.Repositories.Workspace.CreateAsync(templateWorkspaceId, workspace);
-				parameters.WorkspaceId = QueryWorkspaceArtifactId(client, result, logger);
-				logger.LogInformation(
-					"Created the {WorkspaceName} workspace. Workspace Artifact ID: {WorkspaceId}.",
-					workspace.Name,
-					parameters.WorkspaceId);
+				logger.LogInformation("Creating the {WorkspaceName} workspace...", createRequest.Name);
+
+				WorkspaceResponse createResponse = workspaceManager.CreateAsync(createRequest).GetAwaiter().GetResult();
+				logger.LogInformation("Completed the create workspace process.");
+				parameters.WorkspaceId = createResponse.ArtifactID;
+			}
+		}
+
+
+		private static int RetrieveWorkspaceId(IntegrationTestParameters parameters, Relativity.Logging.ILog logger, string workspaceName)
+		{
+			logger.LogInformation("Retrieving the {workspaceName} workspace...", workspaceName);
+			var queryRequest = new QueryRequest { Condition = $"'Name' == '{workspaceName}'" };
+
+			QueryResultSlim queryResponse;
+			using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
+			{
+				queryResponse = workspaceManager.QueryEligibleTemplatesAsync(queryRequest, 0, 2).GetAwaiter().GetResult();
+			}
+
+			switch (queryResponse.Objects.Count)
+			{
+				case 0:
+					throw new InvalidOperationException($"Workspace with the following name does not exist: {workspaceName}");
+				case 1:
+					int workspaceId = queryResponse.Objects[0].ArtifactID;
+					logger.LogInformation($"Retrieved the {workspaceName} workspace. workspaceId={workspaceId}.", workspaceName, workspaceId);
+					return workspaceId;
+				default:
+					throw new InvalidOperationException($"More then one Workspace with the following name exists: {workspaceName}");
 			}
 		}
 
 		public static void DeleteTestWorkspace(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{
-			if (parameters == null)
-			{
-				throw new ArgumentNullException(nameof(parameters));
-			}
-
-			if (logger == null)
-			{
-				throw new ArgumentNullException(nameof(logger));
-			}
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+			logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
 			if (parameters.WorkspaceId != 0)
 			{
-				using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
+				using (IWorkspaceManager workspaceManager = ServiceHelper.GetServiceProxy<IWorkspaceManager>(parameters))
 				{
-					client.APIOptions.WorkspaceID = -1;
 					logger.LogInformation("Deleting the {WorkspaceId} workspace.", parameters.WorkspaceId);
-					client.Repositories.Workspace.DeleteSingle(parameters.WorkspaceId);
+					workspaceManager.DeleteAsync(parameters.WorkspaceId).GetAwaiter().GetResult();
 					logger.LogInformation("Deleted the {WorkspaceId} workspace.", parameters.WorkspaceId);
 				}
 			}
@@ -102,86 +94,20 @@ namespace Relativity.DataExchange.TestFramework
 
 		public static IList<string> QueryWorkspaceFolders(IntegrationTestParameters parameters, Relativity.Logging.ILog logger)
 		{
-			if (parameters == null)
-			{
-				throw new ArgumentNullException(nameof(parameters));
-			}
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+			logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
-			if (logger == null)
+			using (IFolderManager folderManager = ServiceHelper.GetServiceProxy<IFolderManager>(parameters))
 			{
-				throw new ArgumentNullException(nameof(logger));
-			}
-
-			using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
-			{
-				client.APIOptions.WorkspaceID = parameters.WorkspaceId;
-				logger.LogInformation("Retrieving the {WorkspaceId} workspace folders...", parameters.WorkspaceId);
-				Query<Folder> query = new Query<Folder> { Fields = FieldValue.AllFields };
-				QueryResultSet<Folder> resultSet = client.Repositories.Folder.Query(query, 0);
-				List<string> folders = resultSet.Results.Select(x => x.Artifact.Name).ToList();
+				var folderQuery = new Services.Query();
+				var queryResponse = folderManager.QueryAsync(parameters.WorkspaceId, folderQuery).GetAwaiter().GetResult();
+				List<string> folders = queryResponse.Results.Select(x => x.Artifact.Name).ToList();
 				logger.LogInformation(
 					"Retrieved {FolderCount} {WorkspaceId} workspace folders.",
 					folders.Count,
 					parameters.WorkspaceId);
 				return folders;
 			}
-		}
-
-		private static QueryResultSet<Workspace> QueryWorkspaceTemplate(IRSAPIClient client, string templateName)
-		{
-			Query<Workspace> query = new Query<Workspace>
-			{
-				Condition = new TextCondition(WorkspaceFieldNames.Name, TextConditionEnum.EqualTo, templateName),
-				Fields = FieldValue.AllFields,
-			};
-
-			QueryResultSet<Workspace> resultSet = client.Repositories.Workspace.Query(query, 0);
-			return resultSet;
-		}
-
-		private static int QueryWorkspaceArtifactId(
-			IRSAPIClient client,
-			ProcessOperationResult processResult,
-			Relativity.Logging.ILog logger)
-		{
-			if (processResult.Message != null)
-			{
-				logger.LogError("Failed to create the workspace. Message: {Message}", processResult.Message);
-				throw new InvalidOperationException(processResult.Message);
-			}
-
-			TaskCompletionSource<ProcessInformation> source = new TaskCompletionSource<ProcessInformation>();
-			client.ProcessComplete += (sender, args) =>
-			{
-				logger.LogInformation("Completed the create workspace process.");
-				source.SetResult(args.ProcessInformation);
-			};
-
-			client.ProcessCompleteWithError += (sender, args) =>
-			{
-				logger.LogError(
-					"The create process completed with errors. Message: {Message}",
-					args.ProcessInformation.Message);
-				source.SetResult(args.ProcessInformation);
-			};
-
-			client.ProcessFailure += (sender, args) =>
-			{
-				logger.LogError(
-					"The create process failed to complete. Message: {Message}",
-					args.ProcessInformation.Message);
-				source.SetResult(args.ProcessInformation);
-			};
-
-			client.MonitorProcessState(client.APIOptions, processResult.ProcessID);
-			ProcessInformation processInfo = source.Task.GetAwaiter().GetResult();
-			if (processInfo.OperationArtifactIDs.Any() && processInfo.OperationArtifactIDs[0] != null)
-			{
-				return processInfo.OperationArtifactIDs.FirstOrDefault().Value;
-			}
-
-			logger.LogError("The create process failed. Message: {Message}", processResult.Message);
-			throw new InvalidOperationException(processResult.Message);
 		}
 	}
 }
