@@ -12,6 +12,8 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 	using System.Data;
 	using System.Linq;
 	using System.Net;
+	using Relativity.Services.Interfaces.Field.Models;
+	using Relativity.Services.Interfaces.Shared.Models;
 
 	using global::NUnit.Framework;
 
@@ -670,42 +672,41 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 
 		protected void CreateDateField(int workspaceObjectTypeId, string fieldName)
 		{
-			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
+			DateFieldRequest field = new DateFieldRequest
 			{
+				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = workspaceObjectTypeId },
 				AllowGroupBy = false,
 				AllowPivot = false,
 				AllowSortTally = false,
-				FieldTypeID = kCura.Relativity.Client.FieldType.Date,
-				IgnoreWarnings = true,
 				IsRequired = false,
-				Linked = false,
+				IsLinked = false,
 				Name = fieldName,
 				OpenToAssociations = false,
-				Width = "12",
+				Formatting = Formatting.DateTime,
+				Width = 12,
 				Wrapping = true,
 			};
 
-			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
+			FieldHelper.CreateField(this.TestParameters, field);
 		}
 
 		protected void CreateDecimalField(int workspaceObjectTypeId, string fieldName)
 		{
-			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
+			DecimalFieldRequest field = new DecimalFieldRequest
 			{
+				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = workspaceObjectTypeId },
 				AllowGroupBy = false,
 				AllowPivot = false,
 				AllowSortTally = false,
-				FieldTypeID = kCura.Relativity.Client.FieldType.Decimal,
-				IgnoreWarnings = true,
 				IsRequired = false,
-				Linked = false,
+				IsLinked = false,
 				Name = fieldName,
 				OpenToAssociations = false,
-				Width = "12",
+				Width = 12,
 				Wrapping = true,
 			};
 
-			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
+			FieldHelper.CreateField(this.TestParameters, field);
 		}
 
 		/// <summary>
@@ -725,26 +726,25 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 
 		protected void CreateFixedLengthTextField(int workspaceObjectTypeId, string fieldName, int length)
 		{
-			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
+			FixedLengthFieldRequest field = new FixedLengthFieldRequest
 			{
+				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = workspaceObjectTypeId },
 				AllowGroupBy = false,
-				AllowHTML = false,
+				AllowHtml = false,
 				AllowPivot = false,
 				AllowSortTally = false,
-				FieldTypeID = kCura.Relativity.Client.FieldType.FixedLengthText,
 				Length = length,
-				IgnoreWarnings = true,
 				IncludeInTextIndex = true,
 				IsRequired = false,
-				Linked = false,
+				IsLinked = false,
 				Name = fieldName,
 				OpenToAssociations = false,
-				Unicode = false,
-				Width = string.Empty,
+				HasUnicode = false,
+				Width = null,
 				Wrapping = false,
 			};
 
-			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
+			FieldHelper.CreateField(this.TestParameters, field);
 		}
 
 		/// <summary>
@@ -763,40 +763,38 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 
 		protected void CreateSingleObjectField(int workspaceObjectTypeId, int descriptorArtifactTypeId, string fieldName)
 		{
-			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
+			SingleObjectFieldRequest field = new SingleObjectFieldRequest
 			{
+				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = workspaceObjectTypeId },
 				AllowGroupBy = false,
 				AllowPivot = false,
 				AllowSortTally = false,
-				AssociativeObjectType = new kCura.Relativity.Client.DTOs.ObjectType { DescriptorArtifactTypeID = descriptorArtifactTypeId },
-				FieldTypeID = kCura.Relativity.Client.FieldType.SingleObject,
-				IgnoreWarnings = true,
+				AssociativeObjectType = new ObjectTypeIdentifier { ArtifactTypeID = descriptorArtifactTypeId },
 				IsRequired = false,
-				Linked = false,
+				IsLinked = false,
 				Name = fieldName,
 				OpenToAssociations = false,
-				Width = "12",
+				Width = 12,
 				Wrapping = false,
 			};
 
-			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
+			FieldHelper.CreateField(this.TestParameters, field);
 		}
 
 		protected void CreateMultiObjectField(int workspaceObjectTypeId, int descriptorArtifactTypeId, string fieldName)
 		{
-			kCura.Relativity.Client.DTOs.Field field = new kCura.Relativity.Client.DTOs.Field
+			MultipleObjectFieldRequest field = new MultipleObjectFieldRequest
 			{
+				ObjectType = new ObjectTypeIdentifier { ArtifactTypeID = workspaceObjectTypeId },
 				AllowGroupBy = false,
 				AllowPivot = false,
-				AssociativeObjectType = new kCura.Relativity.Client.DTOs.ObjectType { DescriptorArtifactTypeID = descriptorArtifactTypeId },
-				FieldTypeID = kCura.Relativity.Client.FieldType.MultipleObject,
-				IgnoreWarnings = true,
+				AssociativeObjectType = new ObjectTypeIdentifier {ArtifactTypeID = descriptorArtifactTypeId},
 				IsRequired = false,
 				Name = fieldName,
-				Width = "12",
+				Width = 12,
 			};
 
-			FieldHelper.CreateField(this.TestParameters, workspaceObjectTypeId, field);
+			FieldHelper.CreateField(this.TestParameters, field);
 		}
 
 		protected int CreateObjectType(string objectTypeName)
@@ -1046,11 +1044,6 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 		protected IList<string> QueryWorkspaceFolders()
 		{
 			return WorkspaceHelper.QueryWorkspaceFolders(this.TestParameters, this.Logger);
-		}
-
-		protected int QueryWorkspaceObjectTypeDescriptorId(int artifactId)
-		{
-			return RdoHelper.QueryWorkspaceObjectTypeDescriptorId(this.TestParameters, artifactId);
 		}
 
 		protected Relativity.Services.Objects.DataContracts.RelativityObject ReadRelativityObject(

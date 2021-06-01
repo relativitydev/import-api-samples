@@ -8,9 +8,10 @@ namespace Relativity.DataExchange.TestFramework
 {
 	using System;
 	using System.Collections.Generic;
-	using System.Linq;
 	using kCura.Relativity.Client;
 	using kCura.Relativity.Client.DTOs;
+	using Relativity.Services.Interfaces.Field;
+	using Relativity.Services.Interfaces.Field.Models;
 	using Relativity.Services.Objects;
 	using Relativity.Services.Objects.DataContracts;
 
@@ -19,46 +20,41 @@ namespace Relativity.DataExchange.TestFramework
 	/// </summary>
 	public static class FieldHelper
 	{
-		public static void CreateField(
-			IntegrationTestParameters parameters,
-			int workspaceObjectTypeId,
-			kCura.Relativity.Client.DTOs.Field field)
+		public static void CreateField(IntegrationTestParameters parameters, BaseFieldRequest field)
 		{
-			if (parameters == null)
-			{
-				throw new ArgumentNullException(nameof(parameters));
-			}
+			parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+			field = field ?? throw new ArgumentNullException(nameof(field));
 
-			if (field == null)
+			try
 			{
-				throw new ArgumentNullException(nameof(field));
-			}
-
-			using (IRSAPIClient client = ServiceHelper.GetServiceProxy<IRSAPIClient>(parameters))
-			{
-				client.APIOptions.WorkspaceID = parameters.WorkspaceId;
-				List<kCura.Relativity.Client.DTOs.Field>
-					fieldsToCreate = new List<kCura.Relativity.Client.DTOs.Field>();
-				field.ObjectType = new kCura.Relativity.Client.DTOs.ObjectType
+				using (IFieldManager fieldManager = ServiceHelper.GetServiceProxy<IFieldManager>(parameters))
 				{
-					DescriptorArtifactTypeID = workspaceObjectTypeId,
-				};
-				kCura.Relativity.Client.DTOs.WriteResultSet<kCura.Relativity.Client.DTOs.Field> resultSet =
-					client.Repositories.Field.Create(fieldsToCreate);
-				resultSet = client.Repositories.Field.Create(field);
-				if (resultSet.Success)
-				{
-					return;
+					switch (field)
+					{
+						case SingleObjectFieldRequest singleObjectFieldRequest:
+							fieldManager.CreateSingleObjectFieldAsync(parameters.WorkspaceId, singleObjectFieldRequest).GetAwaiter().GetResult();
+							break;
+						case MultipleObjectFieldRequest multipleObjectFieldRequest:
+							fieldManager.CreateMultipleObjectFieldAsync(parameters.WorkspaceId, multipleObjectFieldRequest).GetAwaiter().GetResult();
+							break;
+						case FixedLengthFieldRequest fixedLengthFieldRequest:
+							fieldManager.CreateFixedLengthFieldAsync(parameters.WorkspaceId, fixedLengthFieldRequest).GetAwaiter().GetResult();
+							break;
+						case DateFieldRequest dateFieldRequest:
+							fieldManager.CreateDateFieldAsync(parameters.WorkspaceId, dateFieldRequest).GetAwaiter().GetResult();
+							break;
+						case DecimalFieldRequest decimalFieldRequest:
+							fieldManager.CreateDecimalFieldAsync(parameters.WorkspaceId, decimalFieldRequest).GetAwaiter().GetResult();
+							break;
+						default:
+							throw new InvalidOperationException("Unsupported field type");
+					}
 				}
-
-				List<Exception> innerExceptions = new List<Exception>();
-				foreach (Result<kCura.Relativity.Client.DTOs.Field> result in resultSet.Results.Where(x => !x.Success))
-				{
-					innerExceptions.Add(new InvalidOperationException(result.Message));
-				}
-
-				throw new AggregateException(
-					$"Failed to create the {field.Name} field. Error: {resultSet.Message}", innerExceptions);
+			}
+			catch (Exception e)
+			{
+				Console.WriteLine(e);
+				throw;
 			}
 		}
 
