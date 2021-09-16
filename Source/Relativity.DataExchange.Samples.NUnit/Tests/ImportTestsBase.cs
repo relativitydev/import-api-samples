@@ -18,6 +18,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 	using global::NUnit.Framework;
 
 	using Relativity.DataExchange.TestFramework;
+	using kCura.WinEDDS.Service;
 
 	/// <summary>
 	/// Represents an abstract base class object to provide common functionality and helper methods.
@@ -721,7 +722,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 		protected kCura.WinEDDS.Service.Export.ISearchManager CreateExportSearchManager()
 		{
 			var credentials = new NetworkCredential(this.TestParameters.RelativityUserName, this.TestParameters.RelativityPassword);
-			return new kCura.WinEDDS.Service.SearchManager(credentials, new CookieContainer());
+			return ManagerFactory.CreateSearchManager(credentials, new CookieContainer(), () => "TestCorrelationId");
 		}
 
 		protected void CreateFixedLengthTextField(int workspaceObjectTypeId, string fieldName, int length)
