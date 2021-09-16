@@ -4,7 +4,7 @@ properties {
     $ArtifactsDir = Join-Path $Root "Logs"
     $NumberOfProcessors = (Get-ChildItem env:"NUMBER_OF_PROCESSORS").Value
     $Injections = "EnableInjections"
-    $MasterSolution = Join-Path $root "Source/Relativity.Import.Client.Samples.NUnit.sln"
+    $MasterSolution = Join-Path $root "Source/Relativity.DataExchange.Samples.NUnit.sln"
 
     # Properties below this line are defined in build.ps1
     $BuildType = $Null
