@@ -29,40 +29,33 @@ This page contains the following information:
 
 ## Prerequisites
 
-* Visual Studio 2017 and above
-* NUnit Test Adapter
-* A bluestem (9.7) or above test environment
-* Visual C++ 2010 x86 Runtime (Aspera transfers)
+* Visual Studio 2022 and above
+* A Server 2023 or above test environment
 * Visual C++ 2015 x64 Runtime (Outside In and FreeImage)
 
-**Note:** Visual Studio 2017 and above is required due to C# 7.0 language feature usage and Relativity strongly recommends [using a developer Dev VM](https://platform.relativity.com/9.6/Content/Relativity_Platform/Testing_custom_applications.htm?Highlight=vm#_Developer_test_VMs) for the test environment.
+**Note:** Visual Studio 2022 and above is required due to NuGet 6 and C# language feature usage. Relativity strongly recommends [using a developer Dev VM](https://platform.relativity.com/Server2022/Content/Get_started/Lesson_1_-_Set_up_your_developer_environment.htm) for the test environment.
 
 ## Setup
 The steps below should only be required when the repository is being cloned for the first time.
 
 <details><summary>View instructions</summary>
 
-## Step 1 - Install NUnit 3 test adapter
-If Visual Studio hasn't already been setup with NUnit 3 Test Adapter, go to `Tools->Extensions and Updates` and install the extension.
-
-![NUnit Test Adapter](Documentation/NUnitTestAdapter.png "NUnit Test Adapter")
-
-## Step 2 - Identify the branch
+## Step 1 - Identify the branch
 With each new Relativity release, a new branch is created to not only test and verify the Import API package but to ensure all package references are updated properly. As of this writing, the following three releases are available for consideration:
 
 ![Sample Branches](Documentation/Branches.png "Sample Branches")
 
-## Step 3 - Clone the repository
+## Step 2 - Clone the repository
 Use the command-line or Visual Studio to clone the repository and target a branch from the previous step.
 
 ```bash
-git clone -b release-9.7-bluestem https://github.com/relativitydev/import-api-samples.git
+git clone -b server-release-12.3-2023 https://github.com/relativitydev/import-api-samples.git
 ```
 
-## Step 4 - Open the solution
+## Step 3 - Open the solution
 Launch Visual Studio 2017 and open the Relativity.DataExchange.Samples.NUnit.sln solution file.
 
-## Step 5 - Update app settings
+## Step 4 - Update app settings
 Double-click the app.config file and update the following underneath the `appSettings` element:
 
 | Setting                  | Description                                                               | Example                                             |
@@ -81,12 +74,10 @@ Double-click the app.config file and update the following underneath the `appSet
 
 **Note:** The SQL parameters are optional and generally reserved to cleanup Dev VM's as soon as the tests are completed.
 
-## Step 6 - Test settings
-In order to run the NUnit tests from within Visual Studio, the test settings must target X64. Go to `Test->Test Settings->Default Processor Architecture` and verify this is set to X64.
+## Step 5 - Build Solution
+Use Visual Studio to build the solution.
 
-![Test Settings](Documentation/TestSettings.png "Test Settings")
-
-## Step 7 - Execute tests
+## Step 6 - Execute tests
 At this point, the setup is complete and should now be able to run all of the tests. If the test explorer isn't visible, go to `Test->Windows->Test Explorer` and click the `Run All` hyper-link at the top. Regardless of which method is used to execute tests, the following actions occur:
 
 * A new test workspace is created (normally 15-30 seconds) to ensure tests are isolated

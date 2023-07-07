@@ -17,16 +17,18 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 
 	using global::NUnit.Framework;
 
+	using kCura.WinEDDS.Service;
+
 	using Relativity.DataExchange.TestFramework;
 
-	/// <summary>
-	/// Represents an abstract base class object to provide common functionality and helper methods.
-	/// </summary>
-	public abstract class ImportTestsBase
-	{
-		/// <summary>
-		/// The default bates prefix constant.
-		/// </summary>
+    /// <summary>
+    /// Represents an abstract base class object to provide common functionality and helper methods.
+    /// </summary>
+    public abstract class ImportTestsBase
+    {
+        /// <summary>
+        /// The default bates prefix constant.
+        /// </summary>
 		protected const string BatesPrefix = "BATES";
 
 		/// <summary>
@@ -721,7 +723,7 @@ namespace Relativity.DataExchange.Samples.NUnit.Tests
 		protected kCura.WinEDDS.Service.Export.ISearchManager CreateExportSearchManager()
 		{
 			var credentials = new NetworkCredential(this.TestParameters.RelativityUserName, this.TestParameters.RelativityPassword);
-			return new kCura.WinEDDS.Service.SearchManager(credentials, new CookieContainer());
+			return ManagerFactory.CreateSearchManager(credentials, new CookieContainer(), () => "TestCorrelationId");
 		}
 
 		protected void CreateFixedLengthTextField(int workspaceObjectTypeId, string fieldName, int length)

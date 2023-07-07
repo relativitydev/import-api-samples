@@ -52,7 +52,7 @@ namespace Relativity.DataExchange.TestFramework
 		public static IntegrationTestParameters Create()
 		{
 			// Note: don't create the logger until all parameters have been retrieved.
-			IntegrationTestParameters parameters = GetIntegrationTestParameters();
+			IntegrationTestParameters parameters = ReadIntegrationTestParameters();
 			SetupLogger(parameters);
 			SetupServerCertificateValidation(parameters);
 			if (parameters.SkipIntegrationTests)
@@ -146,83 +146,50 @@ END";
 			}
 		}
 
-		private static IntegrationTestParameters GetIntegrationTestParameters()
+		private static IntegrationTestParameters ReadIntegrationTestParameters()
 		{
-			Console.WriteLine("Retrieving and dumping all integration test parameters...");
-			bool decryptParameters = false;
-			IntegrationTestParameters parameters = new IntegrationTestParameters();
 			string testEnvironment = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_ENV");
-			string jsonFile = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_JSON_FILE");
 			if (!string.IsNullOrWhiteSpace(testEnvironment))
 			{
-				string resourceFile;
-				switch (testEnvironment.ToUpperInvariant())
-				{
-					case "HYPERV":
-						resourceFile = "test-parameters-hyperv.json";
-						break;
-
-					case "E2E":
-						resourceFile = "test-parameters-e2e.json";
-						break;
-
-					default:
-						throw new InvalidOperationException($"The test environment '{testEnvironment}' is not recognized or supported.");
-				}
-
-				using (Stream stream = ResourceFileHelper.ExtractToStream(
-					Assembly.GetExecutingAssembly(),
-					$"Relativity.DataExchange.TestFramework.Resources.{resourceFile}"))
-				{
-					StreamReader reader = new StreamReader(stream);
-					JsonSerializer serializer = new JsonSerializer();
-					parameters = serializer.Deserialize<IntegrationTestParameters>(new JsonTextReader(reader));
-					decryptParameters = true;
-				}
+				return ReadIntegrationTestParametersFromEnvironmentConfiguration(testEnvironment);
 			}
-			else if (!string.IsNullOrWhiteSpace(jsonFile))
+
+			string jsonFile = GetEnvironmentVariable("IAPI_INTEGRATION_TEST_JSON_FILE");
+			if (!string.IsNullOrWhiteSpace(jsonFile))
 			{
-				parameters = JsonConvert.DeserializeObject<IntegrationTestParameters>(File.ReadAllText(jsonFile));
-				decryptParameters = true;
+				return JsonConvert.DeserializeObject<IntegrationTestParameters>(File.ReadAllText(jsonFile));
 			}
-			else
+
+			return ReadIntegrationTestParametersFromRegistryAndAppConfig();
+		}
+
+		private static IntegrationTestParameters ReadIntegrationTestParametersFromEnvironmentConfiguration(string testEnvironment)
+		{
+			string resourceFile;
+			switch (testEnvironment.ToUpperInvariant())
 			{
-				foreach (var prop in parameters.GetType().GetProperties())
-				{
-					IntegrationTestParameterAttribute attribute =
-						prop.GetCustomAttribute<IntegrationTestParameterAttribute>();
-					if (attribute == null || !attribute.IsMapped)
-					{
-						continue;
-					}
+				case "HOPPER":
+					resourceFile = "test-parameters-hopper.json";
+					break;
 
-					string value = GetConfigurationStringValue(prop.Name);
-					if (prop.PropertyType == typeof(string))
-					{
-						prop.SetValue(parameters, value);
-					}
-					else if (prop.PropertyType == typeof(bool))
-					{
-						prop.SetValue(parameters, bool.Parse(value));
-					}
-					else if (prop.PropertyType == typeof(Uri))
-					{
-						prop.SetValue(parameters, new Uri(value));
-					}
-					else
-					{
-						string message =
-							$"The integration test parameter '{prop.Name}' of type '{prop.PropertyType}' isn't supported by the integration test helper.";
-						throw new ConfigurationErrorsException(message);
-					}
-				}
+				default:
+					throw new InvalidOperationException(
+						$"The test environment '{testEnvironment}' is not recognized or supported.");
 			}
 
-			if (decryptParameters)
+			using (Stream stream = ResourceFileHelper.ExtractToStream(
+				       Assembly.GetExecutingAssembly(),
+				       $"Relativity.DataExchange.TestFramework.Resources.{resourceFile}"))
 			{
-				DecryptTestParameters(parameters);
+				StreamReader reader = new StreamReader(stream);
+				JsonSerializer serializer = new JsonSerializer();
+				return serializer.Deserialize<IntegrationTestParameters>(new JsonTextReader(reader));
 			}
+		}
 
+		private static IntegrationTestParameters ReadIntegrationTestParametersFromRegistryAndAppConfig()
+		{
+			IntegrationTestParameters parameters = new IntegrationTestParameters();
 			foreach (var prop in parameters.GetType().GetProperties())
 			{
 				IntegrationTestParameterAttribute attribute =
@@ -232,41 +199,28 @@ END";
 					continue;
 				}
 
-				if (attribute.IsSecret)
+				string value = GetConfigurationStringValue(prop.Name);
+				if (prop.PropertyType == typeof(string))
 				{
-					Console.WriteLine("{0}=[Obfuscated]", prop.Name);
+					prop.SetValue(parameters, value);
+				}
+				else if (prop.PropertyType == typeof(bool))
+				{
+					prop.SetValue(parameters, bool.Parse(value));
+				}
+				else if (prop.PropertyType == typeof(Uri))
+				{
+					prop.SetValue(parameters, new Uri(value));
 				}
 				else
 				{
-					Console.WriteLine("{0}={1}", prop.Name, prop.GetValue(parameters, null));
+					string message =
+						$"The integration test parameter '{prop.Name}' of type '{prop.PropertyType}' isn't supported by the integration test helper.";
+					throw new ConfigurationErrorsException(message);
 				}
 			}
 
-			Console.WriteLine("Retrieved and dumped all integration test parameters.");
 			return parameters;
-		}
-
-		private static void DecryptTestParameters(IntegrationTestParameters parameters)
-		{
-			if (!string.IsNullOrWhiteSpace(parameters.RelativityPassword))
-			{
-				parameters.RelativityPassword = CryptoHelper.Decrypt(parameters.RelativityPassword);
-			}
-
-			if (!string.IsNullOrWhiteSpace(parameters.RelativityUserName))
-			{
-				parameters.RelativityUserName = CryptoHelper.Decrypt(parameters.RelativityUserName);
-			}
-
-			if (!string.IsNullOrWhiteSpace(parameters.SqlAdminPassword))
-			{
-				parameters.SqlAdminPassword = CryptoHelper.Decrypt(parameters.SqlAdminPassword);
-			}
-
-			if (!string.IsNullOrWhiteSpace(parameters.SqlAdminUserName))
-			{
-				parameters.SqlAdminUserName = CryptoHelper.Decrypt(parameters.SqlAdminUserName);
-			}
 		}
 
 		private static string GetConfigurationStringValue(string key)
